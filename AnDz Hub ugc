@@ -1,0 +1,283 @@
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+
+-- =========================
+-- KEY
+-- =========================
+local CORRECT_KEY = "ANDZONTOP"
+
+-- =========================
+-- TỌA ĐỘ TELE
+-- =========================
+local fixedPositions = {
+[1] = Vector3.new(-168.0, 4.8, 392.4),
+[2] = Vector3.new(-1207.1, 6.0, 92.7),
+[3] = Vector3.new(865.4, 5.0, 125.8),
+[4] = Vector3.new(-173.6, 6.0, -931.8),
+}
+
+-- Xóa GUI cũ
+pcall(function()
+game.CoreGui.TeleportSaveGUI:Destroy()
+end)
+
+-- =========================
+-- GUI
+-- =========================
+local gui = Instance.new("ScreenGui")
+gui.Name = "TeleportSaveGUI"
+gui.ResetOnSpawn = false
+gui.Parent = game.CoreGui
+
+-- =========================
+-- MENU KEY
+-- =========================
+local keyFrame = Instance.new("Frame")
+keyFrame.Size = UDim2.new(0, 280, 0, 170)
+keyFrame.Position = UDim2.new(0.5, -140, 0.5, -85)
+keyFrame.BackgroundColor3 = Color3.fromRGB(45, 20, 65)
+keyFrame.Active = true
+keyFrame.Draggable = true
+keyFrame.Parent = gui
+
+local keyCorner = Instance.new("UICorner")
+keyCorner.CornerRadius = UDim.new(0, 12)
+keyCorner.Parent = keyFrame
+
+local keyStroke = Instance.new("UIStroke")
+keyStroke.Thickness = 2
+keyStroke.Color = Color3.fromRGB(170, 70, 255)
+keyStroke.Parent = keyFrame
+
+local keyTitle = Instance.new("TextLabel")
+keyTitle.Size = UDim2.new(1, 0, 0, 45)
+keyTitle.BackgroundTransparency = 1
+keyTitle.Text = "🔐 ENTER KEY"
+keyTitle.TextColor3 = Color3.fromRGB(220, 150, 255)
+keyTitle.TextSize = 20
+keyTitle.Font = Enum.Font.GothamBold
+keyTitle.Parent = keyFrame
+
+local keyBox = Instance.new("TextBox")
+keyBox.Size = UDim2.new(0, 240, 0, 40)
+keyBox.Position = UDim2.new(0, 20, 0, 55)
+keyBox.BackgroundColor3 = Color3.fromRGB(65, 30, 85)
+keyBox.PlaceholderText = "Nhập key..."
+keyBox.Text = ""
+keyBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+keyBox.PlaceholderColor3 = Color3.fromRGB(180, 180, 180)
+keyBox.TextSize = 16
+keyBox.Font = Enum.Font.Gotham
+keyBox.ClearTextOnFocus = false
+keyBox.Parent = keyFrame
+
+local boxCorner = Instance.new("UICorner")
+boxCorner.CornerRadius = UDim.new(0, 8)
+boxCorner.Parent = keyBox
+
+local checkButton = Instance.new("TextButton")
+checkButton.Size = UDim2.new(0, 240, 0, 40)
+checkButton.Position = UDim2.new(0, 20, 0, 110)
+checkButton.BackgroundColor3 = Color3.fromRGB(105, 55, 170)
+checkButton.Text = "UNLOCK"
+checkButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+checkButton.TextSize = 16
+checkButton.Font = Enum.Font.GothamBold
+checkButton.Parent = keyFrame
+
+local checkCorner = Instance.new("UICorner")
+checkCorner.CornerRadius = UDim.new(0, 8)
+checkCorner.Parent = checkButton
+
+-- =========================
+-- NÚT TRÒN
+-- =========================
+local openButton = Instance.new("TextButton")
+openButton.Name = "OpenButton"
+openButton.Size = UDim2.new(0, 55, 0, 55)
+openButton.Position = UDim2.new(0, 15, 0.5, -27)
+openButton.BackgroundColor3 = Color3.fromRGB(100, 40, 160)
+openButton.Text = "T"
+openButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+openButton.TextSize = 22
+openButton.Font = Enum.Font.GothamBold
+openButton.AutoButtonColor = false
+openButton.Active = true
+openButton.Draggable = true
+openButton.Visible = false
+openButton.Parent = gui
+
+local buttonCorner = Instance.new("UICorner")
+buttonCorner.CornerRadius = UDim.new(1, 0)
+buttonCorner.Parent = openButton
+
+local rainbowStroke = Instance.new("UIStroke")
+rainbowStroke.Thickness = 3
+rainbowStroke.Parent = openButton
+
+-- Rainbow
+local hue = 0
+
+RunService.RenderStepped:Connect(function()
+hue = (hue + 0.005) % 1
+
+if rainbowStroke and rainbowStroke.Parent then  
+    rainbowStroke.Color = Color3.fromHSV(hue, 1, 1)  
+end
+
+end)
+
+-- =========================
+-- MENU TELEPORT
+-- =========================
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 230, 0, 260)
+frame.Position = UDim2.new(0.5, -115, 0.5, -130)
+frame.BackgroundColor3 = Color3.fromRGB(45, 20, 65)
+frame.Active = true
+frame.Draggable = true
+frame.Visible = false
+frame.Parent = gui
+
+local frameCorner = Instance.new("UICorner")
+frameCorner.CornerRadius = UDim.new(0, 10)
+frameCorner.Parent = frame
+
+local frameStroke = Instance.new("UIStroke")
+frameStroke.Thickness = 2
+frameStroke.Color = Color3.fromRGB(170, 70, 255)
+frameStroke.Parent = frame
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 45)
+title.BackgroundTransparency = 1
+title.Text = "TELEPORT"
+title.TextColor3 = Color3.fromRGB(220, 150, 255)
+title.TextSize = 20
+title.Font = Enum.Font.GothamBold
+title.Parent = frame
+
+-- =========================
+-- TELE 1-4
+-- =========================
+for i = 1, 4 do
+
+local tele = Instance.new("TextButton")  
+tele.Name = "Tele" .. i  
+tele.Size = UDim2.new(0, 210, 0, 40)  
+tele.Position = UDim2.new(0, 10, 0, 50 + (i - 1) * 50)  
+tele.BackgroundColor3 = Color3.fromRGB(105, 55, 170)  
+tele.Text = "TELE " .. i  
+tele.TextColor3 = Color3.fromRGB(255, 255, 255)  
+tele.TextSize = 15  
+tele.Font = Enum.Font.GothamBold  
+tele.Parent = frame  
+
+local teleCorner = Instance.new("UICorner")  
+teleCorner.CornerRadius = UDim.new(0, 7)  
+teleCorner.Parent = tele  
+
+tele.MouseButton1Click:Connect(function()  
+
+    local character = player.Character  
+    local root = character and character:FindFirstChild("HumanoidRootPart")  
+
+    if not root then  
+        return  
+    end  
+
+    local pos = fixedPositions[i]  
+
+    if not pos then  
+        return  
+    end  
+
+    root.CFrame = CFrame.new(pos)  
+
+    local oldCoordinate = gui:FindFirstChild("TeleportCoordinate")  
+
+    if oldCoordinate then  
+        oldCoordinate:Destroy()  
+    end  
+
+    local coordinate = Instance.new("TextLabel")  
+    coordinate.Name = "TeleportCoordinate"  
+    coordinate.Size = UDim2.new(0, 430, 0, 105)  
+    coordinate.Position = UDim2.new(0.5, -215, 0.78, 0)  
+    coordinate.BackgroundColor3 = Color3.fromRGB(38, 18, 55)  
+    coordinate.BackgroundTransparency = 0.05  
+    coordinate.TextColor3 = Color3.fromRGB(255, 255, 255)  
+    coordinate.TextSize = 24  
+    coordinate.Font = Enum.Font.GothamBold  
+    coordinate.TextXAlignment = Enum.TextXAlignment.Center  
+    coordinate.TextYAlignment = Enum.TextYAlignment.Center  
+
+    coordinate.Text = string.format(  
+        "📍 TELE %d\nX: %.1f    Y: %.1f    Z: %.1f",  
+        i,  
+        pos.X,  
+        pos.Y,  
+        pos.Z  
+    )  
+
+    coordinate.Parent = gui  
+
+    local corner = Instance.new("UICorner")  
+    corner.CornerRadius = UDim.new(0, 10)  
+    corner.Parent = coordinate  
+
+    local stroke = Instance.new("UIStroke")  
+    stroke.Thickness = 3  
+    stroke.Color = Color3.fromRGB(175, 70, 255)  
+    stroke.Parent = coordinate  
+
+    task.delay(2, function()  
+        if coordinate and coordinate.Parent then  
+            coordinate:Destroy()  
+        end  
+    end)  
+end)
+
+end
+
+-- =========================
+-- KIỂM TRA KEY
+-- =========================
+local function checkKey()
+if keyBox.Text == CORRECT_KEY then
+
+keyFrame.Visible = false  
+    openButton.Visible = true  
+    frame.Visible = true  
+
+else  
+
+    keyBox.Text = ""  
+    keyBox.PlaceholderText = "❌ KEY SAI!"  
+
+    task.delay(1.5, function()  
+        if keyBox then  
+            keyBox.PlaceholderText = "Nhập key..."  
+        end  
+    end)  
+
+end
+
+end
+
+checkButton.MouseButton1Click:Connect(checkKey)
+
+keyBox.FocusLost:Connect(function(enterPressed)
+if enterPressed then
+checkKey()
+end
+end)
+
+-- =========================
+-- ẨN / HIỆN MENU
+-- =========================
+openButton.MouseButton1Click:Connect(function()
+frame.Visible = not frame.Visible
+end)

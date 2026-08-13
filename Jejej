@@ -1,0 +1,841 @@
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+local KEY = "NHIEN_MYLOVE"
+
+--==================================================
+-- XÓA GUI CŨ
+--==================================================
+
+local old = playerGui:FindFirstChild("AZ_EggHub")
+if old then
+old:Destroy()
+end
+
+--==================================================
+-- GUI
+--==================================================
+
+local gui = Instance.new("ScreenGui")
+gui.Name = "AZ_EggHub"
+gui.ResetOnSpawn = false
+gui.IgnoreGuiInset = true
+gui.Parent = playerGui
+
+--==================================================
+-- NÚT AZ
+--==================================================
+
+local azButton = Instance.new("TextButton")
+azButton.Name = "AZButton"
+azButton.Size = UDim2.fromOffset(65,65)
+azButton.Position = UDim2.new(0,20,0.5,-32)
+azButton.BackgroundColor3 = Color3.fromRGB(130,40,200)
+azButton.Text = "AZ"
+azButton.TextColor3 = Color3.new(1,1,1)
+azButton.TextSize = 22
+azButton.Font = Enum.Font.GothamBold
+azButton.BorderSizePixel = 0
+azButton.Parent = gui
+
+Instance.new("UICorner",azButton).CornerRadius = UDim.new(1,0)
+
+local rainbowStroke = Instance.new("UIStroke")
+rainbowStroke.Thickness = 4
+rainbowStroke.Parent = azButton
+
+task.spawn(function()
+local colors = {
+Color3.fromRGB(255,0,0),
+Color3.fromRGB(255,127,0),
+Color3.fromRGB(255,255,0),
+Color3.fromRGB(0,255,0),
+Color3.fromRGB(0,170,255),
+Color3.fromRGB(80,0,255),
+Color3.fromRGB(180,0,255)
+}
+
+local i = 1
+
+while azButton.Parent do
+rainbowStroke.Color = colors[i]
+i += 1
+
+if i > #colors then    
+    i = 1    
+end    
+
+task.wait(0.15)
+
+end
+
+end)
+
+--==================================================
+-- KEY MENU
+--==================================================
+
+local keyFrame = Instance.new("Frame")
+keyFrame.Size = UDim2.fromOffset(270,160)
+keyFrame.Position = UDim2.new(0.5,-135,0.5,-80)
+keyFrame.BackgroundColor3 = Color3.fromRGB(25,20,35)
+keyFrame.BorderSizePixel = 0
+keyFrame.Visible = false
+keyFrame.Parent = gui
+
+Instance.new("UICorner",keyFrame).CornerRadius = UDim.new(0,12)
+
+local keyStroke = Instance.new("UIStroke")
+keyStroke.Color = Color3.fromRGB(170,60,255)
+keyStroke.Thickness = 2
+keyStroke.Parent = keyFrame
+
+local keyTitle = Instance.new("TextLabel")
+keyTitle.Size = UDim2.new(1,0,0,40)
+keyTitle.BackgroundTransparency = 1
+keyTitle.Text = "🔑 NHẬP KEY"
+keyTitle.TextColor3 = Color3.new(1,1,1)
+keyTitle.TextSize = 19
+keyTitle.Font = Enum.Font.GothamBold
+keyTitle.Parent = keyFrame
+
+local keyBox = Instance.new("TextBox")
+keyBox.Size = UDim2.new(1,-30,0,40)
+keyBox.Position = UDim2.fromOffset(15,48)
+keyBox.BackgroundColor3 = Color3.fromRGB(45,35,55)
+keyBox.PlaceholderText = "Nhập Key..."
+keyBox.Text = ""
+keyBox.TextColor3 = Color3.new(1,1,1)
+keyBox.PlaceholderColor3 = Color3.fromRGB(170,170,170)
+keyBox.TextSize = 14
+keyBox.Font = Enum.Font.Gotham
+keyBox.ClearTextOnFocus = false
+keyBox.Parent = keyFrame
+
+Instance.new("UICorner",keyBox).CornerRadius = UDim.new(0,8)
+
+local keyButton = Instance.new("TextButton")
+keyButton.Size = UDim2.fromOffset(110,35)
+keyButton.Position = UDim2.new(0.5,-55,1,-47)
+keyButton.BackgroundColor3 = Color3.fromRGB(140,50,220)
+keyButton.Text = "XÁC NHẬN"
+keyButton.TextColor3 = Color3.new(1,1,1)
+keyButton.TextSize = 13
+keyButton.Font = Enum.Font.GothamBold
+keyButton.BorderSizePixel = 0
+keyButton.Parent = keyFrame
+
+Instance.new("UICorner",keyButton).CornerRadius = UDim.new(0,8)
+
+local keyStatus = Instance.new("TextLabel")
+keyStatus.Size = UDim2.new(1,0,0,20)
+keyStatus.Position = UDim2.fromOffset(0,125)
+keyStatus.BackgroundTransparency = 1
+keyStatus.Text = ""
+keyStatus.TextColor3 = Color3.fromRGB(255,80,80)
+keyStatus.TextSize = 12
+keyStatus.Font = Enum.Font.Gotham
+keyStatus.Parent = keyFrame
+
+--==================================================
+-- MAIN MENU
+--==================================================
+
+local main = Instance.new("Frame")
+main.Size = UDim2.fromOffset(250,275)
+main.Position = UDim2.new(0.5,-125,0.5,-137)
+main.BackgroundColor3 = Color3.fromRGB(25,25,30)
+main.BorderSizePixel = 0
+main.Visible = false
+main.Parent = gui
+
+Instance.new("UICorner",main).CornerRadius = UDim.new(0,12)
+
+local mainStroke = Instance.new("UIStroke")
+mainStroke.Color = Color3.fromRGB(170,60,255)
+mainStroke.Thickness = 2
+mainStroke.Parent = main
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1,0,0,40)
+title.BackgroundTransparency = 1
+title.Text = "🥚 AZ EGG HUB"
+title.TextColor3 = Color3.fromRGB(200,100,255)
+title.TextSize = 19
+title.Font = Enum.Font.GothamBold
+title.Parent = main
+
+--==================================================
+-- TELE EGG XA NHẤT
+--==================================================
+
+local tele = Instance.new("TextButton")
+tele.Size = UDim2.new(1,-20,0,42)
+tele.Position = UDim2.fromOffset(10,45)
+tele.BackgroundColor3 = Color3.fromRGB(110,50,200)
+tele.Text = "✈️ BAY TỚI EGG XA NHẤT"
+tele.TextColor3 = Color3.new(1,1,1)
+tele.TextSize = 14
+tele.Font = Enum.Font.GothamBold
+tele.BorderSizePixel = 0
+tele.Parent = main
+
+Instance.new("UICorner",tele).CornerRadius = UDim.new(0,8)
+
+--==================================================
+-- TELE VỀ VỊ TRÍ CŨ
+--==================================================
+
+local back = Instance.new("TextButton")
+back.Size = UDim2.new(1,-20,0,42)
+back.Position = UDim2.fromOffset(10,92)
+back.BackgroundColor3 = Color3.fromRGB(70,70,80)
+back.Text = "📍 TELE VỀ VỊ TRÍ CŨ"
+back.TextColor3 = Color3.new(1,1,1)
+back.TextSize = 14
+back.Font = Enum.Font.GothamBold
+back.BorderSizePixel = 0
+back.Parent = main
+
+Instance.new("UICorner",back).CornerRadius = UDim.new(0,8)
+
+--==================================================
+-- INSTANT CLICK
+--==================================================
+
+local instant = Instance.new("TextButton")
+instant.Size = UDim2.new(1,-20,0,42)
+instant.Position = UDim2.fromOffset(10,139)
+instant.BackgroundColor3 = Color3.fromRGB(160,50,50)
+instant.Text = "⚡ INSTANT CLICK: OFF"
+instant.TextColor3 = Color3.new(1,1,1)
+instant.TextSize = 14
+instant.Font = Enum.Font.GothamBold
+instant.BorderSizePixel = 0
+instant.Parent = main
+
+Instance.new("UICorner",instant).CornerRadius = UDim.new(0,8)
+
+--==================================================
+-- THANH CHỈNH TỐC ĐỘ BAY
+--==================================================
+
+local flySpeed = 5
+
+local speedLabel = Instance.new("TextLabel")
+speedLabel.Size = UDim2.new(1,-20,0,22)
+speedLabel.Position = UDim2.fromOffset(10,187)
+speedLabel.BackgroundTransparency = 1
+speedLabel.Text = "✈️ TỐC ĐỘ BAY: 5"
+speedLabel.TextColor3 = Color3.new(1,1,1)
+speedLabel.TextSize = 13
+speedLabel.Font = Enum.Font.GothamBold
+speedLabel.Parent = main
+
+local speedBar = Instance.new("Frame")
+speedBar.Size = UDim2.new(1,-30,0,8)
+speedBar.Position = UDim2.fromOffset(15,214)
+speedBar.BackgroundColor3 = Color3.fromRGB(60,60,70)
+speedBar.BorderSizePixel = 0
+speedBar.Parent = main
+
+Instance.new("UICorner",speedBar).CornerRadius = UDim.new(1,0)
+
+local speedFill = Instance.new("Frame")
+speedFill.Size = UDim2.new(4/9,0,1,0)
+speedFill.BackgroundColor3 = Color3.fromRGB(150,60,230)
+speedFill.BorderSizePixel = 0
+speedFill.Parent = speedBar
+
+Instance.new("UICorner",speedFill).CornerRadius = UDim.new(1,0)
+
+local speedDragging = false
+
+local function setFlySpeed(inputX)
+
+local x = math.clamp(
+(inputX - speedBar.AbsolutePosition.X)
+/ speedBar.AbsoluteSize.X,
+0,1
+)
+
+flySpeed = math.clamp(
+math.floor(x * 9 + 1.5),
+1,
+10
+)
+
+local visualX = (flySpeed - 1) / 9
+
+speedFill.Size =
+UDim2.new(visualX,0,1,0)
+
+speedLabel.Text =
+"✈️ TỐC ĐỘ BAY: " .. flySpeed
+
+end
+
+speedBar.InputBegan:Connect(function(input)
+
+if input.UserInputType == Enum.UserInputType.MouseButton1
+or input.UserInputType == Enum.UserInputType.Touch then
+
+speedDragging = true    
+setFlySpeed(input.Position.X)
+
+end
+
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+
+if not speedDragging then
+return
+end
+
+if input.UserInputType == Enum.UserInputType.MouseMovement
+or input.UserInputType == Enum.UserInputType.Touch then
+
+setFlySpeed(input.Position.X)
+
+end
+
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+
+if input.UserInputType == Enum.UserInputType.MouseButton1
+or input.UserInputType == Enum.UserInputType.Touch then
+
+speedDragging = false
+
+end
+
+end)
+
+--==================================================
+-- STATUS
+--==================================================
+
+local status = Instance.new("TextLabel")
+status.Size = UDim2.new(1,-20,0,30)
+status.Position = UDim2.fromOffset(10,238)
+status.BackgroundTransparency = 1
+status.Text = "🔒 Chưa nhập Key"
+status.TextColor3 = Color3.fromRGB(180,180,180)
+status.TextSize = 12
+status.Font = Enum.Font.Gotham
+status.Parent = main
+
+--==================================================
+-- KEY
+--==================================================
+
+local unlocked = false
+
+azButton.MouseButton1Click:Connect(function()
+
+if unlocked then
+main.Visible = not main.Visible
+else
+keyFrame.Visible = not keyFrame.Visible
+end
+
+end)
+
+keyButton.MouseButton1Click:Connect(function()
+
+if keyBox.Text == KEY then
+
+unlocked = true    
+
+keyStatus.Text = "✅ Key chính xác!"    
+keyStatus.TextColor3 = Color3.fromRGB(70,255,100)    
+
+task.wait(0.5)    
+
+keyFrame.Visible = false    
+main.Visible = true    
+status.Text = "🔓 Đã mở khóa"
+
+else
+
+keyStatus.Text = "❌ Key không đúng!"    
+keyStatus.TextColor3 = Color3.fromRGB(255,70,70)
+
+end
+
+end)
+
+--==================================================
+-- INSTANT CLICK
+--==================================================
+
+local instantEnabled = false
+
+local function updatePrompts()
+
+for _,obj in ipairs(workspace:GetDescendants()) do
+
+if obj:IsA("ProximityPrompt") and instantEnabled then    
+    obj.HoldDuration = 0    
+end
+
+end
+
+end
+
+instant.MouseButton1Click:Connect(function()
+
+instantEnabled = not instantEnabled
+
+if instantEnabled then
+
+instant.Text = "⚡ INSTANT CLICK: ON"    
+instant.BackgroundColor3 = Color3.fromRGB(40,180,80)    
+status.Text = "⚡ Instant Click: BẬT"    
+
+updatePrompts()
+
+else
+
+instant.Text = "⚡ INSTANT CLICK: OFF"    
+instant.BackgroundColor3 = Color3.fromRGB(160,50,50)    
+status.Text = "⚡ Instant Click: TẮT"
+
+end
+
+end)
+
+workspace.DescendantAdded:Connect(function(obj)
+
+if instantEnabled and obj:IsA("ProximityPrompt") then
+obj.HoldDuration = 0
+end
+
+end)
+
+--==================================================
+-- ROOT
+--==================================================
+
+local function getRoot()
+
+local character =
+player.Character or player.CharacterAdded:Wait()
+
+return character:WaitForChild("HumanoidRootPart")
+
+end
+
+--==================================================
+-- LẤY VỊ TRÍ OBJECT
+--==================================================
+
+local function getPosition(obj)
+
+if obj:IsA("BasePart") then
+return obj.Position
+end
+
+if obj:IsA("Model") then
+
+local success,cf = pcall(function()    
+    return obj:GetPivot()    
+end)    
+
+if success then    
+    return cf.Position    
+end
+
+end
+
+return nil
+
+end
+
+--==================================================
+-- EGG CONTAINER
+--==================================================
+
+local function findEggContainer(obj)
+
+local current = obj
+
+for _ = 1,12 do
+
+if not current then    
+    break    
+end    
+
+if current:IsA("Model") then    
+    return current    
+end    
+
+current = current.Parent
+
+end
+
+return nil
+
+end
+
+--==================================================
+-- TÌM EGG
+--==================================================
+
+local function findEggs()
+
+local eggs = {}
+local checked = {}
+
+for _,obj in ipairs(workspace:GetDescendants()) do
+
+local name = obj.Name:lower()    
+
+if string.find(name,"egg",1,true) then    
+
+    local model = findEggContainer(obj)    
+
+    if model and not checked[model] then    
+        checked[model] = true    
+        table.insert(eggs,model)    
+    end    
+end    
+
+if obj:IsA("TextLabel")    
+    or obj:IsA("TextButton") then    
+
+    local text = tostring(obj.Text):lower()    
+
+    if string.find(text,"egg",1,true) then    
+
+        local model = findEggContainer(obj)    
+
+        if model and not checked[model] then    
+            checked[model] = true    
+            table.insert(eggs,model)    
+        end    
+    end    
+end    
+
+if obj:IsA("ProximityPrompt") then    
+
+    local action =    
+        tostring(obj.ActionText):lower()    
+
+    local objectText =    
+        tostring(obj.ObjectText):lower()    
+
+    if action == "steal"    
+        or string.find(objectText,"egg",1,true) then    
+
+        local model = findEggContainer(obj)    
+
+        if model and not checked[model] then    
+            checked[model] = true    
+            table.insert(eggs,model)    
+        end    
+    end    
+end
+
+end
+
+return eggs
+
+end
+
+--==================================================
+-- VỊ TRÍ CŨ
+--==================================================
+
+local savedPosition = nil
+
+--==================================================
+-- BAY TỚI CẠNH EGG
+--==================================================
+
+local flyingToEgg = false
+
+local function flyBesideEgg(root,eggPosition)
+
+if flyingToEgg then
+return false
+end
+
+flyingToEgg = true
+
+local distance = 4
+
+local targetPosition =
+eggPosition + Vector3.new(distance,2.5,0)
+
+local startPosition = root.Position
+
+-- TỐC ĐỘ 1 = 10 GIÂY
+-- TỐC ĐỘ 10 = 1 GIÂY
+local duration = 10 / flySpeed
+
+local startTime = tick()
+
+while flyingToEgg and root.Parent do
+
+local elapsed =    
+    tick() - startTime    
+
+local alpha =    
+    math.clamp(    
+        elapsed / duration,    
+        0,    
+        1    
+    )    
+
+local smoothAlpha =    
+    alpha * alpha * (3 - 2 * alpha)    
+
+local currentPosition =    
+    startPosition:Lerp(    
+        targetPosition,    
+        smoothAlpha    
+    )    
+
+root.CFrame =    
+    CFrame.lookAt(    
+        currentPosition,    
+        eggPosition    
+    )    
+
+root.AssemblyLinearVelocity =    
+    Vector3.zero    
+
+root.AssemblyAngularVelocity =    
+    Vector3.zero    
+
+if alpha >= 1 then    
+    break    
+end    
+
+task.wait(0.03)
+
+end
+
+if root.Parent and flyingToEgg then
+
+root.CFrame =    
+    CFrame.lookAt(    
+        targetPosition,    
+        eggPosition    
+    )    
+
+root.AssemblyLinearVelocity =    
+    Vector3.zero    
+
+root.AssemblyAngularVelocity =    
+    Vector3.zero
+
+end
+
+flyingToEgg = false
+
+return true
+
+end
+
+--==================================================
+-- BAY TỚI EGG XA NHẤT
+--==================================================
+
+tele.MouseButton1Click:Connect(function()
+
+if flyingToEgg then
+
+status.Text =    
+    "✈️ Đang bay tới Egg..."    
+
+return
+
+end
+
+local root = getRoot()
+local eggs = findEggs()
+
+if #eggs == 0 then
+
+status.Text =    
+    "❌ Không tìm thấy Egg"    
+
+return
+
+end
+
+local farthestPosition = nil
+local farthestName = nil
+local farthestDistance = -math.huge
+
+for _,egg in ipairs(eggs) do
+
+local pos = getPosition(egg)    
+
+if pos then    
+
+    local distance =    
+        (root.Position - pos).Magnitude    
+
+    if distance > farthestDistance then    
+
+        farthestDistance = distance    
+        farthestPosition = pos    
+        farthestName = egg.Name    
+
+    end    
+end
+
+end
+
+if not farthestPosition then
+
+status.Text =    
+    "❌ Egg không có vị trí"    
+
+return
+
+end
+
+savedPosition = root.CFrame
+
+status.Text =
+"✈️ Đang bay tới " ..
+farthestName ..
+"..."
+
+task.spawn(function()
+
+local success =    
+    flyBesideEgg(    
+        root,    
+        farthestPosition    
+    )    
+
+if success and root.Parent then    
+
+    status.Text =    
+        "✅ Đã tới cạnh " ..    
+        farthestName ..    
+        " | " ..    
+        math.floor(farthestDistance) ..    
+        " studs"    
+end
+
+end)
+
+end)
+
+--==================================================
+-- BAY VỀ VỊ TRÍ CŨ
+--==================================================
+
+back.MouseButton1Click:Connect(function()
+if not savedPosition then
+status.Text="❌ Chưa có vị trí cũ"
+return
+end
+
+if flyingToEgg then  
+    flyingToEgg=false  
+    task.wait()  
+end  
+
+local root=getRoot()  
+local start,target=root.Position,savedPosition.Position  
+local t=tick()  
+
+flyingToEgg=true  
+
+while flyingToEgg and root.Parent do  
+    local a=math.clamp((tick()-t)/(10/flySpeed),0,1)  
+    a=a*a*(3-2*a)  
+
+    root.CFrame=CFrame.lookAt(  
+        start:Lerp(target,a),  
+        target  
+    )  
+
+    root.AssemblyLinearVelocity=Vector3.zero  
+    root.AssemblyAngularVelocity=Vector3.zero  
+
+    if a>=1 then break end  
+    task.wait(.03)  
+end  
+
+flyingToEgg=false  
+status.Text="📍 Đã bay về vị trí cũ"
+
+end)
+
+--==================================================
+-- KÉO GUI
+--==================================================
+
+local function makeDraggable(object)
+
+local dragging = false
+local dragStart
+local startPosition
+
+object.InputBegan:Connect(function(input)
+
+if input.UserInputType ==    
+    Enum.UserInputType.MouseButton1    
+    or input.UserInputType ==    
+    Enum.UserInputType.Touch then    
+
+    dragging = true    
+    dragStart = input.Position    
+    startPosition = object.Position    
+end
+
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+
+if not dragging then    
+    return    
+end    
+
+if input.UserInputType ==    
+    Enum.UserInputType.MouseMovement    
+    or input.UserInputType ==    
+    Enum.UserInputType.Touch then    
+
+    local delta =    
+        input.Position - dragStart    
+
+    object.Position = UDim2.new(    
+        startPosition.X.Scale,    
+        startPosition.X.Offset + delta.X,    
+        startPosition.Y.Scale,    
+        startPosition.Y.Offset + delta.Y    
+    )    
+end
+
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+
+if input.UserInputType ==    
+    Enum.UserInputType.MouseButton1    
+    or input.UserInputType ==    
+    Enum.UserInputType.Touch then    
+
+    dragging = false    
+end
+
+end)
+
+end
+
+makeDraggable(azButton)
+makeDraggable(main)

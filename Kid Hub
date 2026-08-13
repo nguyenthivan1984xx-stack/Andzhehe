@@ -1,0 +1,230 @@
+local Players = game:GetService("Players")
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+local KEY = "36thanhhoa"
+local savedPosition = nil
+
+--==================================================
+-- GUI
+--==================================================
+
+local gui = Instance.new("ScreenGui")
+gui.Name = "nemchu36"
+gui.ResetOnSpawn = false
+gui.Parent = playerGui
+
+--==================================================
+-- KEY MENU
+--==================================================
+
+local keyFrame = Instance.new("Frame")
+keyFrame.Size = UDim2.fromOffset(290, 155)
+keyFrame.Position = UDim2.new(0.5, -145, 0.5, -77)
+keyFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+keyFrame.Active = true
+keyFrame.Parent = gui
+
+Instance.new("UICorner", keyFrame).CornerRadius = UDim.new(0, 12)
+
+local keyDrag = Instance.new("UIDragDetector")
+keyDrag.Parent = keyFrame
+
+local keyTitle = Instance.new("TextLabel")
+keyTitle.Size = UDim2.new(1, 0, 0, 42)
+keyTitle.BackgroundTransparency = 1
+keyTitle.Text = "🔑 nemchu36"
+keyTitle.TextColor3 = Color3.new(1, 1, 1)
+keyTitle.TextSize = 20
+keyTitle.Font = Enum.Font.GothamBold
+keyTitle.Parent = keyFrame
+
+local keyBox = Instance.new("TextBox")
+keyBox.Size = UDim2.new(1, -30, 0, 40)
+keyBox.Position = UDim2.fromOffset(15, 48)
+keyBox.PlaceholderText = "Nhập key..."
+keyBox.Text = ""
+keyBox.TextSize = 16
+keyBox.TextColor3 = Color3.new(1, 1, 1)
+keyBox.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+keyBox.ClearTextOnFocus = false
+keyBox.Parent = keyFrame
+
+Instance.new("UICorner", keyBox).CornerRadius = UDim.new(0, 8)
+
+local enterButton = Instance.new("TextButton")
+enterButton.Size = UDim2.new(1, -30, 0, 35)
+enterButton.Position = UDim2.fromOffset(15, 100)
+enterButton.Text = "XÁC NHẬN"
+enterButton.TextSize = 15
+enterButton.TextColor3 = Color3.new(1, 1, 1)
+enterButton.BackgroundColor3 = Color3.fromRGB(55, 120, 210)
+enterButton.Parent = keyFrame
+
+Instance.new("UICorner", enterButton).CornerRadius = UDim.new(0, 8)
+
+--==================================================
+-- MAIN MENU
+--==================================================
+
+local main = Instance.new("Frame")
+main.Size = UDim2.fromOffset(280, 245)
+main.Position = UDim2.new(0.5, -140, 0.5, -122)
+main.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+main.Active = true
+main.Visible = false
+main.Parent = gui
+
+Instance.new("UICorner", main).CornerRadius = UDim.new(0, 12)
+
+local mainDrag = Instance.new("UIDragDetector")
+mainDrag.Parent = main
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, -45, 0, 45)
+title.Position = UDim2.fromOffset(12, 0)
+title.BackgroundTransparency = 1
+title.Text = "⚡ nemchu36"
+title.TextColor3 = Color3.new(1, 1, 1)
+title.TextSize = 19
+title.Font = Enum.Font.GothamBold
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.Parent = main
+
+local close = Instance.new("TextButton")
+close.Size = UDim2.fromOffset(38, 38)
+close.Position = UDim2.new(1, -42, 0, 4)
+close.BackgroundTransparency = 1
+close.Text = "✕"
+close.TextColor3 = Color3.new(1, 1, 1)
+close.TextSize = 20
+close.Parent = main
+
+local function makeButton(text, y)
+local b = Instance.new("TextButton")
+b.Size = UDim2.new(1, -20, 0, 42)
+b.Position = UDim2.fromOffset(10, y)
+b.BackgroundColor3 = Color3.fromRGB(55, 55, 65)
+b.TextColor3 = Color3.new(1, 1, 1)
+b.Text = text
+b.TextSize = 15
+b.Font = Enum.Font.Gotham
+b.Parent = main
+
+Instance.new("UICorner", b).CornerRadius = UDim.new(0, 8)  
+
+return b
+
+end
+
+local moveButton = makeButton("🚀 Dịch chuyển +10", 50)
+local saveButton = makeButton("📍 Lưu vị trí", 98)
+local returnButton = makeButton("🔙 Teleport về vị trí", 146)
+local closeButton = makeButton("🔽 Đóng menu", 194)
+
+--==================================================
+-- DỊCH CHUYỂN MỘT ĐOẠN
+--==================================================
+
+moveButton.Activated:Connect(function()
+local character = player.Character
+local root = character and character:FindFirstChild("HumanoidRootPart")
+
+if root then  
+	root.CFrame = root.CFrame + root.CFrame.LookVector * 10  
+end
+
+end)
+
+--==================================================
+-- LƯU VỊ TRÍ
+--==================================================
+
+saveButton.Activated:Connect(function()
+local character = player.Character
+local root = character and character:FindFirstChild("HumanoidRootPart")
+
+if root then  
+	savedPosition = root.CFrame  
+	saveButton.Text = "✓ Đã lưu vị trí"  
+
+	task.delay(1.5, function()  
+		if saveButton then  
+			saveButton.Text = "📍 Lưu vị trí"  
+		end  
+	end)  
+end
+
+end)
+
+--==================================================
+-- TELEPORT VỀ VỊ TRÍ ĐÃ LƯU
+--==================================================
+
+returnButton.Activated:Connect(function()
+local character = player.Character
+local root = character and character:FindFirstChild("HumanoidRootPart")
+
+if root and savedPosition then  
+	root.CFrame = savedPosition  
+end
+
+end)
+
+--==================================================
+-- NÚT MỞ LẠI
+--==================================================
+
+local openButton = Instance.new("TextButton")
+openButton.Size = UDim2.fromOffset(58, 50)
+openButton.Position = UDim2.new(0, 15, 0.5, -25)
+openButton.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
+openButton.Text = "nemchu36"
+openButton.TextSize = 11
+openButton.TextColor3 = Color3.new(1, 1, 1)
+openButton.Visible = false
+openButton.Parent = gui
+
+Instance.new("UICorner", openButton).CornerRadius = UDim.new(0, 10)
+
+--==================================================
+-- ĐÓNG / MỞ
+--==================================================
+
+close.Activated:Connect(function()
+main.Visible = false
+openButton.Visible = true
+end)
+
+closeButton.Activated:Connect(function()
+main.Visible = false
+openButton.Visible = true
+end)
+
+openButton.Activated:Connect(function()
+main.Visible = true
+openButton.Visible = false
+end)
+
+--==================================================
+-- KIỂM TRA KEY
+--==================================================
+
+local function checkKey()
+if keyBox.Text == KEY then
+keyFrame.Visible = false
+main.Visible = true
+else
+keyBox.Text = ""
+keyBox.PlaceholderText = "❌ Key không đúng!"
+end
+end
+
+enterButton.Activated:Connect(checkKey)
+
+keyBox.FocusLost:Connect(function(enterPressed)
+if enterPressed then
+checkKey()
+end
+end)

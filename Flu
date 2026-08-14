@@ -1,0 +1,668 @@
+--==================================================
+-- FLU X ANDZ HUB
+-- ESP + SPIN + CIRCLE + HITBOX
+--==================================================
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UIS = game:GetService("UserInputService")
+
+local LP = Players.LocalPlayer
+local Camera = workspace.CurrentCamera
+local PG = LP:WaitForChild("PlayerGui")
+
+--==================================================
+-- XÓA GUI CŨ
+--==================================================
+
+local old = PG:FindFirstChild("FluXAnDzHub")
+if old then
+	old:Destroy()
+end
+
+--==================================================
+-- GUI
+--==================================================
+
+local GUI = Instance.new("ScreenGui")
+GUI.Name = "FluXAnDzHub"
+GUI.ResetOnSpawn = false
+GUI.Parent = PG
+
+--==================================================
+-- NÚT FZ
+--==================================================
+
+local OpenButton = Instance.new("TextButton")
+OpenButton.Name = "FZButton"
+OpenButton.Size = UDim2.fromOffset(55,55)
+OpenButton.Position = UDim2.new(0,15,0.5,-28)
+OpenButton.BackgroundColor3 = Color3.fromRGB(90,35,150)
+OpenButton.Text = "FZ"
+OpenButton.TextColor3 = Color3.fromRGB(255,0,0)
+OpenButton.TextSize = 21
+OpenButton.Font = Enum.Font.GothamBold
+OpenButton.Parent = GUI
+
+local OpenCorner = Instance.new("UICorner")
+OpenCorner.CornerRadius = UDim.new(1,0)
+OpenCorner.Parent = OpenButton
+
+local OpenStroke = Instance.new("UIStroke")
+OpenStroke.Color = Color3.fromRGB(210,120,255)
+OpenStroke.Thickness = 3
+OpenStroke.Parent = OpenButton
+
+--==================================================
+-- MENU
+--==================================================
+
+local Main = Instance.new("Frame")
+Main.Name = "Main"
+Main.Size = UDim2.fromOffset(280,480)
+Main.Position = UDim2.new(.5,-140,.5,-240)
+Main.BackgroundColor3 = Color3.fromRGB(35,18,55)
+Main.BorderSizePixel = 0
+Main.Parent = GUI
+
+local MainCorner = Instance.new("UICorner")
+MainCorner.CornerRadius = UDim.new(0,14)
+MainCorner.Parent = Main
+
+local MainStroke = Instance.new("UIStroke")
+MainStroke.Color = Color3.fromRGB(160,70,255)
+MainStroke.Thickness = 2
+MainStroke.Parent = Main
+
+--==================================================
+-- TITLE
+--==================================================
+
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1,0,0,45)
+Title.BackgroundTransparency = 1
+Title.Text = "Flu X AnDz Hub"
+Title.TextColor3 = Color3.fromRGB(215,150,255)
+Title.TextSize = 20
+Title.Font = Enum.Font.GothamBold
+Title.Parent = Main
+
+--==================================================
+-- DRAG MENU
+--==================================================
+
+local dragging = false
+local dragStart
+local startPos
+
+Title.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1
+	or input.UserInputType == Enum.UserInputType.Touch then
+
+		dragging = true
+		dragStart = input.Position
+		startPos = Main.Position
+
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+			end
+		end)
+	end
+end)
+
+UIS.InputChanged:Connect(function(input)
+	if dragging and
+		(input.UserInputType == Enum.UserInputType.MouseMovement
+		or input.UserInputType == Enum.UserInputType.Touch) then
+
+		local delta = input.Position - dragStart
+
+		Main.Position = UDim2.new(
+			startPos.X.Scale,
+			startPos.X.Offset + delta.X,
+			startPos.Y.Scale,
+			startPos.Y.Offset + delta.Y
+		)
+	end
+end)
+
+--==================================================
+-- FZ MỞ / ĐÓNG MENU
+--==================================================
+
+OpenButton.MouseButton1Click:Connect(function()
+	Main.Visible = not Main.Visible
+end)
+
+--==================================================
+-- FZ 7 MÀU
+--==================================================
+
+task.spawn(function()
+
+	local colors = {
+		Color3.fromRGB(255,0,0),
+		Color3.fromRGB(255,127,0),
+		Color3.fromRGB(255,255,0),
+		Color3.fromRGB(0,255,0),
+		Color3.fromRGB(0,170,255),
+		Color3.fromRGB(80,0,255),
+		Color3.fromRGB(255,0,255)
+	}
+
+	local i = 1
+
+	while GUI.Parent do
+		OpenButton.TextColor3 = colors[i]
+
+		i = i + 1
+
+		if i > #colors then
+			i = 1
+		end
+
+		task.wait(.15)
+	end
+end)
+
+--==================================================
+-- BUTTON
+--==================================================
+
+local function Button(text,y)
+
+	local b = Instance.new("TextButton")
+
+	b.Size = UDim2.fromOffset(240,38)
+	b.Position = UDim2.new(0,20,0,y)
+
+	b.BackgroundColor3 =
+		Color3.fromRGB(60,30,85)
+
+	b.TextColor3 =
+		Color3.new(1,1,1)
+
+	b.TextSize = 15
+	b.Font = Enum.Font.GothamSemibold
+	b.Text = text
+
+	b.AutoButtonColor = false
+	b.Parent = Main
+
+	local c = Instance.new("UICorner")
+	c.CornerRadius = UDim.new(0,8)
+	c.Parent = b
+
+	return b
+end
+
+local function ToggleText(button,name,state)
+
+	button.Text =
+		name..": "..(state and "ON" or "OFF")
+
+	button.BackgroundColor3 =
+		state
+		and Color3.fromRGB(105,45,150)
+		or Color3.fromRGB(60,30,85)
+end
+
+--==================================================
+-- ESP
+--==================================================
+
+local ESPBox = false
+local ESPTracer = false
+local ESPDistance = false
+
+local BoxButton =
+	Button("Box: OFF",55)
+
+local TracerButton =
+	Button("Tracer: OFF",100)
+
+local DistanceButton =
+	Button("Distance: OFF",145)
+
+BoxButton.MouseButton1Click:Connect(function()
+	ESPBox = not ESPBox
+	ToggleText(BoxButton,"Box",ESPBox)
+end)
+
+TracerButton.MouseButton1Click:Connect(function()
+	ESPTracer = not ESPTracer
+	ToggleText(TracerButton,"Tracer",ESPTracer)
+end)
+
+DistanceButton.MouseButton1Click:Connect(function()
+	ESPDistance = not ESPDistance
+	ToggleText(DistanceButton,"Distance",ESPDistance)
+end)
+
+--==================================================
+-- SPIN
+--==================================================
+
+local Spin = false
+local SpinSpeed = 100
+
+local SpinButton =
+	Button("Spin: OFF",190)
+
+SpinButton.MouseButton1Click:Connect(function()
+	Spin = not Spin
+	ToggleText(SpinButton,"Spin",Spin)
+end)
+
+--==================================================
+-- SPIN SPEED
+--==================================================
+
+local SpeedLabel = Instance.new("TextLabel")
+SpeedLabel.Size = UDim2.fromOffset(240,25)
+SpeedLabel.Position = UDim2.new(0,20,0,235)
+SpeedLabel.BackgroundTransparency = 1
+SpeedLabel.Text = "Spin Speed: 100 / 500"
+SpeedLabel.TextColor3 = Color3.new(1,1,1)
+SpeedLabel.TextSize = 14
+SpeedLabel.Font = Enum.Font.Gotham
+SpeedLabel.Parent = Main
+
+local SpeedSlider = Instance.new("Frame")
+SpeedSlider.Size = UDim2.fromOffset(240,8)
+SpeedSlider.Position = UDim2.new(0,20,0,265)
+SpeedSlider.BackgroundColor3 = Color3.fromRGB(70,45,90)
+SpeedSlider.BorderSizePixel = 0
+SpeedSlider.Parent = Main
+
+local SpeedFill = Instance.new("Frame")
+SpeedFill.Size = UDim2.new(.2,0,1,0)
+SpeedFill.BackgroundColor3 = Color3.fromRGB(175,80,255)
+SpeedFill.BorderSizePixel = 0
+SpeedFill.Parent = SpeedSlider
+
+local speedDrag = false
+
+local function SetSpeed(x)
+
+	local p = math.clamp(
+		(x-SpeedSlider.AbsolutePosition.X) /
+		SpeedSlider.AbsoluteSize.X,
+		0,1
+	)
+
+	SpinSpeed =
+		math.clamp(
+			math.floor(p*499)+1,
+			1,500
+		)
+
+	SpeedFill.Size =
+		UDim2.new(p,0,1,0)
+
+	SpeedLabel.Text =
+		"Spin Speed: "..SpinSpeed.." / 500"
+end
+
+SpeedSlider.InputBegan:Connect(function(input)
+
+	if input.UserInputType ==
+		Enum.UserInputType.MouseButton1
+	or input.UserInputType ==
+		Enum.UserInputType.Touch then
+
+		speedDrag = true
+		SetSpeed(input.Position.X)
+	end
+end)
+
+--==================================================
+-- CIRCLE
+--==================================================
+
+local CircleOn = false
+local CircleSize = 150
+
+local CircleButton =
+	Button("Circle: OFF",290)
+
+CircleButton.MouseButton1Click:Connect(function()
+
+	CircleOn = not CircleOn
+
+	ToggleText(
+		CircleButton,
+		"Circle",
+		CircleOn
+	)
+end)
+
+local Circle = Instance.new("Frame")
+Circle.Name = "PurpleCircle"
+Circle.AnchorPoint = Vector2.new(.5,.5)
+Circle.Position = UDim2.new(.5,0,.5,0)
+Circle.Size = UDim2.fromOffset(300,300)
+Circle.BackgroundTransparency = 1
+Circle.Visible = false
+Circle.Parent = GUI
+
+local CircleCorner =
+	Instance.new("UICorner")
+
+CircleCorner.CornerRadius =
+	UDim.new(1,0)
+
+CircleCorner.Parent = Circle
+
+local CircleStroke =
+	Instance.new("UIStroke")
+
+CircleStroke.Color =
+	Color3.fromRGB(180,70,255)
+
+CircleStroke.Thickness = 3
+CircleStroke.Parent = Circle
+
+local CircleLabel =
+	Instance.new("TextLabel")
+
+CircleLabel.Size =
+	UDim2.fromOffset(240,25)
+
+CircleLabel.Position =
+	UDim2.new(0,20,0,335)
+
+CircleLabel.BackgroundTransparency = 1
+
+CircleLabel.Text =
+	"Circle Size: 150 / 500"
+
+CircleLabel.TextColor3 =
+	Color3.new(1,1,1)
+
+CircleLabel.TextSize = 14
+CircleLabel.Font = Enum.Font.Gotham
+CircleLabel.Parent = Main
+
+local CircleSlider =
+	Instance.new("Frame")
+
+CircleSlider.Size =
+	UDim2.fromOffset(240,8)
+
+CircleSlider.Position =
+	UDim2.new(0,20,0,365)
+
+CircleSlider.BackgroundColor3 =
+	Color3.fromRGB(70,45,90)
+
+CircleSlider.BorderSizePixel = 0
+CircleSlider.Parent = Main
+
+local CircleFill =
+	Instance.new("Frame")
+
+CircleFill.Size =
+	UDim2.new(.3,0,1,0)
+
+CircleFill.BackgroundColor3 =
+	Color3.fromRGB(175,80,255)
+
+CircleFill.BorderSizePixel = 0
+CircleFill.Parent = CircleSlider
+
+local circleDrag = false
+
+local function SetCircle(x)
+
+	local p = math.clamp(
+		(x-CircleSlider.AbsolutePosition.X) /
+		CircleSlider.AbsoluteSize.X,
+		0,1
+	)
+
+	CircleSize =
+		math.clamp(
+			math.floor(p*499)+1,
+			1,500
+		)
+
+	CircleFill.Size =
+		UDim2.new(p,0,1,0)
+
+	CircleLabel.Text =
+		"Circle Size: "..CircleSize.." / 500"
+
+	Circle.Size =
+		UDim2.fromOffset(
+			CircleSize*2,
+			CircleSize*2
+		)
+end
+
+CircleSlider.InputBegan:Connect(function(input)
+
+	if input.UserInputType ==
+		Enum.UserInputType.MouseButton1
+	or input.UserInputType ==
+		Enum.UserInputType.Touch then
+
+		circleDrag = true
+		SetCircle(input.Position.X)
+	end
+end)
+
+--==================================================
+-- HITBOX
+--==================================================
+
+local HitboxEnabled = false
+local HeadSize = 15
+
+local HitboxButton =
+	Button("Hitbox: OFF",390)
+
+HitboxButton.MouseButton1Click:Connect(function()
+
+	HitboxEnabled =
+		not HitboxEnabled
+
+	ToggleText(
+		HitboxButton,
+		"Hitbox",
+		HitboxEnabled
+	)
+end)
+
+local HitboxLabel =
+	Instance.new("TextLabel")
+
+HitboxLabel.Size =
+	UDim2.fromOffset(240,25)
+
+HitboxLabel.Position =
+	UDim2.new(0,20,0,435)
+
+HitboxLabel.BackgroundTransparency = 1
+
+HitboxLabel.Text =
+	"Hitbox Size: 15 / 100"
+
+HitboxLabel.TextColor3 =
+	Color3.new(1,1,1)
+
+HitboxLabel.TextSize = 14
+HitboxLabel.Font = Enum.Font.Gotham
+HitboxLabel.Parent = Main
+
+local HitboxSlider =
+	Instance.new("Frame")
+
+HitboxSlider.Size =
+	UDim2.fromOffset(240,8)
+
+HitboxSlider.Position =
+	UDim2.new(0,20,0,465)
+
+HitboxSlider.BackgroundColor3 =
+	Color3.fromRGB(70,45,90)
+
+HitboxSlider.BorderSizePixel = 0
+HitboxSlider.Parent = Main
+
+local HitboxFill =
+	Instance.new("Frame")
+
+HitboxFill.Size =
+	UDim2.new(.15,0,1,0)
+
+HitboxFill.BackgroundColor3 =
+	Color3.fromRGB(175,80,255)
+
+HitboxFill.BorderSizePixel = 0
+HitboxFill.Parent = HitboxSlider
+
+local hitboxDrag = false
+
+local function SetHitbox(x)
+
+	local p = math.clamp(
+		(x-HitboxSlider.AbsolutePosition.X) /
+		HitboxSlider.AbsoluteSize.X,
+		0,1
+	)
+
+	HeadSize =
+		math.clamp(
+			math.floor(p*99)+1,
+			1,100
+		)
+
+	HitboxFill.Size =
+		UDim2.new(p,0,1,0)
+
+	HitboxLabel.Text =
+		"Hitbox Size: "..HeadSize.." / 100"
+end
+
+HitboxSlider.InputBegan:Connect(function(input)
+
+	if input.UserInputType ==
+		Enum.UserInputType.MouseButton1
+	or input.UserInputType ==
+		Enum.UserInputType.Touch then
+
+		hitboxDrag = true
+		SetHitbox(input.Position.X)
+	end
+end)
+
+--==================================================
+-- SLIDER INPUT
+--==================================================
+
+UIS.InputChanged:Connect(function(input)
+
+	if input.UserInputType ==
+		Enum.UserInputType.MouseMovement
+	or input.UserInputType ==
+		Enum.UserInputType.Touch then
+
+		if speedDrag then
+			SetSpeed(input.Position.X)
+		end
+
+		if circleDrag then
+			SetCircle(input.Position.X)
+		end
+
+		if hitboxDrag then
+			SetHitbox(input.Position.X)
+		end
+	end
+end)
+
+UIS.InputEnded:Connect(function(input)
+
+	if input.UserInputType ==
+		Enum.UserInputType.MouseButton1
+	or input.UserInputType ==
+		Enum.UserInputType.Touch then
+
+		speedDrag = false
+		circleDrag = false
+		hitboxDrag = false
+	end
+end)
+
+--==================================================
+-- MAIN LOOP
+--==================================================
+
+RunService.RenderStepped:Connect(function()
+
+	-- CIRCLE
+	Circle.Visible = CircleOn
+
+	-- SPIN
+	if Spin then
+
+		local char = LP.Character
+		local root =
+			char and char:FindFirstChild("HumanoidRootPart")
+
+		if root then
+
+			root.CFrame =
+				root.CFrame *
+				CFrame.Angles(
+					0,
+					math.rad(SpinSpeed),
+					0
+				)
+		end
+	end
+
+	-- HITBOX
+	if HitboxEnabled then
+
+		for _,player in ipairs(
+			Players:GetPlayers()
+		) do
+
+			if player ~= LP then
+
+				pcall(function()
+
+					local char =
+						player.Character
+
+					local head =
+						char and
+						char:FindFirstChild("Head")
+
+					if head then
+
+						head.Size =
+							Vector3.new(
+								HeadSize,
+								HeadSize,
+								HeadSize
+							)
+
+						head.Transparency = 1
+						head.BrickColor =
+							BrickColor.new("Red")
+
+						head.Material =
+							Enum.Material.Neon
+
+						head.CanCollide = false
+						head.Massless = true
+					end
+				end)
+			end
+		end
+	end
+end)

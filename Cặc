@@ -1,0 +1,181 @@
+local P = game:GetService("Players")
+local R = game:GetService("RunService")
+local TS = game:GetService("TweenService") -- Thêm dịch vụ tạo hiệu ứng
+local LP = P.LocalPlayer
+local PG = LP:WaitForChild("PlayerGui")
+
+-- Xóa menu cũ nếu tồn tại
+local old = PG:FindFirstChild("FollowMenu")
+if old then old:Destroy() end
+
+-- Khởi tạo GUI chính
+local G = Instance.new("ScreenGui", PG)
+G.Name = "FollowMenu"
+G.ResetOnSpawn = false
+
+local F = Instance.new("Frame", G)
+F.Size = UDim2.new(0, 0, 0, 0) -- Bắt đầu từ kích thước 0 để làm hiệu ứng xuất hiện
+F.Position = UDim2.new(.05, 0, .3, 0)
+F.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+F.Active = true
+F.ClipsDescendants = true -- Ẩn các thành phần thừa khi thu nhỏ
+
+-- Tiêu đề
+local T = Instance.new("TextLabel", F)
+T.Size = UDim2.new(1, -40, 0, 40)
+T.Text = "FOLLOW MENU"
+T.TextColor3 = Color3.fromRGB(200, 120, 255)
+T.BackgroundTransparency = 1
+T.TextSize = 18
+
+-- Nút Thu nhỏ / Mở rộng
+local M = Instance.new("TextButton", F)
+M.Size = UDim2.new(0, 35, 0, 30)
+M.Position = UDim2.new(1, -40, 0, 5)
+M.Text = "−"
+
+-- Nút Bật / Tắt Follow
+local B = Instance.new("TextButton", F)
+B.Size = UDim2.new(.9, 0, 0, 35)
+B.Position = UDim2.new(.05, 0, 0, 45)
+B.Text = "FOLLOW: OFF"
+B.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+B.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+-- Danh sách người chơi
+local S = Instance.new("ScrollingFrame", F)
+S.Size = UDim2.new(.9, 0, 0, 200)
+S.Position = UDim2.new(.05, 0, 0, 90)
+S.BackgroundTransparency = 1
+S.CanvasSize = UDim2.new(0, 0, 0, 0)
+S.AutomaticCanvasSize = Enum.AutomaticSize.Y
+
+local L = Instance.new("UIListLayout", S)
+L.Padding = UDim.new(0, 4)
+
+-- Biến trạng thái
+local follow = false
+local target = nil
+local mini = false
+local buttons = {}
+
+-- Cấu hình hiệu ứng mượt (Tween Info)
+local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+
+-- Hiệu ứng xuất hiện khi bật Script (Fade In)
+TS:Create(F, tweenInfo, {Size = UDim2.new(0, 220, 0, 300)}):Play()
+
+-- Tính năng thu nhỏ mượt mà
+M.MouseButton1Click:Connect(function()
+	mini = not mini
+	M.Text = mini and "+" or "−"
+	
+	-- Xác định kích thước đích
+	local targetSize = mini and UDim2.new(0, 220, 0, 45) or UDim2.new(0, 220, 0, 300)
+	
+	-- Chạy hiệu ứng co giãn khung
+	local menuTween = TS:Create(F, tweenInfo, {Size = targetSize})
+	menuTween:Play()
+	
+	-- Ẩn/Hiện các nút bên trong sau khi thu nhỏ hoặc trước khi phóng to
+	if mini then
+		B.Visible = false
+		S.Visible = false
+	else
+		-- Chờ bảng giãn ra một chút rồi hiện nút cho đẹp
+		task.delay(0.1, function()
+			if not mini then
+				B.Visible = true
+				S.Visible = true
+			end
+		end)
+	end
+end)
+
+-- Tính năng Bật/Tắt
+B.MouseButton1Click:Connect(function()
+	if target then
+		follow = not follow
+		B.Text = follow and "FOLLOW: ON" or "FOLLOW: OFF"
+		
+		-- Hiệu ứng đổi màu nút Bật/Tắt mượt mà
+		local targetColor = follow and Color3.fromRGB(0, 150, 0) or Color3.fromRGB(150, 0, 0)
+		TS:Create(B, tweenInfo, {BackgroundColor3 = targetColor}):Play()
+	end
+end)
+
+-- Hàm cập nhật danh sách người chơi
+local function Update()
+	for _, btn in pairs(buttons) do btn:Destroy() end
+	table.clear(buttons)
+
+	for _, p in ipairs(P:GetPlayers()) do
+		if p ~= LP then
+			local b = Instance.new("TextButton", S)
+			b.Size = UDim2.new(1, 0, 0, 30)
+			b.Text = p.DisplayName
+			b.BackgroundColor3 = (target == p) and Color3.fromRGB(130, 60, 180) or Color3.fromRGB(60, 60, 60)
+			b.TextColor3 = Color3.fromRGB(255, 255, 255)
+			
+			b.MouseButton1Click:Connect(function()
+				target = p
+				follow = false
+				B.Text = "FOLLOW: OFF"
+				TS:Create(B, tweenInfo, {BackgroundColor3 = Color3.fromRGB(50, 50, 50)}):Play()
+				Update()
+			end)
+			
+			table.insert(buttons, b)
+		end
+	end
+end
+
+-- Vòng lặp dịch chuyển (Teleport) liên tục
+R.Heartbeat:Connect(function()
+	if follow and target and target.Character and LP.Character then
+		local myRoot = LP.Character:FindFirstChild("HumanoidRootPart")
+		local targetRoot = target.Character:FindFirstChild("HumanoidRootPart")
+
+		if myRoot and targetRoot then
+			myRoot.CFrame = targetRoot.CFrame * CFrame.new(0, 0, 1.5)
+		end
+	elseif follow and (not target or not target.Character) then
+		follow = false
+		B.Text = "FOLLOW: OFF"
+		TS:Create(B, tweenInfo, {BackgroundColor3 = Color3.fromRGB(50, 50, 50)}):Play()
+	end
+end)
+
+P.PlayerAdded:Connect(Update)
+P.PlayerRemoving:Connect(function(player)
+	if target == player then
+		target = nil
+		follow = false
+		B.Text = "FOLLOW: OFF"
+		TS:Create(B, tweenInfo, {BackgroundColor3 = Color3.fromRGB(50, 50, 50)}):Play()
+	end
+	Update()
+end)
+
+Update()
+
+-- Code kéo thả GUI mượt mà
+local UIS = game:GetService("UserInputService")
+local dragToggle, dragStart, startPos
+F.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		dragToggle = true dragStart = input.Position startPos = F.Position
+		input.Changed:Connect(function() if input.UserInputState == Enum.UserInputState.End then dragToggle = false end end)
+	end
+end)
+UIS.InputChanged:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+		if dragToggle then
+			local delta = input.Position - dragStart
+			-- Sử dụng hiệu ứng dịch chuyển nhẹ khi kéo thả (mượt hơn đứng khựng)
+			TS:Create(F, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+				Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+			}):Play()
+		end
+	end
+end)

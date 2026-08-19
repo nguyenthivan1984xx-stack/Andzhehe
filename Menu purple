@@ -1,12 +1,12 @@
 --==================================================
 --          AnDz Purple HUB (AUTO HEAD EDITION)
 --      ESP + FOV + SPIN + AUTO HEAD + MOBILE GUI
---      KEY: AnDzxpurple
+--      KEY: AnDzXN13
 --==================================================
 
 local Players, RunService, UIS = game:GetService("Players"), game:GetService("RunService"), game:GetService("UserInputService")
 local LP, Camera = Players.LocalPlayer, workspace.CurrentCamera
-local KEY = "AnDzxpurple"
+local KEY = "AnDzXN13"
 
 local ESPOn, FOVOn, SpinOn, AutoHeadOn = false, true, false, false
 local FOV_SIZE, SPIN_SPEED, HITBOX_SIZE = 300, 100, 15

@@ -1,0 +1,472 @@
+--==================================================
+--          Tuấn Menu Vip (AUTO HEAD EDITION)
+--      ESP + FOV + SPIN + AUTO HEAD + MOBILE GUI
+--      KEY: TMV_Key100VV
+--==================================================
+
+local Players, RunService, UIS = game:GetService("Players"), game:GetService("RunService"), game:GetService("UserInputService")
+local LP, Camera = Players.LocalPlayer, workspace.CurrentCamera
+local KEY = "TMV_Key100VV"
+
+local ESPOn, FOVOn, SpinOn, AutoHeadOn, HeadViewOn, GodModeOn = false, true, false, false, false, false
+local FOV_SIZE, SPIN_SPEED, HITBOX_SIZE = 300, 100, 15
+local SpinAngle, ESPObjects, Dragging = 0, {}, nil
+
+-- GIỚI HẠN KÍCH THƯỚC HEAD TỐI ĐA = 100
+local MAX_HEAD_SIZE = 100
+
+pcall(function() game.CoreGui.TuanMenuVip:Destroy() end)
+pcall(function() game.CoreGui.TuanMenuVipFOV:Destroy() end)
+
+local Gui = Instance.new("ScreenGui", game.CoreGui)
+Gui.Name, Gui.ResetOnSpawn, Gui.IgnoreGuiInset = "TuanMenuVip", false, true
+
+local function Corner(p, r) local c = Instance.new("UICorner", p) c.CornerRadius = UDim.new(0, r or 6) return c end
+
+-- KEY SYSTEM
+local KeyFrame = Instance.new("Frame", Gui)
+KeyFrame.Size, KeyFrame.Position, KeyFrame.AnchorPoint, KeyFrame.BackgroundColor3 = UDim2.fromOffset(200,110), UDim2.fromScale(0.5,0.5), Vector2.new(0.5,0.5), Color3.fromRGB(20,10,30)
+Corner(KeyFrame, 10)
+
+local KeyTitle = Instance.new("TextLabel", KeyFrame)
+KeyTitle.Size, KeyTitle.Text, KeyTitle.TextColor3, KeyTitle.BackgroundTransparency, KeyTitle.Font, KeyTitle.TextSize = UDim2.new(1,0,0,30), "Tuấn Menu Vip", Color3.fromRGB(190,80,255), 1, Enum.Font.Code, 16
+
+local KeyBox = Instance.new("TextBox", KeyFrame)
+KeyBox.Size, KeyBox.Position, KeyBox.PlaceholderText, KeyBox.Text, KeyBox.BackgroundColor3, KeyBox.TextColor3, KeyBox.Font, KeyBox.TextSize = UDim2.new(0.85,0,0,30), UDim2.new(0.075,0,0,38), "Enter Key", "", Color3.fromRGB(40,20,50), Color3.fromRGB(255,255,255), Enum.Font.Code, 13
+Corner(KeyBox)
+
+local KeyBtn = Instance.new("TextButton", KeyFrame)
+KeyBtn.Size, KeyBtn.Position, KeyBtn.Text, KeyBtn.BackgroundColor3, KeyBtn.TextColor3, KeyBtn.Font, KeyBtn.TextSize = UDim2.new(0.85,0,0,26), UDim2.new(0.075,0,0,74), "UNLOCK", Color3.fromRGB(110,0,160), Color3.fromRGB(255,255,255), Enum.Font.Code, 12
+Corner(KeyBtn)
+
+-- MAIN MENU
+local Menu = Instance.new("Frame", Gui)
+Menu.Size, Menu.Position, Menu.BackgroundColor3, Menu.Visible, Menu.Active, Menu.Draggable = UDim2.fromOffset(210,430), UDim2.fromScale(0.7,0.3), Color3.fromRGB(20,10,30), false, true, true
+Corner(Menu, 10)
+Instance.new("UIStroke", Menu).Color = Color3.fromRGB(150,50,220)
+
+local Title = Instance.new("TextLabel", Menu)
+Title.Size, Title.Text, Title.BackgroundColor3, Title.TextColor3, Title.Font, Title.TextSize = UDim2.new(1,0,0,32), "Tuấn Menu Vip", Color3.fromRGB(10,5,15), Color3.fromRGB(190,80,255), Enum.Font.Code, 14
+Corner(Title, 8)
+
+local Container = Instance.new("Frame", Menu)
+Container.Size, Container.Position, Container.BackgroundTransparency = UDim2.new(1,0,1,-38), UDim2.new(0,0,0,35), 1
+local List = Instance.new("UIListLayout", Container)
+List.SortOrder, List.Padding, List.HorizontalAlignment = Enum.SortOrder.LayoutOrder, UDim.new(0,4), Enum.HorizontalAlignment.Center
+
+local function MakeButton(txt, order)
+    local B = Instance.new("TextButton", Container)
+    B.Size, B.Text, B.BackgroundColor3, B.TextColor3, B.Font, B.TextSize, B.LayoutOrder = UDim2.new(0.9,0,0,26), txt, Color3.fromRGB(90,0,130), Color3.fromRGB(255,255,255), Enum.Font.Code, 12, order
+    Corner(B)
+    return B
+end
+
+local function MakeSliderUI(txtDef, minV, maxV, initV, order, callback)
+    local frame = Instance.new("Frame", Container)
+    frame.Size, frame.BackgroundTransparency, frame.LayoutOrder = UDim2.new(0.9,0,0,24), 1, order
+
+    local txt = Instance.new("TextLabel", frame)
+    txt.Size, txt.Text, txt.BackgroundTransparency, txt.TextColor3, txt.Font, txt.TextSize = UDim2.new(1,0,0,12), txtDef..initV, 1, Color3.fromRGB(220,180,255), Enum.Font.Code, 11
+
+    local back = Instance.new("Frame", frame)
+    back.Size, back.Position, back.BackgroundColor3 = UDim2.new(1,0,0,5), UDim2.new(0,0,0,15), Color3.fromRGB(60,40,70)
+    Corner(back, 3)
+
+    local bar = Instance.new("Frame", back)
+    bar.Size, bar.BackgroundColor3 = UDim2.new((initV-minV)/(maxV-minV),0,1,0), Color3.fromRGB(190,80,255)
+    Corner(bar, 3)
+
+    local function update(inputX)
+        local pct = math.clamp((inputX - back.AbsolutePosition.X) / back.AbsoluteSize.X, 0, 1)
+        local val = math.floor(minV + (maxV - minV) * pct)
+        bar.Size = UDim2.new(pct,0,1,0)
+        txt.Text = txtDef..val
+        callback(val)
+    end
+
+    back.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            Dragging = update
+            update(input.Position.X)
+        end
+    end)
+end
+
+-- CONTROLS
+local ESPBtn = MakeButton("ESP : OFF", 1)
+local FOVBtn = MakeButton("FOV : ON", 2)
+MakeSliderUI("FOV Size: ", 100, 600, 300, 3, function(v) FOV_SIZE = v end)
+
+local SpinBtn = MakeButton("SPIN : OFF", 4)
+MakeSliderUI("Spin Speed: ", 1, 1000, 100, 5, function(v) SPIN_SPEED = v end)
+
+local AutoHeadBtn = MakeButton("AUTO HEAD : OFF", 6)
+MakeSliderUI("Auto Head Size: ", 1, 100, 15, 7, function(v) 
+    HITBOX_SIZE = v
+end)
+
+local HeadViewBtn = MakeButton("HEAD VIEW : OFF", 8)
+
+-- NÚT BẤT TỬ
+local GodModeBtn = MakeButton("GOD MODE : OFF", 9)
+
+local Close = MakeButton("CLOSE MENU", 10)
+
+-- FOV CIRCLE & FLOAT BUTTON
+local FOVGui = Instance.new("ScreenGui", game.CoreGui)
+FOVGui.Name, FOVGui.ResetOnSpawn, FOVGui.IgnoreGuiInset = "TuanMenuVipFOV", false, true
+
+local Circle = Instance.new("Frame", FOVGui)
+Circle.AnchorPoint, Circle.Position, Circle.Size, Circle.BackgroundTransparency = Vector2.new(0.5,0.5), UDim2.fromScale(0.5,0.5), UDim2.fromOffset(300,300), 1
+Corner(Circle, 1000)
+Instance.new("UIStroke", Circle).Color = Color3.fromRGB(190,80,255)
+
+local Float = Instance.new("TextButton", Gui)
+Float.Size, Float.Position, Float.AnchorPoint, Float.Text, Float.TextColor3, Float.TextSize, Float.Font, Float.BackgroundColor3, Float.Visible, Float.Active, Float.Draggable = UDim2.fromOffset(45,45), UDim2.new(0,15,0.5,0), Vector2.new(0,0.5), "N", Color3.fromRGB(255,255,255), 18, Enum.Font.Code, Color3.fromRGB(110,0,160), false, true, true
+Corner(Float, 22)
+
+--============================================================
+-- GOD MODE (BẤT TỬ)
+--============================================================
+
+local function toggleGodMode(on)
+    local char = LP.Character
+    if not char then return end
+    
+    local humanoid = char:FindFirstChildOfClass("Humanoid")
+    if not humanoid then return end
+    
+    if on then
+        -- Lưu HP hiện tại
+        humanoid:SetAttribute("GodMode_OriginalHealth", humanoid.Health)
+        
+        -- Vô hiệu hóa sát thương
+        humanoid:SetAttribute("GodMode_Active", true)
+        
+        -- Tạo vòng lặp giữ HP
+        local conn
+        conn = RunService.Heartbeat:Connect(function()
+            if not GodModeOn then
+                conn:Disconnect()
+                return
+            end
+            if char and char.Parent and humanoid and humanoid.Health > 0 then
+                humanoid.Health = math.max(humanoid.Health, 100)
+            end
+        end)
+        
+        -- Lưu connection để hủy sau
+        char:SetAttribute("GodMode_Connection", conn)
+        
+        -- Đổi màu tên thành vàng (hiệu ứng)
+        local nameDisplay = char:FindFirstChild("NameDisplay")
+        if nameDisplay then
+            nameDisplay.TextColor3 = Color3.fromRGB(255, 215, 0)
+        end
+        
+        print("[GOD MODE] Bất tử đã được kích hoạt!")
+    else
+        -- Tắt bất tử
+        humanoid:SetAttribute("GodMode_Active", false)
+        
+        -- Hủy connection
+        local conn = char:GetAttribute("GodMode_Connection")
+        if conn then
+            conn:Disconnect()
+            char:SetAttribute("GodMode_Connection", nil)
+        end
+        
+        -- Reset màu tên
+        local nameDisplay = char:FindFirstChild("NameDisplay")
+        if nameDisplay then
+            nameDisplay.TextColor3 = Color3.fromRGB(255, 255, 255)
+        end
+        
+        print("[GOD MODE] Bất tử đã tắt")
+    end
+end
+
+-- Hàm khôi phục khi nhân vật mới spawn
+local function setupGodModeOnRespawn()
+    LP.CharacterAdded:Connect(function(char)
+        wait(0.5)
+        if GodModeOn then
+            toggleGodMode(true)
+        end
+    end)
+end
+setupGodModeOnRespawn()
+
+--============================================================
+-- HEAD VIEW - DÙNG BILLBOARDGUI + FRAME
+--============================================================
+
+local HeadViewObjects = {}
+
+local function ToggleHeadView(player, create)
+    if player == LP then return end
+    if create and not HeadViewObjects[player] then
+        local billboard = Instance.new("BillboardGui")
+        billboard.Name = "HeadViewBillboard"
+        billboard.Adornee = player.Character and player.Character:FindFirstChild("Head")
+        billboard.Size = UDim2.new(2, 0, 2, 0)
+        billboard.StudsOffset = Vector3.new(0, 0, 0)
+        billboard.AlwaysOnTop = true
+        billboard.Parent = player.Character or workspace
+        
+        local frame = Instance.new("Frame")
+        frame.Name = "HeadViewFrame"
+        frame.Size = UDim2.new(1, 0, 1, 0)
+        frame.BackgroundTransparency = 1
+        frame.BorderSizePixel = 3
+        frame.BorderColor3 = Color3.fromRGB(255, 0, 0)
+        frame.Parent = billboard
+        
+        local glow = Instance.new("Frame")
+        glow.Size = UDim2.new(1.2, 0, 1.2, 0)
+        glow.Position = UDim2.new(-0.1, 0, -0.1, 0)
+        glow.BackgroundTransparency = 0.7
+        glow.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+        glow.BorderSizePixel = 0
+        glow.Parent = frame
+        Instance.new("UICorner", glow).CornerRadius = UDim.new(1, 0)
+        
+        Instance.new("UICorner", frame).CornerRadius = UDim.new(1, 0)
+        
+        HeadViewObjects[player] = {
+            Billboard = billboard,
+            Frame = frame
+        }
+    elseif not create and HeadViewObjects[player] then
+        if HeadViewObjects[player].Billboard then
+            HeadViewObjects[player].Billboard:Destroy()
+        end
+        HeadViewObjects[player] = nil
+    end
+end
+
+local function updateHeadView(player)
+    local data = HeadViewObjects[player]
+    if not data then return end
+    
+    local char = player.Character
+    local head = char and char:FindFirstChild("Head")
+    
+    if data.Billboard then
+        data.Billboard.Adornee = head
+        if char and head then
+            data.Billboard.Parent = char
+            data.Billboard.Size = UDim2.new(2.5, 0, 2.5, 0)
+        else
+            data.Billboard.Parent = workspace
+            data.Billboard.Adornee = nil
+        end
+    end
+end
+
+local function clearAllHeadViews()
+    for player, data in pairs(HeadViewObjects) do
+        if data.Billboard then
+            data.Billboard:Destroy()
+        end
+    end
+    HeadViewObjects = {}
+end
+
+--============================================================
+-- EVENTS
+--============================================================
+
+KeyBtn.MouseButton1Click:Connect(function()
+    if KeyBox.Text == KEY then KeyFrame.Visible = false; Menu.Visible, Float.Visible = true, true else KeyBox.Text, KeyBox.PlaceholderText = "", "Wrong Key!" end
+end)
+
+Float.MouseButton1Click:Connect(function() Menu.Visible = not Menu.Visible end)
+Close.MouseButton1Click:Connect(function() Menu.Visible = false end)
+
+FOVBtn.MouseButton1Click:Connect(function() FOVOn = not FOVOn; Circle.Visible = FOVOn; FOVBtn.Text = FOVOn and "FOV : ON" or "FOV : OFF" end)
+SpinBtn.MouseButton1Click:Connect(function() SpinOn = not SpinOn; SpinBtn.Text = SpinOn and "SPIN : ON" or "SPIN : OFF" end)
+ESPBtn.MouseButton1Click:Connect(function() ESPOn = not ESPOn; ESPBtn.Text = ESPOn and "ESP : ON" or "ESP : OFF" end)
+
+-- GOD MODE TOGGLE
+GodModeBtn.MouseButton1Click:Connect(function()
+    GodModeOn = not GodModeOn
+    GodModeBtn.Text = GodModeOn and "GOD MODE : ON" or "GOD MODE : OFF"
+    GodModeBtn.BackgroundColor3 = GodModeOn and Color3.fromRGB(0,150,0) or Color3.fromRGB(90,0,130)
+    
+    toggleGodMode(GodModeOn)
+end)
+
+HeadViewBtn.MouseButton1Click:Connect(function()
+    HeadViewOn = not HeadViewOn
+    HeadViewBtn.Text = HeadViewOn and "HEAD VIEW : ON" or "HEAD VIEW : OFF"
+    HeadViewBtn.BackgroundColor3 = HeadViewOn and Color3.fromRGB(0,150,0) or Color3.fromRGB(90,0,130)
+    
+    if HeadViewOn then
+        for _, player in pairs(Players:GetPlayers()) do
+            if player ~= LP then
+                ToggleHeadView(player, true)
+                updateHeadView(player)
+            end
+        end
+    else
+        clearAllHeadViews()
+    end
+end)
+
+AutoHeadBtn.MouseButton1Click:Connect(function()
+    AutoHeadOn = not AutoHeadOn
+    AutoHeadBtn.Text = AutoHeadOn and "AUTO HEAD : ON" or "AUTO HEAD : OFF"
+    AutoHeadBtn.BackgroundColor3 = AutoHeadOn and Color3.fromRGB(0,150,0) or Color3.fromRGB(90,0,130)
+    
+    if not AutoHeadOn then
+        for _, v in pairs(Players:GetPlayers()) do
+            if v ~= LP and v.Character and v.Character:FindFirstChild("Head") then
+                pcall(function()
+                    local head = v.Character.Head
+                    head.Size = Vector3.new(1.2, 1.2, 1.2)
+                    head.Transparency = 0
+                    head.CanCollide = true
+                    head.Massless = false
+                end)
+            end
+        end
+    end
+end)
+
+UIS.InputChanged:Connect(function(i)
+    if Dragging and (i.UserInputType == Enum.UserInputType.MouseMovement or i.UserInputType == Enum.UserInputType.Touch) then Dragging(i.Position.X) end
+end)
+UIS.InputEnded:Connect(function(i)
+    if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then Dragging = nil end
+end)
+
+-- ESP SETUP
+local function ToggleESP(player, create)
+    if player == LP then return end
+    if create and not ESPObjects[player] then
+        local t, l, b, h = Drawing.new("Text"), Drawing.new("Line"), Drawing.new("Square"), Drawing.new("Line")
+        t.Size, t.Center, t.Outline, t.Color = 13, true, true, Color3.fromRGB(255,0,0)
+        l.Thickness, l.Color = 1, Color3.fromRGB(190,80,255)
+        b.Thickness, b.Color = 2, Color3.fromRGB(255,255,255)
+        h.Thickness, h.Color = 4, Color3.fromRGB(0,255,0)
+        ESPObjects[player] = {Text = t, Line = l, Box = b, Health = h}
+    elseif not create and ESPObjects[player] then
+        for _, v in pairs(ESPObjects[player]) do pcall(function() v:Remove() end) end
+        ESPObjects[player] = nil
+    end
+end
+
+for _, p in pairs(Players:GetPlayers()) do 
+    ToggleESP(p, true)
+    if HeadViewOn then
+        ToggleHeadView(p, true)
+        updateHeadView(p)
+    end
+end
+
+Players.PlayerAdded:Connect(function(p) 
+    ToggleESP(p, true)
+    if HeadViewOn then
+        ToggleHeadView(p, true)
+        updateHeadView(p)
+    end
+end)
+
+Players.PlayerRemoving:Connect(function(p) 
+    ToggleESP(p, false)
+    if HeadViewOn then
+        ToggleHeadView(p, false)
+    end
+end)
+
+local function setupCharacterAdded(player)
+    if player == LP then return end
+    player.CharacterAdded:Connect(function()
+        if HeadViewOn then
+            updateHeadView(player)
+        end
+    end)
+end
+
+for _, player in pairs(Players:GetPlayers()) do
+    if player ~= LP then
+        setupCharacterAdded(player)
+    end
+end
+
+Players.PlayerAdded:Connect(function(player)
+    if player ~= LP then
+        setupCharacterAdded(player)
+    end
+end)
+
+--============================================================
+-- MAIN LOOP
+--============================================================
+
+RunService.RenderStepped:Connect(function(dt)
+    Circle.Size = UDim2.fromOffset(FOV_SIZE, FOV_SIZE)
+
+    -- AUTO HEAD - Giới hạn size tối đa 100
+    if AutoHeadOn then
+        for _, v in pairs(Players:GetPlayers()) do
+            if v ~= LP and v.Character and v.Character:FindFirstChild("Head") then
+                pcall(function()
+                    local head = v.Character.Head
+                    local size = math.min(HITBOX_SIZE, MAX_HEAD_SIZE)
+                    head.Size = Vector3.new(size, size, size)
+                    head.Transparency = 1
+                    head.CanCollide = false
+                    head.Massless = true
+                end)
+            end
+        end
+    end
+
+    -- SPIN
+    local char = LP.Character
+    local hum = char and char:FindFirstChildOfClass("Humanoid")
+    local root = char and char:FindFirstChild("HumanoidRootPart")
+    if SpinOn and root and hum then
+        hum.AutoRotate = false
+        SpinAngle = SpinAngle + math.rad(SPIN_SPEED) * dt
+        root.CFrame = CFrame.new(root.Position) * CFrame.Angles(0, SpinAngle, 0)
+    elseif hum then
+        hum.AutoRotate = true
+    end
+
+    -- ESP
+    for player, o in pairs(ESPObjects) do
+        local pc = player.Character
+        local pHum = pc and pc:FindFirstChildOfClass("Humanoid")
+        local pRoot = pc and pc:FindFirstChild("HumanoidRootPart")
+        local myRoot = char and char:FindFirstChild("HumanoidRootPart")
+
+        if ESPOn and myRoot and pRoot and pHum and pHum.Health > 0 then
+            local pos, vis = Camera:WorldToViewportPoint(pRoot.Position)
+            if vis and pos.Z > 0 then
+                local dist = math.floor((pRoot.Position - myRoot.Position).Magnitude)
+                local w, h = (1000 / pos.Z) * 0.7, 1000 / pos.Z
+                local hp = math.clamp(pHum.Health / pHum.MaxHealth, 0, 1)
+
+                o.Box.Size, o.Box.Position, o.Box.Visible = Vector2.new(w, h), Vector2.new(pos.X - w/2, pos.Y - h/2), true
+                o.Health.From, o.Health.To, o.Health.Visible = Vector2.new(pos.X - w/2 - 6, pos.Y + h/2), Vector2.new(pos.X - w/2 - 6, pos.Y + h/2 - (h * hp)), true
+                o.Text.Position, o.Text.Text, o.Text.Visible = Vector2.new(pos.X, pos.Y - h/2 - 18), player.Name.." ["..dist.."m] ["..math.floor(pHum.Health).."HP]", true
+                o.Line.From, o.Line.To, o.Line.Visible = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y), Vector2.new(pos.X, pos.Y + h/2), true
+            else o.Text.Visible, o.Line.Visible, o.Box.Visible, o.Health.Visible = false, false, false, false end
+        else o.Text.Visible, o.Line.Visible, o.Box.Visible, o.Health.Visible = false, false, false, false end
+    end
+end)
+
+-- RAINBOW TITLE
+task.spawn(function()
+    local hue = 0
+    while Gui.Parent do
+        hue = (hue + 0.01) % 1
+        Title.TextColor3 = Color3.fromHSV(hue, 0.7, 1)
+        task.wait(0.03)
+    end
+end)
+
+print("[Tuấn Menu Vip] Loaded - God Mode + Head View + Auto Head (Max 100)")

@@ -15,8 +15,8 @@ local SpinAngle, ESPObjects, Dragging = 0, {}, nil
 -- GIỚI HẠN KÍCH THƯỚC HEAD TỐI ĐA = 100
 local MAX_HEAD_SIZE = 100
 
-pcall(function() game.CoreGui.TuanMenuVip:Destroy() end)
-pcall(function() game.CoreGui.TuanMenuVipFOV:Destroy() end)
+pcall(function() game.CoreGui.AnDzPurple:Destroy() end)
+pcall(function() game.CoreGui.AnDzPurpleFov:Destroy() end)
 
 local Gui = Instance.new("ScreenGui", game.CoreGui)
 Gui.Name, Gui.ResetOnSpawn, Gui.IgnoreGuiInset = "TuanMenuVip", false, true
@@ -46,7 +46,7 @@ Corner(Menu, 10)
 Instance.new("UIStroke", Menu).Color = Color3.fromRGB(150,50,220)
 
 local Title = Instance.new("TextLabel", Menu)
-Title.Size, Title.Text, Title.BackgroundColor3, Title.TextColor3, Title.Font, Title.TextSize = UDim2.new(1,0,0,32), "Tuấn Menu Vip", Color3.fromRGB(10,5,15), Color3.fromRGB(190,80,255), Enum.Font.Code, 14
+Title.Size, Title.Text, Title.BackgroundColor3, Title.TextColor3, Title.Font, Title.TextSize = UDim2.new(1,0,0,32), "AnDz Purple", Color3.fromRGB(10,5,15), Color3.fromRGB(190,80,255), Enum.Font.Code, 14
 Corner(Title, 8)
 
 local Container = Instance.new("Frame", Menu)

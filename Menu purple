@@ -29,7 +29,7 @@ KeyFrame.Size, KeyFrame.Position, KeyFrame.AnchorPoint, KeyFrame.BackgroundColor
 Corner(KeyFrame, 10)
 
 local KeyTitle = Instance.new("TextLabel", KeyFrame)
-KeyTitle.Size, KeyTitle.Text, KeyTitle.TextColor3, KeyTitle.BackgroundTransparency, KeyTitle.Font, KeyTitle.TextSize = UDim2.new(1,0,0,30), "Tuấn Menu Vip", Color3.fromRGB(190,80,255), 1, Enum.Font.Code, 16
+KeyTitle.Size, KeyTitle.Text, KeyTitle.TextColor3, KeyTitle.BackgroundTransparency, KeyTitle.Font, KeyTitle.TextSize = UDim2.new(1,0,0,30), "AnDz Purple", Color3.fromRGB(190,80,255), 1, Enum.Font.Code, 16
 
 local KeyBox = Instance.new("TextBox", KeyFrame)
 KeyBox.Size, KeyBox.Position, KeyBox.PlaceholderText, KeyBox.Text, KeyBox.BackgroundColor3, KeyBox.TextColor3, KeyBox.Font, KeyBox.TextSize = UDim2.new(0.85,0,0,30), UDim2.new(0.075,0,0,38), "Enter Key", "", Color3.fromRGB(40,20,50), Color3.fromRGB(255,255,255), Enum.Font.Code, 13

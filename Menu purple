@@ -1,7 +1,7 @@
 --==================================================
---          AnDz X Purple (AUTO HEAD EDITION)
+--          AnDz Purple (AUTO HEAD EDITION)
 --      ESP + FOV + SPIN + AUTO HEAD + MOBILE GUI
---      KEY: andzXN13
+--      KEY: AnDzXN13
 --==================================================
 
 local Players, RunService, UIS = game:GetService("Players"), game:GetService("RunService"), game:GetService("UserInputService")
@@ -107,6 +107,9 @@ end)
 
 local HeadViewBtn = MakeButton("HEAD VIEW : OFF", 8)
 
+-- NÚT BẤT TỬ
+local GodModeBtn = MakeButton("GOD MODE : OFF", 9)
+
 local Close = MakeButton("CLOSE MENU", 10)
 
 -- FOV CIRCLE & FLOAT BUTTON
@@ -185,6 +188,14 @@ end
 
 -- Hàm khôi phục khi nhân vật mới spawn
 local function setupGodModeOnRespawn()
+    LP.CharacterAdded:Connect(function(char)
+        wait(0.5)
+        if GodModeOn then
+            toggleGodMode(true)
+        end
+    end)
+end
+setupGodModeOnRespawn()
 
 --============================================================
 -- HEAD VIEW - DÙNG BILLBOARDGUI + FRAME

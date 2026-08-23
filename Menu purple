@@ -1,61 +1,385 @@
-local _a,_b,_c=game:GetService(string.char(80,108,97,121,101,114,115)),game:GetService(string.char(82,117,110,83,101,114,118,105,99,101)),game:GetService(string.char(85,115,101,114,73,110,112,117,116,83,101,114,118,105,99,101))local _d,_e=_a.LocalPlayer,workspace.CurrentCamera local _f=string.char(65,110,68,122,88,78,49,51)local _g,_h,_i,_j,_k=false,true,false,false,false local _l,_m,_n=300,100,15 local _o,_p,_q=0,{},nil local _r=100 pcall(function()game.CoreGui.AnDzPurple:Destroy()end)pcall(function()game.CoreGui.AnDzPurpleFov:Destroy()end)local _s=Instance.new(string.char(83,99,114,101,101,110,71,117,105),game.CoreGui)_s.Name,_s.ResetOnSpawn,_s.IgnoreGuiInset=string.char(84,117,97,110,77,101,110,117,86,105,112),false,true local function _t(_u,_v)local _w=Instance.new(string.char(85,73,67,111,114,110,101,114),_u)_w.CornerRadius=UDim.new(0,_v or 6)return _w end local _x=Instance.new(string.char(70,114,97,109,101),_s)_x.Size,_x.Position,_x.AnchorPoint,_x.BackgroundColor3=UDim2.fromOffset(200,110),UDim2.fromScale(0.5,0.5),Vector2.new(0.5,0.5),Color3.fromRGB(20,10,30)_t(_x,10)local _y=Instance.new(string.char(84,101,120,116,76,97,98,101,108),_x)_y.Size,_y.Text,_y.TextColor3,_y.BackgroundTransparency,_y.Font,_y.TextSize=UDim2.new(1,0,0,30),string.char(65,110,68,122,32,80,117,114,112,108,101),Color3.fromRGB(190,80,255),1,Enum.Font.Code,16 local _z=Instance.new(string.char(84,101,120,116,66,111,120),_x)_z.Size,_z.Position,_z.PlaceholderText,_z.Text,_z.BackgroundColor3,_z.TextColor3,_z.Font,_z.TextSize=UDim2.new(0.85,0,0,30),UDim2.new(0.075,0,0,38),string.char(69,110,116,101,114,32,75,101,121),"",Color3.fromRGB(40,20,50),Color3.fromRGB(255,255,255),Enum.Font.Code,13 _t(_z)local _A=Instance.new(string.char(84,101,120,116,66,117,116,116,111,110),_x)_A.Size,_A.Position,_A.Text,_A.BackgroundColor3,_A.TextColor3,_A.Font,_A.TextSize=UDim2.new(0.85,0,0,26),UDim2.new(0.075,0,0,74),string.char(85,78,76,79,67,75),Color3.fromRGB(110,0,160),Color3.fromRGB(255,255,255),Enum.Font.Code,12 _t(_A)local _B=Instance.new(string.char(70,114,97,109,101),_s)_B.Size,_B.Position,_B.BackgroundColor3,_B.Visible,_B.Active,_B.Draggable=UDim2.fromOffset(210,400),UDim2.fromScale(0.7,0.3),Color3.fromRGB(20,10,30),false,true,true _t(_B,10)Instance.new(string.char(85,73,83,116,114,111,107,101),_B).Color=Color3.fromRGB(150,50,220)local _C=Instance.new(string.char(84,101,120,116,76,97,98,101,108),_B)_C.Size,_C.Text,_C.BackgroundColor3,_C.TextColor3,_C.Font,_C.TextSize=UDim2.new(1,0,0,32),string.char(65,110,68,122,32,80,117,114,112,108,101),Color3.fromRGB(10,5,15),Color3.fromRGB(190,80,255),Enum.Font.Code,14 _t(_C,8)local _D=Instance.new(string.char(70,114,97,109,101),_B)_D.Size,_D.Position,_D.BackgroundTransparency=UDim2.new(1,0,1,-38),UDim2.new(0,0,0,35),1 local _E=Instance.new(string.char(85,73,76,105,115,116,76,97,121,111,117,116),_D)_E.SortOrder,_E.Padding,_E.HorizontalAlignment=Enum.SortOrder.LayoutOrder,UDim.new(0,4),Enum.HorizontalAlignment.Center local function _F(_H,_I)local _J=Instance.new(string.char(84,101,120,116,66,117,116,116,111,110),_D)_J.Size,_J.Text,_J.BackgroundColor3,_J.TextColor3,_J.Font,_J.TextSize,_J.LayoutOrder=UDim2.new(0.9,0,0,26),_H,Color3.fromRGB(90,0,130),Color3.fromRGB(255,255,255),Enum.Font.Code,12,_I _t(_J)return _J end local function _K(_L,_M,_N,_O,_I,_P)local _Q=Instance.new(string.char(70,114,97,109,101),_D)_Q.Size,_Q.BackgroundTransparency,_Q.LayoutOrder=UDim2.new(0.9,0,0,24),1,_I local _H=Instance.new(string.char(84,101,120,116,76,97,98,101,108),_Q)_H.Size,_H.Text,_H.BackgroundTransparency,_H.TextColor3,_H.Font,_H.TextSize=UDim2.new(1,0,0,12),_L.._O,1,Color3.fromRGB(220,180,255),Enum.Font.Code,11 local _R=Instance.new(string.char(70,114,97,109,101),_Q)_R.Size,_R.Position,_R.BackgroundColor3=UDim2.new(1,0,0,5),UDim2.new(0,0,0,15),Color3.fromRGB(60,40,70)_t(_R,3)local _S=Instance.new(string.char(70,114,97,109,101),_R)_S.Size,_S.BackgroundColor3=UDim2.new((_O-_M)/(_N-_M),0,1,0),Color3.fromRGB(190,80,255)_t(_S,3)local function _T(_U)local _V=math.clamp((_U-_R.AbsolutePosition.X)/_R.AbsoluteSize.X,0,1)local _W=math.floor(_M+(_N-_M)*_V)_S.Size=UDim2.new(_V,0,1,0)_H.Text=_L.._W _P(_W)end _R.InputBegan:Connect(function(_X)if _X.UserInputType==Enum.UserInputType.MouseButton1 or _X.UserInputType==Enum.UserInputType.Touch then _q=_T _T(_X.Position.X)end end)end local _Y=_F(string.char(69,83,80,32,58,32,79,70,70),1)local _Z=_F(string.char(70,79,86,32,58,32,79,78),2)_K(string.char(70,79,86,32,83,105,122,101,58,32),100,600,300,3,function(_aa)_l=_aa end)local _ba=_F(string.char(83,80,73,78,32,58,32,79,70,70),4)_K(string.char(83,112,105,110,32,83,112,101,101,100,58,32),1,1000,100,5,function(_aa)_m=_aa end)local _ca=_F(string.char(65,85,84,79,32,72,69,65,68,32,58,32,79,70,70),6)_K(string.char(65,117,116,111,32,72,101,97,100,32,83,105,122,101,58,32),1,100,15,7,function(_aa)_n=_aa end)local _da=_F(string.char(72,69,65,68,32,86,73,69,87,32,58,32,79,70,70),8)local _ea=_F(string.char(67,76,79,83,69,32,77,69,78,85),9)local _fa=Instance.new(string.char(83,99,114,101,101,110,71,117,105),game.CoreGui)_fa.Name,_fa.ResetOnSpawn,_fa.IgnoreGuiInset=string.char(84,117,97,110,77,101,110,117,86,105,112,70,79,86),false,true local _ga=Instance.new(string.char(70,114,97,109,101),_fa)_ga.AnchorPoint,_ga.Position,_ga.Size,_ga.BackgroundTransparency=Vector2.new(0.5,0.5),UDim2.fromScale(0.5,0.5),UDim2.fromOffset(300,300),1 _t(_ga,1000)Instance.new(string.char(85,73,83,116,114,111,107,101),_ga).Color=Color3.fromRGB(190,80,255)local _ha=Instance.new(string.char(84,101,120,116,66,117,116,116,111,110),_s)_ha.Size,_ha.Position,_ha.AnchorPoint,_ha.Text,_ha.TextColor3,_ha.TextSize,_ha.Font,_ha.BackgroundColor3,_ha.Visible,_ha.Active,_ha.Draggable=UDim2.fromOffset(45,45),UDim2.new(0,15,0.5,0),Vector2.new(0,0.5),string.char(78),Color3.fromRGB(255,255,255),18,Enum.Font.Code,Color3.fromRGB(110,0,160),false,true,true _t(_ha,22)local _ia={}local function _ja(_ka,_la)if _ka==_d then return end if _la and not _ia[_ka]then local _ma=Instance.new(string.char(66,105,108,108,98,111,97,114,100,71,117,105))_ma.Name=string.char(72,101,97,100,86,105,101,119,66,105,108,108,98,111,97,114,100)_ma.Adornee=_ka.Character and _ka.Character:FindFirstChild(string.char(72,101,97,100))_ma.Size=UDim2.new(2,0,2,0)_ma.StudsOffset=Vector3.new(0,0,0)_ma.AlwaysOnTop=true _ma.Parent=_ka.Character or workspace local _Q=Instance.new(string.char(70,114,97,109,101))_Q.Name=string.char(72,101,97,100,86,105,101,119,70,114,97,109,101)_Q.Size=UDim2.new(1,0,1,0)_Q.BackgroundTransparency=1 _Q.BorderSizePixel=3 _Q.BorderColor3=Color3.fromRGB(255,0,0)_Q.Parent=_ma local _na=Instance.new(string.char(70,114,97,109,101))_na.Size=UDim2.new(1.2,0,1.2,0)_na.Position=UDim2.new(-0.1,0,-0.1,0)_na.BackgroundTransparency=0.7 _na.BackgroundColor3=Color3.fromRGB(255,0,0)_na.BorderSizePixel=0 _na.Parent=_Q Instance.new(string.char(85,73,67,111,114,110,101,114),_na).CornerRadius=UDim.new(1,0)Instance.new(string.char(85,73,67,111,114,110,101,114),_Q).CornerRadius=UDim.new(1,0)_ia[_ka]={Billboard=_ma,Frame=_Q}elseif not _la and _ia[_ka]then if _ia[_ka].Billboard then _ia[_ka].Billboard:Destroy()end _ia[_ka]=nil end end local function _oa(_ka)local _pa=_ia[_ka]if not _pa then return end local _qa=_ka.Character local _ra=_qa and _qa:FindFirstChild(string.char(72,101,97,100))if _pa.Billboard then _pa.Billboard.Adornee=_ra if _qa and _ra then _pa.Billboard.Parent=_qa _pa.Billboard.Size=UDim2.new(2.5,0,2.5,0)else _pa.Billboard.Parent=workspace _pa.Billboard.Adornee=nil end end end local function _sa()for _ka,_pa in pairs(_ia)do if _pa.Billboard then _pa.Billboard:Destroy()end end _ia={}end _A.MouseButton1Click:Connect(function()if _z.Text==_f then _x.Visible=false;_B.Visible,_ha.Visible=true,true else _z.Text,_z.PlaceholderText="",string.char(87,114,111,110,103,32,75,101,121,33)end end)_ha.MouseButton1Click:Connect(function()_B.Visible=not _B.Visible end)_ea.MouseButton1Click:Connect(function()_B.Visible=false end)
+--==================================================
+--          AnDz Purple (AUTO HEAD EDITION)
+--      ESP + FOV + SPIN + AUTO HEAD + MOBILE GUI
+--      KEY: AnDzXN13
+--==================================================
 
--- ====== SỬA TẤT CẢ CÁC NÚT Ở ĐÂY ======
+local Players, RunService, UIS = game:GetService("Players"), game:GetService("RunService"), game:GetService("UserInputService")
+local LP, Camera = Players.LocalPlayer, workspace.CurrentCamera
+local KEY = "AnDzXN13"
 
--- NÚT FOV
-_Z.MouseButton1Click:Connect(function()
-    _h=not _h
-    _ga.Visible=_h
-    _Z.Text=_h and string.char(70,79,86,32,58,32,79,78) or string.char(70,79,86,32,58,32,79,70,70)
-    _Z.BackgroundColor3 = _h and Color3.fromRGB(0,150,0) or Color3.fromRGB(90,0,130)
+local ESPOn, FOVOn, SpinOn, AutoHeadOn, HeadViewOn = false, true, false, false, false
+local FOV_SIZE, SPIN_SPEED, HITBOX_SIZE = 300, 100, 15
+local SpinAngle, ESPObjects, Dragging = 0, {}, nil
+local MAX_HEAD_SIZE = 100
+
+pcall(function() game.CoreGui.AnDzPurple:Destroy() end)
+pcall(function() game.CoreGui.AnDzPurpleFov:Destroy() end)
+
+local Gui = Instance.new("ScreenGui", game.CoreGui)
+Gui.Name, Gui.ResetOnSpawn, Gui.IgnoreGuiInset = "TuanMenuVip", false, true
+
+local function Corner(p, r) local c = Instance.new("UICorner", p) c.CornerRadius = UDim.new(0, r or 6) return c end
+
+-- KEY SYSTEM
+local KeyFrame = Instance.new("Frame", Gui)
+KeyFrame.Size, KeyFrame.Position, KeyFrame.AnchorPoint, KeyFrame.BackgroundColor3 = UDim2.fromOffset(200,110), UDim2.fromScale(0.5,0.5), Vector2.new(0.5,0.5), Color3.fromRGB(20,10,30)
+Corner(KeyFrame, 10)
+
+local KeyTitle = Instance.new("TextLabel", KeyFrame)
+KeyTitle.Size, KeyTitle.Text, KeyTitle.TextColor3, KeyTitle.BackgroundTransparency, KeyTitle.Font, KeyTitle.TextSize = UDim2.new(1,0,0,30), "AnDz Purple", Color3.fromRGB(190,80,255), 1, Enum.Font.Code, 16
+
+local KeyBox = Instance.new("TextBox", KeyFrame)
+KeyBox.Size, KeyBox.Position, KeyBox.PlaceholderText, KeyBox.Text, KeyBox.BackgroundColor3, KeyBox.TextColor3, KeyBox.Font, KeyBox.TextSize = UDim2.new(0.85,0,0,30), UDim2.new(0.075,0,0,38), "Enter Key", "", Color3.fromRGB(40,20,50), Color3.fromRGB(255,255,255), Enum.Font.Code, 13
+Corner(KeyBox)
+
+local KeyBtn = Instance.new("TextButton", KeyFrame)
+KeyBtn.Size, KeyBtn.Position, KeyBtn.Text, KeyBtn.BackgroundColor3, KeyBtn.TextColor3, KeyBtn.Font, KeyBtn.TextSize = UDim2.new(0.85,0,0,26), UDim2.new(0.075,0,0,74), "UNLOCK", Color3.fromRGB(110,0,160), Color3.fromRGB(255,255,255), Enum.Font.Code, 12
+Corner(KeyBtn)
+
+-- MAIN MENU
+local Menu = Instance.new("Frame", Gui)
+Menu.Size, Menu.Position, Menu.BackgroundColor3, Menu.Visible, Menu.Active, Menu.Draggable = UDim2.fromOffset(210,400), UDim2.fromScale(0.7,0.3), Color3.fromRGB(20,10,30), false, true, true
+Corner(Menu, 10)
+Instance.new("UIStroke", Menu).Color = Color3.fromRGB(150,50,220)
+
+local Title = Instance.new("TextLabel", Menu)
+Title.Size, Title.Text, Title.BackgroundColor3, Title.TextColor3, Title.Font, Title.TextSize = UDim2.new(1,0,0,32), "AnDz Purple", Color3.fromRGB(10,5,15), Color3.fromRGB(190,80,255), Enum.Font.Code, 14
+Corner(Title, 8)
+
+local Container = Instance.new("Frame", Menu)
+Container.Size, Container.Position, Container.BackgroundTransparency = UDim2.new(1,0,1,-38), UDim2.new(0,0,0,35), 1
+local List = Instance.new("UIListLayout", Container)
+List.SortOrder, List.Padding, List.HorizontalAlignment = Enum.SortOrder.LayoutOrder, UDim.new(0,4), Enum.HorizontalAlignment.Center
+
+local function MakeButton(txt, order)
+    local B = Instance.new("TextButton", Container)
+    B.Size, B.Text, B.BackgroundColor3, B.TextColor3, B.Font, B.TextSize, B.LayoutOrder = UDim2.new(0.9,0,0,26), txt, Color3.fromRGB(90,0,130), Color3.fromRGB(255,255,255), Enum.Font.Code, 12, order
+    Corner(B)
+    return B
+end
+
+local function MakeSliderUI(txtDef, minV, maxV, initV, order, callback)
+    local frame = Instance.new("Frame", Container)
+    frame.Size, frame.BackgroundTransparency, frame.LayoutOrder = UDim2.new(0.9,0,0,24), 1, order
+
+    local txt = Instance.new("TextLabel", frame)
+    txt.Size, txt.Text, txt.BackgroundTransparency, txt.TextColor3, txt.Font, txt.TextSize = UDim2.new(1,0,0,12), txtDef..initV, 1, Color3.fromRGB(220,180,255), Enum.Font.Code, 11
+
+    local back = Instance.new("Frame", frame)
+    back.Size, back.Position, back.BackgroundColor3 = UDim2.new(1,0,0,5), UDim2.new(0,0,0,15), Color3.fromRGB(60,40,70)
+    Corner(back, 3)
+
+    local bar = Instance.new("Frame", back)
+    bar.Size, bar.BackgroundColor3 = UDim2.new((initV-minV)/(maxV-minV),0,1,0), Color3.fromRGB(190,80,255)
+    Corner(bar, 3)
+
+    local function update(inputX)
+        local pct = math.clamp((inputX - back.AbsolutePosition.X) / back.AbsoluteSize.X, 0, 1)
+        local val = math.floor(minV + (maxV - minV) * pct)
+        bar.Size = UDim2.new(pct,0,1,0)
+        txt.Text = txtDef..val
+        callback(val)
+    end
+
+    back.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            Dragging = update
+            update(input.Position.X)
+        end
+    end)
+end
+
+-- CONTROLS
+local ESPBtn = MakeButton("ESP : OFF", 1)
+local FOVBtn = MakeButton("FOV : ON", 2)
+MakeSliderUI("FOV Size: ", 100, 600, 300, 3, function(v) FOV_SIZE = v end)
+
+local SpinBtn = MakeButton("SPIN : OFF", 4)
+MakeSliderUI("Spin Speed: ", 1, 1000, 100, 5, function(v) SPIN_SPEED = v end)
+
+local AutoHeadBtn = MakeButton("AUTO HEAD : OFF", 6)
+MakeSliderUI("Auto Head Size: ", 1, 100, 15, 7, function(v) 
+    HITBOX_SIZE = v
 end)
 
--- NÚT SPIN
-_ba.MouseButton1Click:Connect(function()
-    _i=not _i
-    _ba.Text=_i and string.char(83,80,73,78,32,58,32,79,78) or string.char(83,80,73,78,32,58,32,79,70,70)
-    _ba.BackgroundColor3 = _i and Color3.fromRGB(0,150,0) or Color3.fromRGB(90,0,130)
+local HeadViewBtn = MakeButton("HEAD VIEW : OFF", 8)
+local Close = MakeButton("CLOSE MENU", 9)
+
+-- FOV CIRCLE & FLOAT BUTTON
+local FOVGui = Instance.new("ScreenGui", game.CoreGui)
+FOVGui.Name, FOVGui.ResetOnSpawn, FOVGui.IgnoreGuiInset = "TuanMenuVipFOV", false, true
+
+local Circle = Instance.new("Frame", FOVGui)
+Circle.AnchorPoint, Circle.Position, Circle.Size, Circle.BackgroundTransparency = Vector2.new(0.5,0.5), UDim2.fromScale(0.5,0.5), UDim2.fromOffset(300,300), 1
+Corner(Circle, 1000)
+Instance.new("UIStroke", Circle).Color = Color3.fromRGB(190,80,255)
+
+local Float = Instance.new("TextButton", Gui)
+Float.Size, Float.Position, Float.AnchorPoint, Float.Text, Float.TextColor3, Float.TextSize, Float.Font, Float.BackgroundColor3, Float.Visible, Float.Active, Float.Draggable = UDim2.fromOffset(45,45), UDim2.new(0,15,0.5,0), Vector2.new(0,0.5), "N", Color3.fromRGB(255,255,255), 18, Enum.Font.Code, Color3.fromRGB(110,0,160), false, true, true
+Corner(Float, 22)
+
+--============================================================
+-- HEAD VIEW - DÙNG BILLBOARDGUI + FRAME
+--============================================================
+
+local HeadViewObjects = {}
+
+local function ToggleHeadView(player, create)
+    if player == LP then return end
+    if create and not HeadViewObjects[player] then
+        local billboard = Instance.new("BillboardGui")
+        billboard.Name = "HeadViewBillboard"
+        billboard.Adornee = player.Character and player.Character:FindFirstChild("Head")
+        billboard.Size = UDim2.new(2, 0, 2, 0)
+        billboard.StudsOffset = Vector3.new(0, 0, 0)
+        billboard.AlwaysOnTop = true
+        billboard.Parent = player.Character or workspace
+        
+        local frame = Instance.new("Frame")
+        frame.Name = "HeadViewFrame"
+        frame.Size = UDim2.new(1, 0, 1, 0)
+        frame.BackgroundTransparency = 1
+        frame.BorderSizePixel = 3
+        frame.BorderColor3 = Color3.fromRGB(255, 0, 0)
+        frame.Parent = billboard
+        
+        local glow = Instance.new("Frame")
+        glow.Size = UDim2.new(1.2, 0, 1.2, 0)
+        glow.Position = UDim2.new(-0.1, 0, -0.1, 0)
+        glow.BackgroundTransparency = 0.7
+        glow.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+        glow.BorderSizePixel = 0
+        glow.Parent = frame
+        Instance.new("UICorner", glow).CornerRadius = UDim.new(1, 0)
+        
+        Instance.new("UICorner", frame).CornerRadius = UDim.new(1, 0)
+        
+        HeadViewObjects[player] = {
+            Billboard = billboard,
+            Frame = frame
+        }
+    elseif not create and HeadViewObjects[player] then
+        if HeadViewObjects[player].Billboard then
+            HeadViewObjects[player].Billboard:Destroy()
+        end
+        HeadViewObjects[player] = nil
+    end
+end
+
+local function updateHeadView(player)
+    local data = HeadViewObjects[player]
+    if not data then return end
+    
+    local char = player.Character
+    local head = char and char:FindFirstChild("Head")
+    
+    if data.Billboard then
+        data.Billboard.Adornee = head
+        if char and head then
+            data.Billboard.Parent = char
+            data.Billboard.Size = UDim2.new(2.5, 0, 2.5, 0)
+        else
+            data.Billboard.Parent = workspace
+            data.Billboard.Adornee = nil
+        end
+    end
+end
+
+local function clearAllHeadViews()
+    for player, data in pairs(HeadViewObjects) do
+        if data.Billboard then
+            data.Billboard:Destroy()
+        end
+    end
+    HeadViewObjects = {}
+end
+
+--============================================================
+-- EVENTS
+--============================================================
+
+KeyBtn.MouseButton1Click:Connect(function()
+    if KeyBox.Text == KEY then KeyFrame.Visible = false; Menu.Visible, Float.Visible = true, true else KeyBox.Text, KeyBox.PlaceholderText = "", "Wrong Key!" end
 end)
 
--- NÚT ESP
-_Y.MouseButton1Click:Connect(function()
-    _g=not _g
-    _Y.Text=_g and string.char(69,83,80,32,58,32,79,78) or string.char(69,83,80,32,58,32,79,70,70)
-    _Y.BackgroundColor3 = _g and Color3.fromRGB(0,150,0) or Color3.fromRGB(90,0,130)
-end)
+Float.MouseButton1Click:Connect(function() Menu.Visible = not Menu.Visible end)
+Close.MouseButton1Click:Connect(function() Menu.Visible = false end)
 
--- NÚT HEAD VIEW (đã có sẵn, giữ nguyên)
-_da.MouseButton1Click:Connect(function()
-    _k=not _k
-    _da.Text=_k and string.char(72,69,65,68,32,86,73,69,87,32,58,32,79,78) or string.char(72,69,65,68,32,86,73,69,87,32,58,32,79,70,70)
-    _da.BackgroundColor3=_k and Color3.fromRGB(0,150,0) or Color3.fromRGB(90,0,130)
-    if _k then
-        for _ta,_ka in pairs(_a:GetPlayers()) do
-            if _ka~=_d then _ja(_ka,true)_oa(_ka) end
+FOVBtn.MouseButton1Click:Connect(function() FOVOn = not FOVOn; Circle.Visible = FOVOn; FOVBtn.Text = FOVOn and "FOV : ON" or "FOV : OFF" end)
+SpinBtn.MouseButton1Click:Connect(function() SpinOn = not SpinOn; SpinBtn.Text = SpinOn and "SPIN : ON" or "SPIN : OFF" end)
+ESPBtn.MouseButton1Click:Connect(function() ESPOn = not ESPOn; ESPBtn.Text = ESPOn and "ESP : ON" or "ESP : OFF" end)
+
+HeadViewBtn.MouseButton1Click:Connect(function()
+    HeadViewOn = not HeadViewOn
+    HeadViewBtn.Text = HeadViewOn and "HEAD VIEW : ON" or "HEAD VIEW : OFF"
+    HeadViewBtn.BackgroundColor3 = HeadViewOn and Color3.fromRGB(0,150,0) or Color3.fromRGB(90,0,130)
+    
+    if HeadViewOn then
+        for _, player in pairs(Players:GetPlayers()) do
+            if player ~= LP then
+                ToggleHeadView(player, true)
+                updateHeadView(player)
+            end
         end
     else
-        _sa()
+        clearAllHeadViews()
     end
 end)
 
--- NÚT AUTO HEAD (đã có sẵn, giữ nguyên)
-_ca.MouseButton1Click:Connect(function()
-    _j=not _j
-    _ca.Text=_j and string.char(65,85,84,79,32,72,69,65,68,32,58,32,79,78) or string.char(65,85,84,79,32,72,69,65,68,32,58,32,79,70,70)
-    _ca.BackgroundColor3=_j and Color3.fromRGB(0,150,0) or Color3.fromRGB(90,0,130)
-    if not _j then
-        for _ta,_aa in pairs(_a:GetPlayers()) do
-            if _aa~=_d and _aa.Character and _aa.Character:FindFirstChild(string.char(72,101,97,100))then
+AutoHeadBtn.MouseButton1Click:Connect(function()
+    AutoHeadOn = not AutoHeadOn
+    AutoHeadBtn.Text = AutoHeadOn and "AUTO HEAD : ON" or "AUTO HEAD : OFF"
+    AutoHeadBtn.BackgroundColor3 = AutoHeadOn and Color3.fromRGB(0,150,0) or Color3.fromRGB(90,0,130)
+    
+    if not AutoHeadOn then
+        for _, v in pairs(Players:GetPlayers()) do
+            if v ~= LP and v.Character and v.Character:FindFirstChild("Head") then
                 pcall(function()
-                    local _ra=_aa.Character.Head
-                    _ra.Size=Vector3.new(1.2,1.2,1.2)
-                    _ra.Transparency=0
-                    _ra.CanCollide=true
-                    _ra.Massless=false
+                    local head = v.Character.Head
+                    head.Size = Vector3.new(1.2, 1.2, 1.2)
+                    head.Transparency = 0
+                    head.CanCollide = true
+                    head.Massless = false
                 end)
             end
         end
     end
 end)
 
-_c.InputChanged:Connect(function(_ua)if _q and(_ua.UserInputType==Enum.UserInputType.MouseMovement or _ua.UserInputType==Enum.UserInputType.Touch)then _q(_ua.Position.X)end end)_c.InputEnded:Connect(function(_ua)if _ua.UserInputType==Enum.UserInputType.MouseButton1 or _ua.UserInputType==Enum.UserInputType.Touch then _q=nil end end)local function _va(_ka,_la)if _ka==_d then return end if _la and not _p[_ka]then local _wa,_xa,_ya,_za=Drawing.new(string.char(84,101,120,116)),Drawing.new(string.char(76,105,110,101)),Drawing.new(string.char(83,113,117,97,114,101)),Drawing.new(string.char(76,105,110,101))_wa.Size,_wa.Center,_wa.Outline,_wa.Color=13,true,true,Color3.fromRGB(255,0,0)_xa.Thickness,_xa.Color=1,Color3.fromRGB(190,80,255)_ya.Thickness,_ya.Color=2,Color3.fromRGB(255,255,255)_za.Thickness,_za.Color=4,Color3.fromRGB(0,255,0)_p[_ka]={Text=_wa,Line=_xa,Box=_ya,Health=_za}elseif not _la and _p[_ka]then for _ta,_aa in pairs(_p[_ka])do pcall(function()_aa:Remove()end)end _p[_ka]=nil end end for _ta,_u in pairs(_a:GetPlayers())do _va(_u,true)if _k then _ja(_u,true)_oa(_u)end end _a.PlayerAdded:Connect(function(_u)_va(_u,true)if _k then _ja(_u,true)_oa(_u)end end)_a.PlayerRemoving:Connect(function(_u)_va(_u,false)if _k then _ja(_u,false)end end)local function _Aa(_ka)if _ka==_d then return end _ka.CharacterAdded:Connect(function()if _k then _oa(_ka)end end)end for _ta,_ka in pairs(_a:GetPlayers())do if _ka~=_d then _Aa(_ka)end end _a.PlayerAdded:Connect(function(_ka)if _ka~=_d then _Aa(_ka)end end)_b.RenderStepped:Connect(function(_Ba)_ga.Size=UDim2.fromOffset(_l,_l)if _j then for _ta,_aa in pairs(_a:GetPlayers())do if _aa~=_d and _aa.Character and _aa.Character:FindFirstChild(string.char(72,101,97,100))then pcall(function()local _ra=_aa.Character.Head local _Ca=math.min(_n,_r)_ra.Size=Vector3.new(_Ca,_Ca,_Ca)_ra.Transparency=1 _ra.CanCollide=false _ra.Massless=true end)end end end local _qa=_d.Character local _Da=_qa and _qa:FindFirstChildOfClass(string.char(72,117,109,97,110,111,105,100))local _Ea=_qa and _qa:FindFirstChild(string.char(72,117,109,97,110,111,105,100,82,111,111,116,80,97,114,116))if _i and _Ea and _Da then _Da.AutoRotate=false _o=_o+math.rad(_m)*_Ba _Ea.CFrame=CFrame.new(_Ea.Position)*CFrame.Angles(0,_o,0)elseif _Da then _Da.AutoRotate=true end for _ka,_Fa in pairs(_p)do local _Ga=_ka.Character local _Ha=_Ga and _Ga:FindFirstChildOfClass(string.char(72,117,109,97,110,111,105,100))local _Ia=_Ga and _Ga:FindFirstChild(string.char(72,117,109,97,110,111,105,100,82,111,111,116,80,97,114,116))local _Ja=_qa and _qa:FindFirstChild(string.char(72,117,109,97,110,111,105,100,82,111,111,116,80,97,114,116))if _g and _Ja and _Ia and _Ha and _Ha.Health>0 then local _Ka,_La=_e:WorldToViewportPoint(_Ia.Position)if _La and _Ka.Z>0 then local _Ma=math.floor((_Ia.Position-_Ja.Position).Magnitude)local _Na,_za=(1000/_Ka.Z)*0.7,1000/_Ka.Z local _Oa=math.clamp(_Ha.Health/_Ha.MaxHealth,0,1)_Fa.Box.Size,_Fa.Box.Position,_Fa.Box.Visible=Vector2.new(_Na,_za),Vector2.new(_Ka.X-_Na/2,_Ka.Y-_za/2),true _Fa.Health.From,_Fa.Health.To,_Fa.Health.Visible=Vector2.new(_Ka.X-_Na/2-6,_Ka.Y+_za/2),Vector2.new(_Ka.X-_Na/2-6,_Ka.Y+_za/2-(_za*_Oa)),true _Fa.Text.Position,_Fa.Text.Text,_Fa.Text.Visible=Vector2.new(_Ka.X,_Ka.Y-_za/2-18),_ka.Name..string.char(32,91).._Ma..string.char(109,93,32,91)..math.floor(_Ha.Health)..string.char(72,80,93),true _Fa.Line.From,_Fa.Line.To,_Fa.Line.Visible=Vector2.new(_e.ViewportSize.X/2,_e.ViewportSize.Y),Vector2.new(_Ka.X,_Ka.Y+_za/2),true else _Fa.Text.Visible,_Fa.Line.Visible,_Fa.Box.Visible,_Fa.Health.Visible=false,false,false,false end else _Fa.Text.Visible,_Fa.Line.Visible,_Fa.Box.Visible,_Fa.Health.Visible=false,false,false,false end end end)task.spawn(function()local _Pa=0 while _s.Parent do _Pa=(_Pa+0.01)%1 _C.TextColor3=Color3.fromHSV(_Pa,0.7,1)task.wait(0.03)end end)print(string.char(91,65,110,68,122,32,80,117,114,112,108,101,93,32,76,111,97,100,101,100,32,45,32,72,101,97,100,32,86,105,101,119,32,43,32,65,117,116,111,32,72,101,97,100,32,40,77,97,120,32,49,48,48,41))
+UIS.InputChanged:Connect(function(i)
+    if Dragging and (i.UserInputType == Enum.UserInputType.MouseMovement or i.UserInputType == Enum.UserInputType.Touch) then Dragging(i.Position.X) end
+end)
+UIS.InputEnded:Connect(function(i)
+    if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then Dragging = nil end
+end)
+
+-- ESP SETUP
+local function ToggleESP(player, create)
+    if player == LP then return end
+    if create and not ESPObjects[player] then
+        local t, l, b, h = Drawing.new("Text"), Drawing.new("Line"), Drawing.new("Square"), Drawing.new("Line")
+        t.Size, t.Center, t.Outline, t.Color = 13, true, true, Color3.fromRGB(255,0,0)
+        l.Thickness, l.Color = 1, Color3.fromRGB(190,80,255)
+        b.Thickness, b.Color = 2, Color3.fromRGB(255,255,255)
+        h.Thickness, h.Color = 4, Color3.fromRGB(0,255,0)
+        ESPObjects[player] = {Text = t, Line = l, Box = b, Health = h}
+    elseif not create and ESPObjects[player] then
+        for _, v in pairs(ESPObjects[player]) do pcall(function() v:Remove() end) end
+        ESPObjects[player] = nil
+    end
+end
+
+for _, p in pairs(Players:GetPlayers()) do 
+    ToggleESP(p, true)
+    if HeadViewOn then
+        ToggleHeadView(p, true)
+        updateHeadView(p)
+    end
+end
+
+Players.PlayerAdded:Connect(function(p) 
+    ToggleESP(p, true)
+    if HeadViewOn then
+        ToggleHeadView(p, true)
+        updateHeadView(p)
+    end
+end)
+
+Players.PlayerRemoving:Connect(function(p) 
+    ToggleESP(p, false)
+    if HeadViewOn then
+        ToggleHeadView(p, false)
+    end
+end)
+
+local function setupCharacterAdded(player)
+    if player == LP then return end
+    player.CharacterAdded:Connect(function()
+        if HeadViewOn then
+            updateHeadView(player)
+        end
+    end)
+end
+
+for _, player in pairs(Players:GetPlayers()) do
+    if player ~= LP then
+        setupCharacterAdded(player)
+    end
+end
+
+Players.PlayerAdded:Connect(function(player)
+    if player ~= LP then
+        setupCharacterAdded(player)
+    end
+end)
+
+--============================================================
+-- MAIN LOOP
+--============================================================
+
+RunService.RenderStepped:Connect(function(dt)
+    Circle.Size = UDim2.fromOffset(FOV_SIZE, FOV_SIZE)
+
+    -- AUTO HEAD - Giới hạn size tối đa 100
+    if AutoHeadOn then
+        for _, v in pairs(Players:GetPlayers()) do
+            if v ~= LP and v.Character and v.Character:FindFirstChild("Head") then
+                pcall(function()
+                    local head = v.Character.Head
+                    local size = math.min(HITBOX_SIZE, MAX_HEAD_SIZE)
+                    head.Size = Vector3.new(size, size, size)
+                    head.Transparency = 1
+                    head.CanCollide = false
+                    head.Massless = true
+                end)
+            end
+        end
+    end
+
+    -- SPIN
+    local char = LP.Character
+    local hum = char and char:FindFirstChildOfClass("Humanoid")
+    local root = char and char:FindFirstChild("HumanoidRootPart")
+    if SpinOn and root and hum then
+        hum.AutoRotate = false
+        SpinAngle = SpinAngle + math.rad(SPIN_SPEED) * dt
+        root.CFrame = CFrame.new(root.Position) * CFrame.Angles(0, SpinAngle, 0)
+    elseif hum then
+        hum.AutoRotate = true
+    end
+
+    -- ESP
+    for player, o in pairs(ESPObjects) do
+        local pc = player.Character
+        local pHum = pc and pc:FindFirstChildOfClass("Humanoid")
+        local pRoot = pc and pc:FindFirstChild("HumanoidRootPart")
+        local myRoot = char and char:FindFirstChild("HumanoidRootPart")
+
+        if ESPOn and myRoot and pRoot and pHum and pHum.Health > 0 then
+            local pos, vis = Camera:WorldToViewportPoint(pRoot.Position)
+            if vis and pos.Z > 0 then
+                local dist = math.floor((pRoot.Position - myRoot.Position).Magnitude)
+                local w, h = (1000 / pos.Z) * 0.7, 1000 / pos.Z
+                local hp = math.clamp(pHum.Health / pHum.MaxHealth, 0, 1)
+
+                o.Box.Size, o.Box.Position, o.Box.Visible = Vector2.new(w, h), Vector2.new(pos.X - w/2, pos.Y - h/2), true
+                o.Health.From, o.Health.To, o.Health.Visible = Vector2.new(pos.X - w/2 - 6, pos.Y + h/2), Vector2.new(pos.X - w/2 - 6, pos.Y + h/2 - (h * hp)), true
+                o.Text.Position, o.Text.Text, o.Text.Visible = Vector2.new(pos.X, pos.Y - h/2 - 18), player.Name.." ["..dist.."m] ["..math.floor(pHum.Health).."HP]", true
+                o.Line.From, o.Line.To, o.Line.Visible = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y), Vector2.new(pos.X, pos.Y + h/2), true
+            else o.Text.Visible, o.Line.Visible, o.Box.Visible, o.Health.Visible = false, false, false, false end
+        else o.Text.Visible, o.Line.Visible, o.Box.Visible, o.Health.Visible = false, false, false, false end
+    end
+end)
+
+-- RAINBOW TITLE
+task.spawn(function()
+    local hue = 0
+    while Gui.Parent do
+        hue = (hue + 0.01) % 1
+        Title.TextColor3 = Color3.fromHSV(hue, 0.7, 1)
+        task.wait(0.03)
+    end
+end)
+
+print("[AnDz Purple] Loaded - Head View + Auto Head (Max 100)")

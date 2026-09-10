@@ -85,7 +85,7 @@ MaxLabel.Font = Enum.Font.Gotham
 MaxLabel.TextXAlignment = Enum.TextXAlignment.Left
 MaxLabel.TextColor3 = Color3.fromRGB(160, 160, 160)
 MaxLabel.TextSize = 11
-MaxLabel.Text = "Hop jika player di server ini LEBIH dari:"
+MaxLabel.Text = "Tìm sever và Hop:"
 
 local MaxBox = Instance.new("TextBox", MainFrame)
 MaxBox.Position = UDim2.new(0, 10, 0, 126)
@@ -105,7 +105,7 @@ HopBtn.Size = UDim2.new(0, 125, 0, 45)
 HopBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 180)
 HopBtn.BorderSizePixel = 0
 HopBtn.Font = Enum.Font.GothamBold
-HopBtn.Text = "Hop Sekali"
+HopBtn.Text = "Hop????"
 HopBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 HopBtn.TextSize = 13
 Instance.new("UICorner", HopBtn).CornerRadius = UDim.new(0, 6)
@@ -131,7 +131,7 @@ local autoThread = nil
 task.spawn(function()
     while ScreenGui.Parent do
         local count = #Players:GetPlayers()
-        NowLabel.Text = "Player di server ini sekarang: " .. count
+        NowLabel.Text = "Bạn Hãy follow cho Icus nhé " .. count
         task.wait(1)
     end
 end)

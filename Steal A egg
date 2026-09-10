@@ -1,0 +1,236 @@
+--========================================================--
+--                 BEST HUB TỔNG HỢP
+--========================================================--
+
+local Players = game:GetService("Players")
+local CoreGui = game:GetService("CoreGui")
+local UserInputService = game:GetService("UserInputService")
+
+local Player = Players.LocalPlayer
+
+-- Xóa GUI cũ
+pcall(function()
+    local old = CoreGui:FindFirstChild("BestHubTongHop")
+    if old then
+        old:Destroy()
+    end
+end)
+
+--========================================================--
+-- GUI
+--========================================================--
+
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "BestHubTongHop"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.IgnoreGuiInset = true
+ScreenGui.DisplayOrder = 999
+ScreenGui.Parent = CoreGui
+
+--========================================================--
+-- DRAG
+--========================================================--
+
+local function MakeDraggable(object)
+    local dragging = false
+    local dragStart
+    local startPos
+
+    object.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1
+        or input.UserInputType == Enum.UserInputType.Touch then
+
+            dragging = true
+            dragStart = input.Position
+            startPos = object.Position
+
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if not dragging then
+            return
+        end
+
+        if input.UserInputType == Enum.UserInputType.MouseMovement
+        or input.UserInputType == Enum.UserInputType.Touch then
+
+            local delta = input.Position - dragStart
+
+            object.Position = UDim2.new(
+                startPos.X.Scale,
+                startPos.X.Offset + delta.X,
+                startPos.Y.Scale,
+                startPos.Y.Offset + delta.Y
+            )
+        end
+    end)
+end
+
+--========================================================--
+-- NÚT TRÒN ĐEN
+--========================================================--
+
+local OpenButton = Instance.new("TextButton")
+OpenButton.Name = "OpenButton"
+OpenButton.Size = UDim2.new(0, 48, 0, 48)
+OpenButton.Position = UDim2.new(0, 12, 0.5, -24)
+OpenButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+OpenButton.Text = "☰"
+OpenButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+OpenButton.TextSize = 21
+OpenButton.Font = Enum.Font.GothamBold
+OpenButton.BorderSizePixel = 0
+OpenButton.Parent = ScreenGui
+
+local OpenCorner = Instance.new("UICorner")
+OpenCorner.CornerRadius = UDim.new(1, 0)
+OpenCorner.Parent = OpenButton
+
+local OpenStroke = Instance.new("UIStroke")
+OpenStroke.Color = Color3.fromRGB(70, 70, 70)
+OpenStroke.Thickness = 1.5
+OpenStroke.Parent = OpenButton
+
+MakeDraggable(OpenButton)
+
+--========================================================--
+-- MENU
+--========================================================--
+
+local Main = Instance.new("Frame")
+Main.Name = "Main"
+Main.Size = UDim2.new(0, 285, 0, 225)
+Main.Position = UDim2.new(0.5, -142, 0.5, -112)
+Main.BackgroundColor3 = Color3.fromRGB(22, 22, 22)
+Main.BorderSizePixel = 0
+Main.Visible = false
+Main.Parent = ScreenGui
+
+local MainCorner = Instance.new("UICorner")
+MainCorner.CornerRadius = UDim.new(0, 12)
+MainCorner.Parent = Main
+
+local MainStroke = Instance.new("UIStroke")
+MainStroke.Color = Color3.fromRGB(80, 80, 80)
+MainStroke.Thickness = 2
+MainStroke.Parent = Main
+
+MakeDraggable(Main)
+
+--========================================================--
+-- TIÊU ĐỀ
+--========================================================--
+
+local Title = Instance.new("TextLabel")
+Title.Name = "Title"
+Title.Size = UDim2.new(1, -20, 0, 45)
+Title.Position = UDim2.new(0, 10, 0, 4)
+Title.BackgroundTransparency = 1
+Title.Text = "BEST HUB TỔNG HỢP"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 19
+Title.Font = Enum.Font.GothamBold
+Title.Parent = Main
+
+--========================================================--
+-- TẠO BUTTON
+--========================================================--
+
+local function CreateButton(text, y)
+    local Button = Instance.new("TextButton")
+
+    Button.Size = UDim2.new(1, -30, 0, 43)
+    Button.Position = UDim2.new(0, 15, 0, y)
+    Button.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    Button.BorderSizePixel = 0
+    Button.Text = text
+    Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Button.TextSize = 15
+    Button.Font = Enum.Font.GothamBold
+    Button.Parent = Main
+
+    local Corner = Instance.new("UICorner")
+    Corner.CornerRadius = UDim.new(0, 9)
+    Corner.Parent = Button
+
+    return Button
+end
+
+local MirandaButton = CreateButton("Miranda Hub", 55)
+local LemonButton = CreateButton("Lemon Hub", 105)
+local HopButton = CreateButton("Hop Sever", 155)
+
+--========================================================--
+-- SCRIPT LOADER
+--========================================================--
+
+local function RunScript(url)
+    task.spawn(function()
+
+        local success, result = pcall(function()
+            local source = game:HttpGet(url)
+            local func = loadstring(source)
+
+            if not func then
+                error("Không thể load script.")
+            end
+
+            return func()
+        end)
+
+        if not success then
+            warn("[BEST HUB] Lỗi script:", result)
+        end
+
+    end)
+end
+
+--========================================================--
+-- MIRANDA HUB
+--========================================================--
+
+MirandaButton.MouseButton1Click:Connect(function()
+
+    RunScript(
+        "https://raw.githubusercontent.com/miirandahub/loader/refs/heads/main/stealaeggs"
+    )
+
+end)
+
+--========================================================--
+-- LEMON HUB
+--========================================================--
+
+LemonButton.MouseButton1Click:Connect(function()
+
+    RunScript(
+        "https://raw.githubusercontent.com/lennonxscripts/lennonhubv2/main/stealaneggv2"
+    )
+
+end)
+
+--========================================================--
+-- HOP SEVER
+--========================================================--
+
+HopButton.MouseButton1Click:Connect(function()
+
+    RunScript(
+        "https://luauforge-antiraw.netlify.app/raw/DANgpBF7gagmpsS1cbeVEKF"
+    )
+
+end)
+
+--========================================================--
+-- MỞ / ĐÓNG MENU
+--========================================================--
+
+OpenButton.MouseButton1Click:Connect(function()
+    Main.Visible = not Main.Visible
+end)

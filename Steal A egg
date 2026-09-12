@@ -22,10 +22,6 @@ pcall(function()
     end
 end)
 
---========================================================--
--- GUI
---========================================================--
-
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "BestHubTongHop"
 ScreenGui.ResetOnSpawn = false
@@ -34,7 +30,7 @@ ScreenGui.DisplayOrder = 999
 ScreenGui.Parent = CoreGui
 
 --========================================================--
--- DRAG FUNCTION
+-- DRAG
 --========================================================--
 
 local function MakeDraggable(Object)
@@ -59,9 +55,7 @@ local function MakeDraggable(Object)
     end)
 
     UserInputService.InputChanged:Connect(function(input)
-        if not dragging then
-            return
-        end
+        if not dragging then return end
 
         if input.UserInputType == Enum.UserInputType.MouseMovement
         or input.UserInputType == Enum.UserInputType.Touch then
@@ -106,11 +100,8 @@ MakeDraggable(OpenButton)
 
 local Main = Instance.new("Frame")
 Main.Name = "Main"
-
--- Đã thu gọn sau khi bỏ FPS Boost
 Main.Size = UDim2.new(0, 270, 0, 265)
 Main.Position = UDim2.new(0.5, -135, 0.5, -132)
-
 Main.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 Main.BorderSizePixel = 0
 Main.Visible = false
@@ -215,7 +206,7 @@ local function RunScript(URL)
 end
 
 --========================================================--
--- MIRANDA
+-- MIRANDA HUB
 --========================================================--
 
 MirandaButton.MouseButton1Click:Connect(function()
@@ -225,7 +216,7 @@ MirandaButton.MouseButton1Click:Connect(function()
 end)
 
 --========================================================--
--- LEMON
+-- LEMON HUB
 --========================================================--
 
 LemonButton.MouseButton1Click:Connect(function()
@@ -235,11 +226,13 @@ LemonButton.MouseButton1Click:Connect(function()
 end)
 
 --========================================================--
--- SERVER HOP
+-- HOP SERVER
 --========================================================--
 
 HopButton.MouseButton1Click:Connect(function()
-    warn("[Best Hub] Chưa có URL Server Hop.")
+    RunScript(
+        "https://luauforge-antiraw.netlify.app/raw/DANgpBF7gagmpsS1cbeVEKF"
+    )
 end)
 
 --========================================================--
@@ -249,7 +242,6 @@ end)
 local FixLagEnabled = false
 local GuardAnimators = {}
 
--- Kiểm tra vật thể có phải Egg hoặc Guard không
 local function IsProtected(Object)
     local Current = Object
 
@@ -267,7 +259,6 @@ local function IsProtected(Object)
     return false
 end
 
--- Kiểm tra có thuộc Character của người chơi/NPC có Humanoid không
 local function IsCharacter(Object)
     local Model = Object:FindFirstAncestorOfClass("Model")
 
@@ -278,7 +269,6 @@ local function IsCharacter(Object)
     return Model:FindFirstChildOfClass("Humanoid") ~= nil
 end
 
--- Tìm Model Guard
 local function GetGuardModel(Object)
     local Current = Object
 
@@ -302,21 +292,13 @@ end
 --========================================================--
 
 local function StopGuardAnimations(GuardModel)
-    if not GuardModel then
-        return
-    end
+    if not GuardModel then return end
 
     local Humanoid = GuardModel:FindFirstChildOfClass("Humanoid")
-
-    if not Humanoid then
-        return
-    end
+    if not Humanoid then return end
 
     local Animator = Humanoid:FindFirstChildOfClass("Animator")
-
-    if not Animator then
-        return
-    end
+    if not Animator then return end
 
     -- Dừng animation hiện tại
     for _, Track in ipairs(Animator:GetPlayingAnimationTracks()) do
@@ -325,14 +307,14 @@ local function StopGuardAnimations(GuardModel)
         end)
     end
 
-    -- Không tạo connection trùng
+    -- Tránh tạo connection trùng
     if GuardAnimators[Animator] then
         return
     end
 
     GuardAnimators[Animator] = true
 
-    -- Animation mới phát cũng bị dừng
+    -- Dừng animation mới
     Animator.AnimationPlayed:Connect(function(Track)
         if not FixLagEnabled then
             return
@@ -354,7 +336,7 @@ local function ProcessObject(Object)
         return
     end
 
-    -- Guard luôn được xử lý trước
+    -- Guard: chỉ dừng animation, không xoá Guard
     local GuardModel = GetGuardModel(Object)
 
     if GuardModel then
@@ -362,7 +344,7 @@ local function ProcessObject(Object)
         return
     end
 
-    -- Không đụng vào Character
+    -- Không xử lý nhân vật
     if IsCharacter(Object) then
         return
     end
@@ -372,7 +354,7 @@ local function ProcessObject(Object)
         return
     end
 
-    -- BasePart
+    -- Xử lý vật thể
     if Object:IsA("BasePart") then
 
         -- Chỉ ẩn vật thể có thể đi xuyên qua
@@ -387,7 +369,7 @@ local function ProcessObject(Object)
             Object.Color = Color3.fromRGB(255, 255, 255)
         end)
 
-        -- Xoá bóng
+        -- Tắt bóng
         Object.CastShadow = false
     end
 
@@ -422,7 +404,7 @@ local function RunFixLag()
 
     FixLagEnabled = true
 
-    -- Xử lý Lighting
+    -- Tắt shadow
     pcall(function()
         Lighting.GlobalShadows = false
     end)
@@ -445,7 +427,7 @@ local function RunFixLag()
         end)
     end
 
-    -- Xử lý object mới xuất hiện
+    -- Xử lý vật thể mới
     Workspace.DescendantAdded:Connect(function(Object)
         if not FixLagEnabled then
             return

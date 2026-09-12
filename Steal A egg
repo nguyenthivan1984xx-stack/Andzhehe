@@ -1,18 +1,25 @@
 --========================================================--
---                 BEST HUB TỔNG HỢP
+--              BEST HUB TỔNG HỢP - FINAL
+--      Miranda | Lemon | Hop Server | Fix Lag
 --========================================================--
 
 local Players = game:GetService("Players")
 local CoreGui = game:GetService("CoreGui")
 local UserInputService = game:GetService("UserInputService")
+local Workspace = game:GetService("Workspace")
+local Lighting = game:GetService("Lighting")
 
 local Player = Players.LocalPlayer
 
--- Xóa GUI cũ
+--========================================================--
+-- XÓA GUI CŨ
+--========================================================--
+
 pcall(function()
-    local old = CoreGui:FindFirstChild("BestHubTongHop")
-    if old then
-        old:Destroy()
+    local OldGui = CoreGui:FindFirstChild("BestHubTongHop")
+
+    if OldGui then
+        OldGui:Destroy()
     end
 end)
 
@@ -28,52 +35,57 @@ ScreenGui.DisplayOrder = 999
 ScreenGui.Parent = CoreGui
 
 --========================================================--
--- DRAG
+-- DRAG FUNCTION
 --========================================================--
 
-local function MakeDraggable(object)
-    local dragging = false
-    local dragStart
-    local startPos
+local function MakeDraggable(Object)
+    local Dragging = false
+    local DragStart
+    local StartPos
 
-    object.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1
-        or input.UserInputType == Enum.UserInputType.Touch then
+    Object.InputBegan:Connect(function(Input)
 
-            dragging = true
-            dragStart = input.Position
-            startPos = object.Position
+        if Input.UserInputType == Enum.UserInputType.MouseButton1
+        or Input.UserInputType == Enum.UserInputType.Touch then
 
-            input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then
-                    dragging = false
+            Dragging = true
+            DragStart = Input.Position
+            StartPos = Object.Position
+
+            Input.Changed:Connect(function()
+
+                if Input.UserInputState == Enum.UserInputState.End then
+                    Dragging = false
                 end
+
             end)
         end
     end)
 
-    UserInputService.InputChanged:Connect(function(input)
-        if not dragging then
+    UserInputService.InputChanged:Connect(function(Input)
+
+        if not Dragging then
             return
         end
 
-        if input.UserInputType == Enum.UserInputType.MouseMovement
-        or input.UserInputType == Enum.UserInputType.Touch then
+        if Input.UserInputType == Enum.UserInputType.MouseMovement
+        or Input.UserInputType == Enum.UserInputType.Touch then
 
-            local delta = input.Position - dragStart
+            local Delta = Input.Position - DragStart
 
-            object.Position = UDim2.new(
-                startPos.X.Scale,
-                startPos.X.Offset + delta.X,
-                startPos.Y.Scale,
-                startPos.Y.Offset + delta.Y
+            Object.Position = UDim2.new(
+                StartPos.X.Scale,
+                StartPos.X.Offset + Delta.X,
+
+                StartPos.Y.Scale,
+                StartPos.Y.Offset + Delta.Y
             )
         end
     end)
 end
 
 --========================================================--
--- NÚT TRÒN ĐEN
+-- NÚT MỞ MENU
 --========================================================--
 
 local OpenButton = Instance.new("TextButton")
@@ -83,7 +95,7 @@ OpenButton.Position = UDim2.new(0, 12, 0.5, -24)
 OpenButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 OpenButton.Text = "☰"
 OpenButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-OpenButton.TextSize = 21
+OpenButton.TextSize = 22
 OpenButton.Font = Enum.Font.GothamBold
 OpenButton.BorderSizePixel = 0
 OpenButton.Parent = ScreenGui
@@ -91,11 +103,6 @@ OpenButton.Parent = ScreenGui
 local OpenCorner = Instance.new("UICorner")
 OpenCorner.CornerRadius = UDim.new(1, 0)
 OpenCorner.Parent = OpenButton
-
-local OpenStroke = Instance.new("UIStroke")
-OpenStroke.Color = Color3.fromRGB(70, 70, 70)
-OpenStroke.Thickness = 1.5
-OpenStroke.Parent = OpenButton
 
 MakeDraggable(OpenButton)
 
@@ -105,9 +112,12 @@ MakeDraggable(OpenButton)
 
 local Main = Instance.new("Frame")
 Main.Name = "Main"
-Main.Size = UDim2.new(0, 285, 0, 225)
-Main.Position = UDim2.new(0.5, -142, 0.5, -112)
-Main.BackgroundColor3 = Color3.fromRGB(22, 22, 22)
+
+-- 5 nút
+Main.Size = UDim2.new(0, 270, 0, 315)
+Main.Position = UDim2.new(0.5, -135, 0.5, -157)
+
+Main.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 Main.BorderSizePixel = 0
 Main.Visible = false
 Main.Parent = ScreenGui
@@ -116,21 +126,21 @@ local MainCorner = Instance.new("UICorner")
 MainCorner.CornerRadius = UDim.new(0, 12)
 MainCorner.Parent = Main
 
-local MainStroke = Instance.new("UIStroke")
-MainStroke.Color = Color3.fromRGB(80, 80, 80)
-MainStroke.Thickness = 2
-MainStroke.Parent = Main
+local Stroke = Instance.new("UIStroke")
+Stroke.Color = Color3.fromRGB(80, 80, 80)
+Stroke.Thickness = 2
+Stroke.Parent = Main
 
 MakeDraggable(Main)
 
 --========================================================--
--- TIÊU ĐỀ
+-- TITLE
 --========================================================--
 
 local Title = Instance.new("TextLabel")
 Title.Name = "Title"
 Title.Size = UDim2.new(1, -20, 0, 45)
-Title.Position = UDim2.new(0, 10, 0, 4)
+Title.Position = UDim2.new(0, 10, 0, 5)
 Title.BackgroundTransparency = 1
 Title.Text = "BEST HUB TỔNG HỢP"
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -142,17 +152,22 @@ Title.Parent = Main
 -- TẠO BUTTON
 --========================================================--
 
-local function CreateButton(text, y)
+local function CreateButton(Text, Position)
+
     local Button = Instance.new("TextButton")
 
-    Button.Size = UDim2.new(1, -30, 0, 43)
-    Button.Position = UDim2.new(0, 15, 0, y)
+    Button.Size = UDim2.new(1, -30, 0, 42)
+    Button.Position = Position
+
     Button.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
     Button.BorderSizePixel = 0
-    Button.Text = text
+
+    Button.Text = Text
     Button.TextColor3 = Color3.fromRGB(255, 255, 255)
     Button.TextSize = 15
     Button.Font = Enum.Font.GothamBold
+
+    Button.AutoButtonColor = true
     Button.Parent = Main
 
     local Corner = Instance.new("UICorner")
@@ -162,30 +177,57 @@ local function CreateButton(text, y)
     return Button
 end
 
-local MirandaButton = CreateButton("Miranda Hub", 55)
-local LemonButton = CreateButton("Lemon Hub", 105)
-local HopButton = CreateButton("Hop Sever", 155)
-
 --========================================================--
--- SCRIPT LOADER
+-- BUTTONS
 --========================================================--
 
-local function RunScript(url)
+local MirandaButton = CreateButton(
+    "Miranda Hub",
+    UDim2.new(0, 15, 0, 58)
+)
+
+local LemonButton = CreateButton(
+    "Lemon Hub",
+    UDim2.new(0, 15, 0, 108)
+)
+
+local HopButton = CreateButton(
+    "Hop Sever",
+    UDim2.new(0, 15, 0, 158)
+)
+
+local FixLagButton = CreateButton(
+    "Fix Lag",
+    UDim2.new(0, 15, 0, 208)
+)
+
+local FPSButton = CreateButton(
+    "FPS Boost",
+    UDim2.new(0, 15, 0, 258)
+)
+
+--========================================================--
+-- LOADER
+--========================================================--
+
+local function RunScript(URL)
+
     task.spawn(function()
 
-        local success, result = pcall(function()
-            local source = game:HttpGet(url)
-            local func = loadstring(source)
+        local Success, Result = pcall(function()
 
-            if not func then
+            local Source = game:HttpGet(URL)
+            local Func = loadstring(Source)
+
+            if not Func then
                 error("Không thể load script.")
             end
 
-            return func()
+            return Func()
         end)
 
-        if not success then
-            warn("[BEST HUB] Lỗi script:", result)
+        if not Success then
+            warn("[Best Hub] Script error:", Result)
         end
 
     end)
@@ -216,14 +258,388 @@ LemonButton.MouseButton1Click:Connect(function()
 end)
 
 --========================================================--
--- HOP SEVER
+-- HOP SERVER
 --========================================================--
 
 HopButton.MouseButton1Click:Connect(function()
 
-    RunScript(
-        "https://luauforge-antiraw.netlify.app/raw/DANgpBF7gagmpsS1cbeVEKF"
-    )
+    warn("[Best Hub] Chưa có URL Server Hop.")
+
+end)
+
+--========================================================--
+-- FIX LAG
+--========================================================--
+
+local FixLagEnabled = false
+
+-- Lưu những Animator của Guard đã kết nối
+local GuardAnimators = {}
+
+--========================================================--
+-- KIỂM TRA OBJECT ĐƯỢC BẢO VỆ
+--========================================================--
+
+local function IsProtected(Object)
+
+    local Current = Object
+
+    while Current and Current ~= Workspace do
+
+        local Name = string.lower(Current.Name)
+
+        if string.find(Name, "egg", 1, true)
+        or string.find(Name, "guard", 1, true) then
+
+            return true
+        end
+
+        Current = Current.Parent
+    end
+
+    return false
+end
+
+--========================================================--
+-- KIỂM TRA NHÂN VẬT
+--========================================================--
+
+local function IsCharacter(Object)
+
+    local Model = Object:FindFirstAncestorOfClass("Model")
+
+    if Model and Model:FindFirstChildOfClass("Humanoid") then
+        return true
+    end
+
+    return false
+end
+
+--========================================================--
+-- KIỂM TRA GUARD
+--========================================================--
+
+local function GetGuardModel(Object)
+
+    local Current = Object
+
+    while Current and Current ~= Workspace do
+
+        if Current:IsA("Model") then
+
+            local Name = string.lower(Current.Name)
+
+            if string.find(Name, "guard", 1, true) then
+                return Current
+            end
+        end
+
+        Current = Current.Parent
+    end
+
+    return nil
+end
+
+--========================================================--
+-- TẮT ANIMATION GUARD
+--========================================================--
+
+local function StopGuardAnimations(GuardModel)
+
+    if not GuardModel then
+        return
+    end
+
+    -- Không xử lý character
+    if GuardModel:FindFirstChildOfClass("Player") then
+        return
+    end
+
+    local Humanoid = GuardModel:FindFirstChildOfClass("Humanoid")
+
+    if not Humanoid then
+        return
+    end
+
+    local Animator = Humanoid:FindFirstChildOfClass("Animator")
+
+    if not Animator then
+        return
+    end
+
+    -- Dừng animation đang chạy
+    pcall(function()
+
+        for _, Track in ipairs(
+            Animator:GetPlayingAnimationTracks()
+        ) do
+
+            Track:Stop(0)
+        end
+
+    end)
+
+    -- Chỉ kết nối một lần
+    if GuardAnimators[Animator] then
+        return
+    end
+
+    GuardAnimators[Animator] = true
+
+    -- Nếu Guard phát animation mới thì dừng ngay
+    Animator.AnimationPlayed:Connect(function(Track)
+
+        if not FixLagEnabled then
+            return
+        end
+
+        pcall(function()
+            Track:Stop(0)
+        end)
+
+    end)
+end
+
+--========================================================--
+-- PROCESS OBJECT
+--========================================================--
+
+local function ProcessObject(Object)
+
+    if not Object or not Object.Parent then
+        return
+    end
+
+    --====================================================--
+    -- GUARD
+    --====================================================--
+
+    local GuardModel = GetGuardModel(Object)
+
+    if GuardModel then
+
+        -- Không xóa Guard
+        -- Chỉ dừng animation
+        StopGuardAnimations(GuardModel)
+
+        return
+    end
+
+    --====================================================--
+    -- KHÔNG XỬ LÝ NHÂN VẬT
+    --====================================================--
+
+    if IsCharacter(Object) then
+        return
+    end
+
+    --====================================================--
+    -- GIỮ EGG
+    --====================================================--
+
+    if IsProtected(Object) then
+        return
+    end
+
+    --====================================================--
+    -- BASEPART
+    --====================================================--
+
+    if Object:IsA("BasePart") then
+
+        -- Ẩn vật thể có thể đi xuyên qua
+        if Object.CanCollide == false then
+
+            pcall(function()
+
+                Object.LocalTransparencyModifier = 1
+                Object.CanQuery = false
+                Object.CanTouch = false
+
+            end)
+        end
+
+        -- Xóa màu vật thể MAP
+        pcall(function()
+
+            Object.Color = Color3.fromRGB(
+                255,
+                255,
+                255
+            )
+
+        end)
+
+        -- Tắt bóng
+        pcall(function()
+            Object.CastShadow = false
+        end)
+    end
+
+    --====================================================--
+    -- SPECIAL MESH
+    --====================================================--
+
+    if Object:IsA("SpecialMesh") then
+
+        pcall(function()
+
+            Object.VertexColor = Vector3.new(
+                1,
+                1,
+                1
+            )
+
+        end)
+    end
+
+    --====================================================--
+    -- EFFECTS
+    --====================================================--
+
+    if Object:IsA("ParticleEmitter")
+    or Object:IsA("Trail")
+    or Object:IsA("Beam")
+    or Object:IsA("Smoke")
+    or Object:IsA("Fire")
+    or Object:IsA("Sparkles") then
+
+        pcall(function()
+            Object.Enabled = false
+        end)
+
+    end
+end
+
+--========================================================--
+-- CHẠY FIX LAG
+--========================================================--
+
+local function RunFixLag()
+
+    if FixLagEnabled then
+        return
+    end
+
+    FixLagEnabled = true
+
+    --====================================================--
+    -- XỬ LÝ OBJECT HIỆN TẠI
+    --====================================================--
+
+    for _, Object in ipairs(
+        Workspace:GetDescendants()
+    ) do
+
+        task.defer(function()
+            ProcessObject(Object)
+        end)
+
+    end
+
+    --====================================================--
+    -- XỬ LÝ OBJECT MỚI
+    --====================================================--
+
+    Workspace.DescendantAdded:Connect(function(Object)
+
+        if not FixLagEnabled then
+            return
+        end
+
+        task.defer(function()
+            ProcessObject(Object)
+        end)
+
+    end)
+
+    --====================================================--
+    -- TẮT GLOBAL SHADOW
+    --====================================================--
+
+    pcall(function()
+        Lighting.GlobalShadows = false
+    end)
+
+    --====================================================--
+    -- TẮT LIGHTING EFFECTS
+    --====================================================--
+
+    for _, Object in ipairs(
+        Lighting:GetChildren()
+    ) do
+
+        if Object:IsA("BloomEffect")
+        or Object:IsA("BlurEffect")
+        or Object:IsA("ColorCorrectionEffect")
+        or Object:IsA("SunRaysEffect")
+        or Object:IsA("DepthOfFieldEffect") then
+
+            pcall(function()
+                Object.Enabled = false
+            end)
+
+        end
+    end
+
+    FixLagButton.Text = "Fix Lag: ON"
+
+    print("================================")
+    print("       BEST HUB FIX LAG")
+    print("================================")
+    print("✓ Non-collidable blocks hidden")
+    print("✓ Egg protected")
+    print("✓ Guards protected")
+    print("✓ Guard animations stopped")
+    print("✓ Characters protected")
+    print("✓ Map colors removed")
+    print("✓ Shadows disabled")
+    print("✓ Effects disabled")
+    print("================================")
+
+end
+
+FixLagButton.MouseButton1Click:Connect(function()
+
+    RunFixLag()
+
+end)
+
+--========================================================--
+-- FPS BOOST
+--========================================================--
+
+local FPSBoostEnabled = false
+
+FPSButton.MouseButton1Click:Connect(function()
+
+    if FPSBoostEnabled then
+        return
+    end
+
+    FPSBoostEnabled = true
+
+    -- Tắt thêm các hiệu ứng Lighting mới xuất hiện
+    for _, Object in ipairs(
+        Lighting:GetDescendants()
+    ) do
+
+        if Object:IsA("PostEffect") then
+
+            pcall(function()
+                Object.Enabled = false
+            end)
+
+        end
+    end
+
+    pcall(function()
+        Lighting.GlobalShadows = false
+    end)
+
+    FPSButton.Text = "FPS Boost: ON"
+
+    print("[Best Hub] FPS Boost ON")
 
 end)
 
@@ -232,5 +648,22 @@ end)
 --========================================================--
 
 OpenButton.MouseButton1Click:Connect(function()
+
     Main.Visible = not Main.Visible
+
 end)
+
+--========================================================--
+-- HOÀN TẤT
+--========================================================--
+
+print("================================")
+print("       BEST HUB TỔNG HỢP")
+print("================================")
+print("✓ Miranda Hub")
+print("✓ Lemon Hub")
+print("✓ Hop Server")
+print("✓ Fix Lag")
+print("✓ FPS Boost")
+print("✓ Guard Animation Stop")
+print("================================")

@@ -1,6 +1,6 @@
 --========================================================--
 --              BEST HUB TỔNG HỢP
---      Miranda Hub | Lemon Hub | Hop Server | Fix Lag
+--   Miranda | Lemon | Hop Server | Fix Lag | ICUS MOD
 --========================================================--
 
 local Players = game:GetService("Players")
@@ -34,11 +34,13 @@ ScreenGui.Parent = CoreGui
 --========================================================--
 
 local function MakeDraggable(Object)
+
     local dragging = false
     local dragStart
     local startPos
 
     Object.InputBegan:Connect(function(input)
+
         if input.UserInputType == Enum.UserInputType.MouseButton1
         or input.UserInputType == Enum.UserInputType.Touch then
 
@@ -47,15 +49,20 @@ local function MakeDraggable(Object)
             startPos = Object.Position
 
             input.Changed:Connect(function()
+
                 if input.UserInputState == Enum.UserInputState.End then
                     dragging = false
                 end
+
             end)
         end
     end)
 
     UserInputService.InputChanged:Connect(function(input)
-        if not dragging then return end
+
+        if not dragging then
+            return
+        end
 
         if input.UserInputType == Enum.UserInputType.MouseMovement
         or input.UserInputType == Enum.UserInputType.Touch then
@@ -77,6 +84,7 @@ end
 --========================================================--
 
 local OpenButton = Instance.new("TextButton")
+
 OpenButton.Name = "OpenButton"
 OpenButton.Size = UDim2.new(0, 48, 0, 48)
 OpenButton.Position = UDim2.new(0, 12, 0.5, -24)
@@ -99,9 +107,10 @@ MakeDraggable(OpenButton)
 --========================================================--
 
 local Main = Instance.new("Frame")
+
 Main.Name = "Main"
-Main.Size = UDim2.new(0, 270, 0, 265)
-Main.Position = UDim2.new(0.5, -135, 0.5, -132)
+Main.Size = UDim2.new(0, 270, 0, 315)
+Main.Position = UDim2.new(0.5, -135, 0.5, -157)
 Main.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 Main.BorderSizePixel = 0
 Main.Visible = false
@@ -123,6 +132,7 @@ MakeDraggable(Main)
 --========================================================--
 
 local Title = Instance.new("TextLabel")
+
 Title.Name = "Title"
 Title.Size = UDim2.new(1, -20, 0, 45)
 Title.Position = UDim2.new(0, 10, 0, 5)
@@ -138,6 +148,7 @@ Title.Parent = Main
 --========================================================--
 
 local function CreateButton(Text, Position)
+
     local Button = Instance.new("TextButton")
 
     Button.Size = UDim2.new(1, -30, 0, 42)
@@ -182,13 +193,21 @@ local FixLagButton = CreateButton(
     UDim2.new(0, 15, 0, 208)
 )
 
+local ChilliButton = CreateButton(
+    "ICUS MOD BYPASS CHILLI",
+    UDim2.new(0, 15, 0, 258)
+)
+
 --========================================================--
 -- LOADER
 --========================================================--
 
 local function RunScript(URL)
+
     task.spawn(function()
+
         local Success, Result = pcall(function()
+
             local Source = game:HttpGet(URL)
             local Func = loadstring(Source)
 
@@ -202,6 +221,7 @@ local function RunScript(URL)
         if not Success then
             warn("[Best Hub] Script error:", Result)
         end
+
     end)
 end
 
@@ -210,9 +230,17 @@ end
 --========================================================--
 
 MirandaButton.MouseButton1Click:Connect(function()
+
+    MirandaButton.Text = "Loading..."
+
     RunScript(
         "https://raw.githubusercontent.com/miirandahub/loader/refs/heads/main/stealaeggs"
     )
+
+    task.delay(1, function()
+        MirandaButton.Text = "Miranda Hub"
+    end)
+
 end)
 
 --========================================================--
@@ -220,9 +248,17 @@ end)
 --========================================================--
 
 LemonButton.MouseButton1Click:Connect(function()
+
+    LemonButton.Text = "Loading..."
+
     RunScript(
         "https://raw.githubusercontent.com/lennonxscripts/lennonhubv2/main/stealaneggv2"
     )
+
+    task.delay(1, function()
+        LemonButton.Text = "Lemon Hub"
+    end)
+
 end)
 
 --========================================================--
@@ -230,9 +266,17 @@ end)
 --========================================================--
 
 HopButton.MouseButton1Click:Connect(function()
+
+    HopButton.Text = "Loading..."
+
     RunScript(
         "https://raw.githubusercontent.com/nguyenthivan1984xx-stack/Andzhehe/refs/heads/main/Hop%20sever"
     )
+
+    task.delay(1, function()
+        HopButton.Text = "Hop Sever"
+    end)
+
 end)
 
 --========================================================--
@@ -243,9 +287,11 @@ local FixLagEnabled = false
 local GuardAnimators = {}
 
 local function IsProtected(Object)
+
     local Current = Object
 
     while Current and Current ~= Workspace do
+
         local Name = string.lower(Current.Name)
 
         if string.find(Name, "egg")
@@ -260,6 +306,7 @@ local function IsProtected(Object)
 end
 
 local function IsCharacter(Object)
+
     local Model = Object:FindFirstAncestorOfClass("Model")
 
     if not Model then
@@ -270,10 +317,13 @@ local function IsCharacter(Object)
 end
 
 local function GetGuardModel(Object)
+
     local Current = Object
 
     while Current and Current ~= Workspace do
+
         if Current:IsA("Model") then
+
             local Name = string.lower(Current.Name)
 
             if string.find(Name, "guard") then
@@ -292,30 +342,41 @@ end
 --========================================================--
 
 local function StopGuardAnimations(GuardModel)
-    if not GuardModel then return end
+
+    if not GuardModel then
+        return
+    end
 
     local Humanoid = GuardModel:FindFirstChildOfClass("Humanoid")
-    if not Humanoid then return end
+
+    if not Humanoid then
+        return
+    end
 
     local Animator = Humanoid:FindFirstChildOfClass("Animator")
-    if not Animator then return end
 
-    -- Dừng animation hiện tại
-    for _, Track in ipairs(Animator:GetPlayingAnimationTracks()) do
+    if not Animator then
+        return
+    end
+
+    for _, Track in ipairs(
+        Animator:GetPlayingAnimationTracks()
+    ) do
+
         pcall(function()
             Track:Stop(0)
         end)
+
     end
 
-    -- Tránh tạo connection trùng
     if GuardAnimators[Animator] then
         return
     end
 
     GuardAnimators[Animator] = true
 
-    -- Dừng animation mới
     Animator.AnimationPlayed:Connect(function(Track)
+
         if not FixLagEnabled then
             return
         end
@@ -323,6 +384,7 @@ local function StopGuardAnimations(GuardModel)
         pcall(function()
             Track:Stop(0)
         end)
+
     end)
 end
 
@@ -336,7 +398,6 @@ local function ProcessObject(Object)
         return
     end
 
-    -- Guard: chỉ dừng animation, không xoá Guard
     local GuardModel = GetGuardModel(Object)
 
     if GuardModel then
@@ -344,43 +405,39 @@ local function ProcessObject(Object)
         return
     end
 
-    -- Không xử lý nhân vật
     if IsCharacter(Object) then
         return
     end
 
-    -- Giữ Egg
     if IsProtected(Object) then
         return
     end
 
-    -- Xử lý vật thể
     if Object:IsA("BasePart") then
 
-        -- Chỉ ẩn vật thể có thể đi xuyên qua
         if Object.CanCollide == false then
+
             Object.LocalTransparencyModifier = 1
             Object.CanQuery = false
             Object.CanTouch = false
+
         end
 
-        -- Xoá màu
         pcall(function()
             Object.Color = Color3.fromRGB(255, 255, 255)
         end)
 
-        -- Tắt bóng
         Object.CastShadow = false
     end
 
-    -- Mesh
     if Object:IsA("SpecialMesh") then
+
         pcall(function()
             Object.VertexColor = Vector3.new(1, 1, 1)
         end)
+
     end
 
-    -- Tắt hiệu ứng
     if Object:IsA("ParticleEmitter")
     or Object:IsA("Trail")
     or Object:IsA("Beam")
@@ -404,39 +461,48 @@ local function RunFixLag()
 
     FixLagEnabled = true
 
-    -- Tắt shadow
     pcall(function()
         Lighting.GlobalShadows = false
     end)
 
-    -- Tắt Post Effects
-    for _, Effect in ipairs(Lighting:GetDescendants()) do
+    for _, Effect in ipairs(
+        Lighting:GetDescendants()
+    ) do
+
         if Effect:IsA("PostEffect") then
+
             pcall(function()
                 Effect.Enabled = false
             end)
+
         end
     end
 
-    -- Xử lý Workspace
-    for _, Object in ipairs(Workspace:GetDescendants()) do
+    for _, Object in ipairs(
+        Workspace:GetDescendants()
+    ) do
+
         task.defer(function()
+
             if FixLagEnabled then
                 ProcessObject(Object)
             end
+
         end)
     end
 
-    -- Xử lý vật thể mới
     Workspace.DescendantAdded:Connect(function(Object)
+
         if not FixLagEnabled then
             return
         end
 
         task.defer(function()
+
             if FixLagEnabled then
                 ProcessObject(Object)
             end
+
         end)
     end)
 
@@ -452,9 +518,53 @@ FixLagButton.MouseButton1Click:Connect(function()
 end)
 
 --========================================================--
+-- ICUS MOD BYPASS CHILLI
+--========================================================--
+
+ChilliButton.MouseButton1Click:Connect(function()
+
+    ChilliButton.Text = "Loading..."
+
+    task.spawn(function()
+
+        local Success, Result = pcall(function()
+
+            local URL =
+                "https://raw.githubusercontent.com/robvxs24/freemium/refs/heads/main/chillviethoa.lua"
+
+            local Source = game:HttpGet(URL)
+            local Func = loadstring(Source)
+
+            if not Func then
+                error(
+                    "Không thể load ICUS MOD BYPASS CHILLI."
+                )
+            end
+
+            return Func()
+        end)
+
+        if not Success then
+
+            warn(
+                "[Best Hub] ICUS MOD error:",
+                Result
+            )
+
+        end
+
+        ChilliButton.Text =
+            "ICUS MOD BYPASS CHILLI"
+
+    end)
+end)
+
+--========================================================--
 -- MỞ / ĐÓNG MENU
 --========================================================--
 
 OpenButton.MouseButton1Click:Connect(function()
+
     Main.Visible = not Main.Visible
+
 end)

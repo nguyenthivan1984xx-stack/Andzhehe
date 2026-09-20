@@ -252,7 +252,7 @@ LemonButton.MouseButton1Click:Connect(function()
     LemonButton.Text = "Loading..."
 
     RunScript(
-        "https://raw.githubusercontent.com/lennonxscripts/lennonhubv2/main/stealaneggv2"
+        "https://raw.githubusercontent.com/lennonxscripts/lennonhubv3/refs/heads/main/stealanegg"
     )
 
     task.delay(1, function()

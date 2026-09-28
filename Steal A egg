@@ -234,7 +234,7 @@ MirandaButton.MouseButton1Click:Connect(function()
     MirandaButton.Text = "Loading..."
 
     RunScript(
-        "https://raw.githubusercontent.com/miirandahub/loader/refs/heads/main/stealaeggs"
+        "https://raw.githubusercontent.com/miirandahub/loader/refs/heads/main/stealeggies"
     )
 
     task.delay(1, function()

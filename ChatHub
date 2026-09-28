@@ -1,18 +1,22 @@
 --========================================================--
---                 CHAT HUB - COMPLETE
+--                 AnDz CHAT HUB
 --========================================================--
--- Local internal chat
+-- Server synchronized chat
 -- Maximum 50 messages
 -- Emoji support
 -- Creator badge
--- Draggable GUI
+-- Rainbow creator
+-- Draggable
 -- Mobile friendly
 --========================================================--
 
 local Players = game:GetService("Players")
-local CoreGui = game:GetService("CoreGui")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local UserInputService = game:GetService("UserInputService")
 
 local Player = Players.LocalPlayer
+
+local ChatEvent = ReplicatedStorage:WaitForChild("AnDzChatEvent")
 
 local MAX_MESSAGES = 50
 local CREATOR_USERNAME = "maynhin_707"
@@ -22,7 +26,7 @@ local CREATOR_USERNAME = "maynhin_707"
 --========================================================--
 
 pcall(function()
-    local Old = CoreGui:FindFirstChild("AnDzLocalChat")
+    local Old = Player.PlayerGui:FindFirstChild("AnDzLocalChat")
 
     if Old then
         Old:Destroy()
@@ -38,7 +42,21 @@ ScreenGui.Name = "AnDzLocalChat"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.IgnoreGuiInset = true
 ScreenGui.DisplayOrder = 999999
-ScreenGui.Parent = CoreGui
+ScreenGui.Parent = Player.PlayerGui
+
+--========================================================--
+-- RAINBOW COLORS
+--========================================================--
+
+local RainbowColors = {
+    Color3.fromRGB(255,0,0),
+    Color3.fromRGB(255,127,0),
+    Color3.fromRGB(255,255,0),
+    Color3.fromRGB(0,255,0),
+    Color3.fromRGB(0,255,255),
+    Color3.fromRGB(0,100,255),
+    Color3.fromRGB(180,0,255)
+}
 
 --========================================================--
 -- OPEN BUTTON
@@ -46,9 +64,9 @@ ScreenGui.Parent = CoreGui
 
 local Open = Instance.new("TextButton")
 Open.Name = "OpenButton"
-Open.Size = UDim2.new(0, 45, 0, 45)
-Open.Position = UDim2.new(0, 12, 0.5, -22)
-Open.BackgroundColor3 = Color3.fromRGB(105, 60, 220)
+Open.Size = UDim2.new(0,45,0,45)
+Open.Position = UDim2.new(0,12,0.5,-22)
+Open.BackgroundColor3 = Color3.fromRGB(105,60,220)
 Open.BorderSizePixel = 0
 Open.Text = "💬"
 Open.TextSize = 22
@@ -65,13 +83,13 @@ OpenStroke.Thickness = 1.5
 OpenStroke.Parent = Open
 
 --========================================================--
--- MAIN FRAME
+-- MAIN
 --========================================================--
 
 local Main = Instance.new("Frame")
 Main.Name = "ChatWindow"
-Main.Size = UDim2.new(0, 315, 0, 355)
-Main.Position = UDim2.new(0.5, -157, 0.5, -177)
+Main.Size = UDim2.new(0,315,0,355)
+Main.Position = UDim2.new(0.5,-157,0.5,-177)
 Main.BackgroundColor3 = Color3.fromRGB(22,22,28)
 Main.BorderSizePixel = 0
 Main.Active = true
@@ -103,7 +121,7 @@ Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.Parent = Main
 
 --========================================================--
--- MESSAGE COUNT
+-- COUNT
 --========================================================--
 
 local Count = Instance.new("TextLabel")
@@ -139,7 +157,7 @@ Open.MouseButton1Click:Connect(function()
 end)
 
 --========================================================--
--- MESSAGE SCROLLING FRAME
+-- MESSAGE LIST
 --========================================================--
 
 local MessageList = Instance.new("ScrollingFrame")
@@ -177,21 +195,7 @@ ListPadding.Parent = MessageList
 local Messages = {}
 
 --========================================================--
--- 7 COLOR CREATOR
---========================================================--
-
-local RainbowColors = {
-    Color3.fromRGB(255,0,0),
-    Color3.fromRGB(255,127,0),
-    Color3.fromRGB(255,255,0),
-    Color3.fromRGB(0,255,0),
-    Color3.fromRGB(0,255,255),
-    Color3.fromRGB(0,100,255),
-    Color3.fromRGB(180,0,255)
-}
-
---========================================================--
--- CREATE CREATOR BADGE
+-- CREATOR BADGE
 --========================================================--
 
 local function CreateCreatorBadge(Parent)
@@ -216,7 +220,7 @@ local function CreateCreatorBadge(Parent)
 
             Creator.TextColor3 = RainbowColors[Index]
 
-            Index = Index + 1
+            Index += 1
 
             if Index > #RainbowColors then
                 Index = 1
@@ -231,7 +235,7 @@ local function CreateCreatorBadge(Parent)
 end
 
 --========================================================--
--- CREATE MESSAGE GUI
+-- CREATE MESSAGE
 --========================================================--
 
 local function CreateMessage(Data)
@@ -256,38 +260,32 @@ local function CreateMessage(Data)
     BoxPadding.PaddingRight = UDim.new(0,8)
     BoxPadding.Parent = Box
 
-    --====================================================--
-    -- USER HEADER
-    --====================================================--
+    -- HEADER
 
     local Header = Instance.new("Frame")
-
     Header.Size = UDim2.new(1,0,0,20)
     Header.BackgroundTransparency = 1
     Header.Parent = Box
 
     local Username = Instance.new("TextLabel")
-
     Username.Size = UDim2.new(1,-80,1,0)
     Username.BackgroundTransparency = 1
-    Username.Text = Data.DisplayName .. "  @" .. Data.Username
+    Username.Text = tostring(Data.DisplayName) .. "  @" .. tostring(Data.Username)
     Username.TextColor3 = Color3.fromRGB(190,150,255)
     Username.TextSize = 12
     Username.Font = Enum.Font.GothamBold
     Username.TextXAlignment = Enum.TextXAlignment.Left
     Username.Parent = Header
 
-    --====================================================--
     -- CREATOR
-    --====================================================--
 
-    if string.lower(Data.Username) == string.lower(CREATOR_USERNAME) then
+    if string.lower(tostring(Data.Username)) ==
+       string.lower(CREATOR_USERNAME) then
+
         CreateCreatorBadge(Header)
     end
 
-    --====================================================--
-    -- MESSAGE TEXT
-    --====================================================--
+    -- MESSAGE
 
     local Text = Instance.new("TextLabel")
 
@@ -295,7 +293,7 @@ local function CreateMessage(Data)
     Text.Position = UDim2.new(0,0,0,22)
     Text.AutomaticSize = Enum.AutomaticSize.Y
     Text.BackgroundTransparency = 1
-    Text.Text = Data.Text
+    Text.Text = tostring(Data.Text)
     Text.TextWrapped = true
     Text.TextColor3 = Color3.fromRGB(255,255,255)
     Text.TextSize = 14
@@ -308,7 +306,7 @@ local function CreateMessage(Data)
 end
 
 --========================================================--
--- REFRESH MESSAGES
+-- REFRESH
 --========================================================--
 
 local function RefreshMessages()
@@ -325,55 +323,43 @@ local function RefreshMessages()
         CreateMessage(Data)
     end
 
-    Count.Text = tostring(#Messages) .. "/50"
+    Count.Text = tostring(#Messages) .. "/" .. tostring(MAX_MESSAGES)
 
     task.defer(function()
 
         MessageList.CanvasPosition = Vector2.new(
             0,
-            math.max(
-                0,
-                MessageList.AbsoluteCanvasSize.Y
-            )
+            math.max(0,MessageList.AbsoluteCanvasSize.Y)
         )
 
     end)
 end
 
 --========================================================--
--- ADD MESSAGE
+-- RECEIVE SERVER MESSAGE
 --========================================================--
 
-local function AddMessage(Text)
+ChatEvent.OnClientEvent:Connect(function(Data)
 
-    if not Text or Text == "" then
+    if typeof(Data) ~= "table" then
         return
     end
 
-    local Data = {
-
-        Username = Player.Name,
-
-        DisplayName = Player.DisplayName,
-
-        Text = Text
-    }
+    if not Data.Username or not Data.Text then
+        return
+    end
 
     table.insert(Messages,Data)
-
-    --====================================================--
-    -- MAXIMUM 50
-    --====================================================--
 
     while #Messages > MAX_MESSAGES do
         table.remove(Messages,1)
     end
 
     RefreshMessages()
-end
+end)
 
 --========================================================--
--- INPUT BOX
+-- INPUT
 --========================================================--
 
 local Input = Instance.new("TextBox")
@@ -398,7 +384,7 @@ InputCorner.CornerRadius = UDim.new(0,8)
 InputCorner.Parent = Input
 
 --========================================================--
--- SEND BUTTON
+-- SEND
 --========================================================--
 
 local Send = Instance.new("TextButton")
@@ -418,22 +404,17 @@ local SendCorner = Instance.new("UICorner")
 SendCorner.CornerRadius = UDim.new(0,8)
 SendCorner.Parent = Send
 
---========================================================--
--- SEND FUNCTION
---========================================================--
-
 local function SendMessage()
 
     local Text = Input.Text
 
-    if not Text or Text == "" then
+    if not Text or Text:gsub("%s+","") == "" then
         return
     end
 
-    AddMessage(Text)
+    ChatEvent:FireServer(Text)
 
     Input.Text = ""
-
 end
 
 Send.MouseButton1Click:Connect(SendMessage)
@@ -447,7 +428,7 @@ Input.FocusLost:Connect(function(EnterPressed)
 end)
 
 --========================================================--
--- EMOJI BUTTON
+-- EMOJI
 --========================================================--
 
 local Emoji = Instance.new("TextButton")
@@ -468,15 +449,13 @@ Emoji.MouseButton1Click:Connect(function()
 end)
 
 --========================================================--
--- WELCOME MESSAGE
+-- WELCOME
 --========================================================--
 
-AddMessage(
-    "System",
-    "Local Chat",
-    "Chat nội bộ đã sẵn sàng 💬"
-)
+table.insert(Messages,{
+    Username = "System",
+    DisplayName = "System",
+    Text = "Chat chung đã sẵn sàng 💬"
+})
 
---========================================================--
--- END
---========================================================--
+RefreshMessages()

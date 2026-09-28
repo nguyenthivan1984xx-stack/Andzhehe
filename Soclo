@@ -1,0 +1,773 @@
+--========================================================--
+--        VISUAL EMITTER - SQUARE COMPLETE
+--========================================================--
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local CoreGui = game:GetService("CoreGui")
+
+local Player = Players.LocalPlayer
+
+--========================================================--
+-- SETTINGS
+--========================================================--
+
+local Enabled = false
+local JerkEnabled = false
+
+local FireRate = 0.15
+local ParticleSpeed = 18
+local ParticleSize = 0.55
+local GroundLifetime = 5
+
+local ParticleColor = Color3.fromRGB(255,255,255)
+
+local BoxColor = Color3.fromRGB(210,170,140)
+local PinkColor = Color3.fromRGB(255,80,180)
+
+local BoxLength = 2.8
+local BoxWidth = 1
+local BoxHeight = 0.8
+
+local EmitterHeight = -1.2
+local EmitterForward = -2
+
+--========================================================--
+-- CLEAN
+--========================================================--
+
+pcall(function()
+    local old = CoreGui:FindFirstChild("VisualEmitterComplete")
+    if old then
+        old:Destroy()
+    end
+end)
+
+pcall(function()
+    local old = workspace:FindFirstChild("VisualEmitterObjects")
+    if old then
+        old:Destroy()
+    end
+end)
+
+--========================================================--
+-- GUI
+--========================================================--
+
+local Gui = Instance.new("ScreenGui")
+Gui.Name = "VisualEmitterComplete"
+Gui.ResetOnSpawn = false
+Gui.IgnoreGuiInset = true
+Gui.DisplayOrder = 999
+Gui.Parent = CoreGui
+
+local Main = Instance.new("Frame")
+Main.Size = UDim2.new(0,280,0,280)
+Main.Position = UDim2.new(0.5,-140,0.25,0)
+Main.BackgroundColor3 = Color3.fromRGB(25,20,32)
+Main.BorderSizePixel = 0
+Main.Active = true
+Main.Draggable = true
+Main.ClipsDescendants = true
+Main.Parent = Gui
+
+Instance.new("UICorner",Main).CornerRadius = UDim.new(0,12)
+
+local Stroke = Instance.new("UIStroke")
+Stroke.Color = Color3.fromRGB(170,80,255)
+Stroke.Thickness = 2
+Stroke.Parent = Main
+
+--========================================================--
+-- TITLE
+--========================================================--
+
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1,-75,0,34)
+Title.Position = UDim2.new(0,12,0,3)
+Title.BackgroundTransparency = 1
+Title.Text = "VISUAL EMITTER"
+Title.TextColor3 = Color3.fromRGB(255,255,255)
+Title.TextSize = 15
+Title.Font = Enum.Font.GothamBold
+Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.Parent = Main
+
+--========================================================--
+-- MINIMIZE
+--========================================================--
+
+local Minimize = Instance.new("TextButton")
+Minimize.Size = UDim2.new(0,28,0,28)
+Minimize.Position = UDim2.new(1,-38,0,6)
+Minimize.BackgroundColor3 = Color3.fromRGB(65,45,80)
+Minimize.Text = "-"
+Minimize.TextColor3 = Color3.fromRGB(255,255,255)
+Minimize.TextSize = 18
+Minimize.Font = Enum.Font.GothamBold
+Minimize.BorderSizePixel = 0
+Minimize.Parent = Main
+
+Instance.new("UICorner",Minimize).CornerRadius = UDim.new(0,7)
+
+local OpenButton = Instance.new("TextButton")
+OpenButton.Size = UDim2.new(0,45,0,45)
+OpenButton.Position = UDim2.new(0,12,0.5,-22)
+OpenButton.BackgroundColor3 = Color3.fromRGB(80,45,110)
+OpenButton.Text = "◈"
+OpenButton.TextColor3 = Color3.fromRGB(255,255,255)
+OpenButton.TextSize = 22
+OpenButton.Font = Enum.Font.GothamBold
+OpenButton.BorderSizePixel = 0
+OpenButton.Visible = false
+OpenButton.Active = true
+OpenButton.Draggable = true
+OpenButton.Parent = Gui
+
+Instance.new("UICorner",OpenButton).CornerRadius = UDim.new(1,0)
+
+Minimize.MouseButton1Click:Connect(function()
+    Main.Visible = false
+    OpenButton.Visible = true
+end)
+
+OpenButton.MouseButton1Click:Connect(function()
+    Main.Visible = true
+    OpenButton.Visible = false
+end)
+
+--========================================================--
+-- SCROLL
+--========================================================--
+
+local Scroll = Instance.new("ScrollingFrame")
+Scroll.Size = UDim2.new(1,-16,1,-48)
+Scroll.Position = UDim2.new(0,8,0,42)
+Scroll.BackgroundTransparency = 1
+Scroll.BorderSizePixel = 0
+Scroll.ScrollBarThickness = 4
+Scroll.ScrollBarImageColor3 = Color3.fromRGB(170,80,255)
+Scroll.CanvasSize = UDim2.new(0,0,0,620)
+Scroll.ScrollingDirection = Enum.ScrollingDirection.Y
+Scroll.Active = true
+Scroll.Parent = Main
+
+local Content = Instance.new("Frame")
+Content.Size = UDim2.new(1,-8,0,620)
+Content.BackgroundTransparency = 1
+Content.Parent = Scroll
+
+local function Button(text,y)
+
+    local b = Instance.new("TextButton")
+
+    b.Size = UDim2.new(0,240,0,32)
+    b.Position = UDim2.new(0,10,0,y)
+
+    b.BackgroundColor3 = Color3.fromRGB(60,43,73)
+    b.BorderSizePixel = 0
+
+    b.Text = text
+    b.TextColor3 = Color3.fromRGB(255,255,255)
+    b.TextSize = 11
+    b.Font = Enum.Font.GothamBold
+
+    b.Parent = Content
+
+    Instance.new("UICorner",b).CornerRadius = UDim.new(0,8)
+
+    return b
+end
+
+--========================================================--
+-- EMITTER TOGGLE
+--========================================================--
+
+local Toggle = Button("EMITTER: OFF",5)
+
+Toggle.MouseButton1Click:Connect(function()
+
+    Enabled = not Enabled
+
+    if Enabled then
+        Toggle.Text = "EMITTER: ON"
+        Toggle.BackgroundColor3 = Color3.fromRGB(130,70,180)
+    else
+        Toggle.Text = "EMITTER: OFF"
+        Toggle.BackgroundColor3 = Color3.fromRGB(60,43,73)
+    end
+
+end)
+
+--========================================================--
+-- JERK VISUAL
+--========================================================--
+
+local Jerk = Button("JERK VISUAL: OFF",43)
+
+Jerk.MouseButton1Click:Connect(function()
+
+    JerkEnabled = not JerkEnabled
+
+    if JerkEnabled then
+        Jerk.Text = "JERK VISUAL: ON"
+        Jerk.BackgroundColor3 = Color3.fromRGB(180,70,150)
+    else
+        Jerk.Text = "JERK VISUAL: OFF"
+        Jerk.BackgroundColor3 = Color3.fromRGB(60,43,73)
+    end
+
+end)
+
+--========================================================--
+-- FIRE RATE
+--========================================================--
+
+local Speed = Button("FIRE RATE: 0.15",81)
+
+Speed.MouseButton1Click:Connect(function()
+
+    FireRate -= 0.03
+
+    if FireRate < 0.03 then
+        FireRate = 0.30
+    end
+
+    Speed.Text =
+        "FIRE RATE: "
+        ..string.format("%.2f",FireRate)
+
+end)
+
+--========================================================--
+-- HEIGHT
+--========================================================--
+
+local HeightLabel = Instance.new("TextLabel")
+HeightLabel.Size = UDim2.new(0,240,0,20)
+HeightLabel.Position = UDim2.new(0,10,0,120)
+HeightLabel.BackgroundTransparency = 1
+HeightLabel.TextColor3 = Color3.fromRGB(255,255,255)
+HeightLabel.TextSize = 11
+HeightLabel.Font = Enum.Font.Gotham
+HeightLabel.Text =
+    "HEIGHT: "
+    ..string.format("%.1f",EmitterHeight)
+HeightLabel.Parent = Content
+
+local HeightSlider = Instance.new("Frame")
+HeightSlider.Size = UDim2.new(0,240,0,16)
+HeightSlider.Position = UDim2.new(0,10,0,143)
+HeightSlider.BackgroundColor3 = Color3.fromRGB(55,45,65)
+HeightSlider.BorderSizePixel = 0
+HeightSlider.Active = true
+HeightSlider.Parent = Content
+
+Instance.new("UICorner",HeightSlider).CornerRadius = UDim.new(1,0)
+
+local HeightFill = Instance.new("Frame")
+HeightFill.Size = UDim2.new(0.45,0,1,0)
+HeightFill.BackgroundColor3 = Color3.fromRGB(170,80,255)
+HeightFill.BorderSizePixel = 0
+HeightFill.Parent = HeightSlider
+
+Instance.new("UICorner",HeightFill).CornerRadius = UDim.new(1,0)
+
+local draggingHeight = false
+
+local function UpdateHeight(x)
+
+    local alpha = math.clamp(
+        (x - HeightSlider.AbsolutePosition.X)
+        / HeightSlider.AbsoluteSize.X,
+        0,
+        1
+    )
+
+    EmitterHeight = -3 + alpha * 4
+
+    HeightFill.Size = UDim2.new(alpha,0,1,0)
+
+    HeightLabel.Text =
+        "HEIGHT: "
+        ..string.format("%.1f",EmitterHeight)
+
+end
+
+HeightSlider.InputBegan:Connect(function(input)
+
+    if input.UserInputType == Enum.UserInputType.MouseButton1
+        or input.UserInputType == Enum.UserInputType.Touch then
+
+        draggingHeight = true
+        UpdateHeight(input.Position.X)
+
+    end
+
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+
+    if not draggingHeight then return end
+
+    if input.UserInputType == Enum.UserInputType.MouseMovement
+        or input.UserInputType == Enum.UserInputType.Touch then
+
+        UpdateHeight(input.Position.X)
+
+    end
+
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+
+    if input.UserInputType == Enum.UserInputType.MouseButton1
+        or input.UserInputType == Enum.UserInputType.Touch then
+
+        draggingHeight = false
+
+    end
+
+end)
+
+--========================================================--
+-- SIZE
+--========================================================--
+
+local SizeText = Instance.new("TextLabel")
+SizeText.Size = UDim2.new(0,240,0,20)
+SizeText.Position = UDim2.new(0,10,0,170)
+SizeText.BackgroundTransparency = 1
+SizeText.TextColor3 = Color3.fromRGB(255,255,255)
+SizeText.TextSize = 11
+SizeText.Font = Enum.Font.Gotham
+SizeText.Parent = Content
+
+local function UpdateSize()
+
+    SizeText.Text =
+        "BOX  L:"
+        ..string.format("%.1f",BoxLength)
+        .."  W:"
+        ..string.format("%.1f",BoxWidth)
+        .."  H:"
+        ..string.format("%.1f",BoxHeight)
+
+end
+
+UpdateSize()
+
+local LMinus = Button("LENGTH -",198)
+LMinus.Size = UDim2.new(0,115,0,32)
+
+local LPlus = Button("LENGTH +",198)
+LPlus.Position = UDim2.new(0,130,0,198)
+LPlus.Size = UDim2.new(0,115,0,32)
+
+local WMinus = Button("WIDTH -",236)
+WMinus.Size = UDim2.new(0,115,0,32)
+
+local WPlus = Button("WIDTH +",236)
+WPlus.Position = UDim2.new(0,130,0,236)
+WPlus.Size = UDim2.new(0,115,0,32)
+
+local HMinus = Button("BOX HEIGHT -",274)
+HMinus.Size = UDim2.new(0,115,0,32)
+
+local HPlus = Button("BOX HEIGHT +",274)
+HPlus.Position = UDim2.new(0,130,0,274)
+HPlus.Size = UDim2.new(0,115,0,32)
+
+LMinus.MouseButton1Click:Connect(function()
+    BoxLength = math.max(0.5,BoxLength-0.2)
+    UpdateSize()
+end)
+
+LPlus.MouseButton1Click:Connect(function()
+    BoxLength = math.min(8,BoxLength+0.2)
+    UpdateSize()
+end)
+
+WMinus.MouseButton1Click:Connect(function()
+    BoxWidth = math.max(0.3,BoxWidth-0.1)
+    UpdateSize()
+end)
+
+WPlus.MouseButton1Click:Connect(function()
+    BoxWidth = math.min(4,BoxWidth+0.1)
+    UpdateSize()
+end)
+
+HMinus.MouseButton1Click:Connect(function()
+    BoxHeight = math.max(0.3,BoxHeight-0.1)
+    UpdateSize()
+end)
+
+HPlus.MouseButton1Click:Connect(function()
+    BoxHeight = math.min(4,BoxHeight+0.1)
+    UpdateSize()
+end)
+
+--========================================================--
+-- COLORS
+--========================================================--
+
+local ColorTitle = Instance.new("TextLabel")
+ColorTitle.Size = UDim2.new(0,240,0,20)
+ColorTitle.Position = UDim2.new(0,10,0,316)
+ColorTitle.BackgroundTransparency = 1
+ColorTitle.Text = "PARTICLE COLOR"
+ColorTitle.TextColor3 = Color3.fromRGB(255,255,255)
+ColorTitle.TextSize = 11
+ColorTitle.Font = Enum.Font.GothamBold
+ColorTitle.Parent = Content
+
+local Colors = {
+    {"WHITE",Color3.fromRGB(255,255,255)},
+    {"RED",Color3.fromRGB(255,60,60)},
+    {"BLUE",Color3.fromRGB(60,120,255)},
+    {"GREEN",Color3.fromRGB(60,255,120)},
+    {"YELLOW",Color3.fromRGB(255,220,50)},
+    {"PURPLE",Color3.fromRGB(170,70,255)},
+    {"PINK",Color3.fromRGB(255,80,180)}
+}
+
+for i,data in ipairs(Colors) do
+
+    local row = math.floor((i-1)/4)
+    local col = (i-1)%4
+
+    local B = Instance.new("TextButton")
+
+    B.Size = UDim2.new(0,54,0,30)
+
+    B.Position = UDim2.new(
+        0,
+        10 + col*59,
+        0,
+        342 + row*36
+    )
+
+    B.BackgroundColor3 = data[2]
+    B.BorderSizePixel = 0
+    B.Text = data[1]
+    B.TextColor3 = Color3.fromRGB(255,255,255)
+    B.TextSize = 8
+    B.Font = Enum.Font.GothamBold
+    B.Parent = Content
+
+    Instance.new("UICorner",B).CornerRadius = UDim.new(0,6)
+
+    B.MouseButton1Click:Connect(function()
+        ParticleColor = data[2]
+    end)
+
+end
+
+--========================================================--
+-- JERK R15 BUTTON
+--========================================================--
+
+local JerkR15 = Button("JERK R15",430)
+
+JerkR15.BackgroundColor3 =
+    Color3.fromRGB(90,55,130)
+
+local jerkLoaded = false
+
+JerkR15.MouseButton1Click:Connect(function()
+
+    if jerkLoaded then
+        JerkR15.Text = "JERK R15 ✓"
+        return
+    end
+
+    JerkR15.Text = "LOADING..."
+    JerkR15.BackgroundColor3 = Color3.fromRGB(120,90,50)
+
+    local ok, err = pcall(function()
+        loadstring(game:HttpGet("https://pastefy.app/YZoglOyJ/raw"))()
+    end)
+
+    if ok then
+        jerkLoaded = true
+        JerkR15.Text = "JERK R15 ✓"
+        JerkR15.BackgroundColor3 = Color3.fromRGB(60,180,90)
+    else
+        JerkR15.Text = "JERK R15 ✗"
+        JerkR15.BackgroundColor3 = Color3.fromRGB(200,60,60)
+        warn("[JERK R15] Lỗi:", err)
+
+        task.delay(2, function()
+            JerkR15.Text = "JERK R15"
+            JerkR15.BackgroundColor3 = Color3.fromRGB(90,55,130)
+        end)
+    end
+
+end)
+
+--========================================================--
+-- VISUAL OBJECTS
+--========================================================--
+
+local Folder = Instance.new("Folder")
+Folder.Name = "VisualEmitterObjects"
+Folder.Parent = workspace
+
+local Box
+local PinkCube
+
+local function CreateEmitter()
+
+    if Box then
+        Box:Destroy()
+    end
+
+    if PinkCube then
+        PinkCube:Destroy()
+    end
+
+    Box = Instance.new("Part")
+    Box.Name = "VisualEmitterBox"
+
+    Box.Size =
+        Vector3.new(
+            BoxWidth,
+            BoxHeight,
+            BoxLength
+        )
+
+    Box.Anchored = true
+    Box.CanCollide = false
+    Box.CanTouch = false
+    Box.CanQuery = false
+    Box.CastShadow = false
+    Box.Material = Enum.Material.SmoothPlastic
+    Box.Color = BoxColor
+    Box.Parent = Folder
+
+    PinkCube = Instance.new("Part")
+    PinkCube.Name = "PinkEmitter"
+    PinkCube.Size = Vector3.new(.65,.65,.65)
+
+    PinkCube.Anchored = true
+    PinkCube.CanCollide = false
+    PinkCube.CanTouch = false
+    PinkCube.CanQuery = false
+    PinkCube.CastShadow = false
+    PinkCube.Material = Enum.Material.Neon
+    PinkCube.Color = PinkColor
+    PinkCube.Parent = Folder
+
+end
+
+CreateEmitter()
+
+--========================================================--
+-- POSITION
+--========================================================--
+
+RunService.RenderStepped:Connect(function()
+
+    local Character = Player.Character
+    if not Character then return end
+
+    local Root = Character:FindFirstChild("HumanoidRootPart")
+    if not Root then return end
+
+    if not Box or not Box.Parent
+        or not PinkCube or not PinkCube.Parent then
+
+        CreateEmitter()
+
+    end
+
+    Box.Size =
+        Vector3.new(
+            BoxWidth,
+            BoxHeight,
+            BoxLength
+        )
+
+    local CF =
+        Root.CFrame *
+        CFrame.new(
+            0,
+            EmitterHeight,
+            EmitterForward
+        )
+
+    if JerkEnabled then
+
+        CF =
+            CF *
+            CFrame.new(
+                math.sin(tick()*25)*.08,
+                math.sin(tick()*31)*.05,
+                0
+            )
+
+    end
+
+    Box.CFrame = CF
+
+    PinkCube.CFrame =
+        CF *
+        CFrame.new(
+            0,
+            0,
+            -(BoxLength/2+.35)
+        )
+
+end)
+
+--========================================================--
+-- PARTICLE
+--========================================================--
+
+local function ShootParticle()
+
+    if not Enabled then return end
+    if not PinkCube or not PinkCube.Parent then return end
+
+    local Start =
+        PinkCube.Position +
+        PinkCube.CFrame.LookVector*.4
+
+    local Particle = Instance.new("Part")
+
+    Particle.Name = "VisualParticle"
+    Particle.Shape = Enum.PartType.Ball
+
+    Particle.Size =
+        Vector3.new(
+            ParticleSize,
+            ParticleSize,
+            ParticleSize
+        )
+
+    Particle.Material = Enum.Material.Neon
+    Particle.Color = ParticleColor
+
+    Particle.Anchored = true
+    Particle.CanCollide = false
+    Particle.CanTouch = false
+    Particle.CanQuery = false
+    Particle.CastShadow = false
+    Particle.Position = Start
+    Particle.Parent = workspace
+
+    local Direction =
+        PinkCube.CFrame.LookVector *
+        ParticleSpeed +
+        Vector3.new(0,3,0)
+
+    local Gravity = Vector3.new(0,-45,0)
+
+    local Started = tick()
+    local Last = Start
+
+    local Params = RaycastParams.new()
+
+    Params.FilterType =
+        Enum.RaycastFilterType.Exclude
+
+    Params.FilterDescendantsInstances = {
+        Player.Character,
+        Particle,
+        Folder
+    }
+
+    local Connection
+
+    Connection =
+        RunService.Heartbeat:Connect(function()
+
+            if not Particle.Parent then
+                Connection:Disconnect()
+                return
+            end
+
+            local Time = tick()-Started
+
+            local Position =
+                Start +
+                Direction*Time +
+                .5*Gravity*Time*Time
+
+            local Hit =
+                workspace:Raycast(
+                    Last,
+                    Position-Last,
+                    Params
+                )
+
+            if Hit then
+
+                Particle.Position =
+                    Hit.Position +
+                    Hit.Normal*(ParticleSize/2)
+
+                Connection:Disconnect()
+
+                task.delay(
+                    GroundLifetime,
+                    function()
+
+                        if Particle.Parent then
+                            Particle:Destroy()
+                        end
+
+                    end
+                )
+
+                return
+            end
+
+            Particle.Position = Position
+            Last = Position
+
+            if Time >= 30 then
+
+                Connection:Disconnect()
+
+                if Particle.Parent then
+                    Particle:Destroy()
+                end
+
+            end
+
+        end)
+
+end
+
+--========================================================--
+-- FIRE LOOP
+--========================================================--
+
+task.spawn(function()
+
+    while true do
+
+        if Enabled then
+            ShootParticle()
+        end
+
+        task.wait(FireRate)
+
+    end
+
+end)
+
+--========================================================--
+-- RESPAWN
+--========================================================--
+
+Player.CharacterAdded:Connect(function()
+
+    task.wait(1)
+
+    CreateEmitter()
+
+end)

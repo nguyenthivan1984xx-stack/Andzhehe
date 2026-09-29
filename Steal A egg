@@ -18,7 +18,6 @@ local Player = Players.LocalPlayer
 
 pcall(function()
     local OldGui = CoreGui:FindFirstChild("BestHubTongHop")
-
     if OldGui then
         OldGui:Destroy()
     end
@@ -109,7 +108,7 @@ OpenCorner.Parent = OpenButton
 MakeDraggable(OpenButton)
 
 --========================================================--
--- MAIN
+-- MAIN MENU
 --========================================================--
 
 local Main = Instance.new("Frame")
@@ -150,7 +149,7 @@ Title.Font = Enum.Font.GothamBold
 Title.Parent = Main
 
 --========================================================--
--- SCROLL
+-- SCROLL MENU
 --========================================================--
 
 local Scroll = Instance.new("ScrollingFrame")
@@ -267,9 +266,7 @@ MirandaButton.MouseButton1Click:Connect(function()
     )
 
     task.delay(1, function()
-
         MirandaButton.Text = "Miranda Hub"
-
     end)
 
 end)
@@ -287,9 +284,7 @@ LemonButton.MouseButton1Click:Connect(function()
     )
 
     task.delay(1, function()
-
         LemonButton.Text = "Lemon Hub"
-
     end)
 
 end)
@@ -307,9 +302,7 @@ MirandaAFKButton.MouseButton1Click:Connect(function()
     )
 
     task.delay(1, function()
-
         MirandaAFKButton.Text = "Miranda AFK"
-
     end)
 
 end)
@@ -327,9 +320,7 @@ HopButton.MouseButton1Click:Connect(function()
     )
 
     task.delay(1, function()
-
         HopButton.Text = "Hop Sever"
-
     end)
 
 end)
@@ -384,6 +375,7 @@ local function GetGuardModel(Object)
             if string.find(Name, "guard") then
                 return Current
             end
+
         end
 
         Current = Current.Parent
@@ -391,10 +383,6 @@ local function GetGuardModel(Object)
 
     return nil
 end
-
---========================================================--
--- STOP GUARD ANIMATIONS
---========================================================--
 
 local function StopGuardAnimations(GuardModel)
 
@@ -445,10 +433,6 @@ local function StopGuardAnimations(GuardModel)
     end)
 end
 
---========================================================--
--- PROCESS OBJECT
---========================================================--
-
 local function ProcessObject(Object)
 
     if not Object or not Object.Parent then
@@ -481,10 +465,8 @@ local function ProcessObject(Object)
         end
 
         pcall(function()
-
             Object.Color =
                 Color3.fromRGB(255, 255, 255)
-
         end)
 
         Object.CastShadow = false
@@ -493,10 +475,8 @@ local function ProcessObject(Object)
     if Object:IsA("SpecialMesh") then
 
         pcall(function()
-
             Object.VertexColor =
                 Vector3.new(1, 1, 1)
-
         end)
 
     end
@@ -511,10 +491,6 @@ local function ProcessObject(Object)
         Object.Enabled = false
     end
 end
-
---========================================================--
--- RUN FIX LAG
---========================================================--
 
 local function RunFixLag()
 
@@ -592,11 +568,8 @@ ChilliButton.MouseButton1Click:Connect(function()
             local URL =
                 "https://raw.githubusercontent.com/robvxs24/freemium/refs/heads/main/chillviethoa.lua"
 
-            local Source =
-                game:HttpGet(URL)
-
-            local Func =
-                loadstring(Source)
+            local Source = game:HttpGet(URL)
+            local Func = loadstring(Source)
 
             if not Func then
                 error(
@@ -634,19 +607,19 @@ OpenButton.MouseButton1Click:Connect(function()
 end)
 
 --========================================================--
--- CREATOR 7 MÀU
+-- CREATOR
 --========================================================--
 
 local CreatorUsername = "maynhin_707"
 
 local RainbowColors = {
-    Color3.fromRGB(255, 0, 0),       -- Đỏ
-    Color3.fromRGB(255, 127, 0),     -- Cam
-    Color3.fromRGB(255, 255, 0),     -- Vàng
-    Color3.fromRGB(0, 255, 0),       -- Xanh lá
-    Color3.fromRGB(0, 170, 255),     -- Xanh dương
-    Color3.fromRGB(0, 0, 255),       -- Xanh lam
-    Color3.fromRGB(170, 0, 255)      -- Tím
+    Color3.fromRGB(255, 0, 0),
+    Color3.fromRGB(255, 127, 0),
+    Color3.fromRGB(255, 255, 0),
+    Color3.fromRGB(0, 255, 0),
+    Color3.fromRGB(0, 170, 255),
+    Color3.fromRGB(0, 0, 255),
+    Color3.fromRGB(170, 0, 255)
 }
 
 local function AddCreatorTag(Character)
@@ -664,6 +637,7 @@ local function AddCreatorTag(Character)
         return
     end
 
+    -- Xóa tag cũ
     pcall(function()
 
         local OldTag =
@@ -677,6 +651,10 @@ local function AddCreatorTag(Character)
 
     end)
 
+    --====================================================--
+    -- BILLBOARD CỐ ĐỊNH KÍCH THƯỚC
+    --====================================================--
+
     local Billboard =
         Instance.new("BillboardGui")
 
@@ -684,15 +662,28 @@ local function AddCreatorTag(Character)
         "BestHubCreatorTag"
 
     Billboard.Adornee = Head
+
+    -- Kích thước cố định theo pixel
     Billboard.Size =
-        UDim2.new(0, 180, 0, 45)
+        UDim2.fromOffset(180, 40)
+
+    Billboard.SizeOffset =
+        Vector2.new(0, 0)
 
     Billboard.StudsOffset =
         Vector3.new(0, 3, 0)
 
     Billboard.AlwaysOnTop = true
+
     Billboard.MaxDistance = 1000
+
+    Billboard.DistanceStep = 0
+
     Billboard.Parent = Head
+
+    --====================================================--
+    -- CREATOR TEXT
+    --====================================================--
 
     local CreatorText =
         Instance.new("TextLabel")
@@ -701,7 +692,10 @@ local function AddCreatorTag(Character)
         "CreatorText"
 
     CreatorText.Size =
-        UDim2.new(1, 0, 1, 0)
+        UDim2.fromScale(1, 1)
+
+    CreatorText.Position =
+        UDim2.fromScale(0, 0)
 
     CreatorText.BackgroundTransparency = 1
 
@@ -721,7 +715,7 @@ local function AddCreatorTag(Character)
     CreatorText.Parent = Billboard
 
     --====================================================--
-    -- RAINBOW 7 MÀU
+    -- 7 MÀU
     --====================================================--
 
     task.spawn(function()
@@ -804,5 +798,9 @@ Players.PlayerAdded:Connect(function(
 
 end)
 
-print("[Best Hub] Loaded")
+--========================================================--
+-- HOÀN TẤT
+--========================================================--
+
+print("[Best Hub] Loaded successfully")
 print("[Best Hub] Creator:", CreatorUsername)

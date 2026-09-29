@@ -1,7 +1,7 @@
 --========================================================--
 --              BEST HUB TỔNG HỢP
---   Miranda | Lemon | Miranda AFK | Hop Server
---   Fix Lag | ICUS MOD | CREATOR
+-- Miranda | Lemon | Miranda AFK | Hop Server
+-- Fix Lag | ICUS MOD | CREATOR 7 COLORS
 --========================================================--
 
 local Players = game:GetService("Players")
@@ -29,7 +29,6 @@ end)
 --========================================================--
 
 local ScreenGui = Instance.new("ScreenGui")
-
 ScreenGui.Name = "BestHubTongHop"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.IgnoreGuiInset = true
@@ -42,45 +41,45 @@ ScreenGui.Parent = CoreGui
 
 local function MakeDraggable(Object)
 
-    local dragging = false
-    local dragStart
-    local startPos
+    local Dragging = false
+    local DragStart
+    local StartPos
 
-    Object.InputBegan:Connect(function(input)
+    Object.InputBegan:Connect(function(Input)
 
-        if input.UserInputType == Enum.UserInputType.MouseButton1
-        or input.UserInputType == Enum.UserInputType.Touch then
+        if Input.UserInputType == Enum.UserInputType.MouseButton1
+        or Input.UserInputType == Enum.UserInputType.Touch then
 
-            dragging = true
-            dragStart = input.Position
-            startPos = Object.Position
+            Dragging = true
+            DragStart = Input.Position
+            StartPos = Object.Position
 
-            input.Changed:Connect(function()
+            Input.Changed:Connect(function()
 
-                if input.UserInputState == Enum.UserInputState.End then
-                    dragging = false
+                if Input.UserInputState == Enum.UserInputState.End then
+                    Dragging = false
                 end
 
             end)
         end
     end)
 
-    UserInputService.InputChanged:Connect(function(input)
+    UserInputService.InputChanged:Connect(function(Input)
 
-        if not dragging then
+        if not Dragging then
             return
         end
 
-        if input.UserInputType == Enum.UserInputType.MouseMovement
-        or input.UserInputType == Enum.UserInputType.Touch then
+        if Input.UserInputType == Enum.UserInputType.MouseMovement
+        or Input.UserInputType == Enum.UserInputType.Touch then
 
-            local delta = input.Position - dragStart
+            local Delta = Input.Position - DragStart
 
             Object.Position = UDim2.new(
-                startPos.X.Scale,
-                startPos.X.Offset + delta.X,
-                startPos.Y.Scale,
-                startPos.Y.Offset + delta.Y
+                StartPos.X.Scale,
+                StartPos.X.Offset + Delta.X,
+                StartPos.Y.Scale,
+                StartPos.Y.Offset + Delta.Y
             )
         end
     end)
@@ -110,7 +109,7 @@ OpenCorner.Parent = OpenButton
 MakeDraggable(OpenButton)
 
 --========================================================--
--- MENU
+-- MAIN
 --========================================================--
 
 local Main = Instance.new("Frame")
@@ -127,10 +126,10 @@ local MainCorner = Instance.new("UICorner")
 MainCorner.CornerRadius = UDim.new(0, 12)
 MainCorner.Parent = Main
 
-local Stroke = Instance.new("UIStroke")
-Stroke.Color = Color3.fromRGB(80, 80, 80)
-Stroke.Thickness = 2
-Stroke.Parent = Main
+local MainStroke = Instance.new("UIStroke")
+MainStroke.Color = Color3.fromRGB(80, 80, 80)
+MainStroke.Thickness = 2
+MainStroke.Parent = Main
 
 MakeDraggable(Main)
 
@@ -161,14 +160,7 @@ Scroll.Size = UDim2.new(1, -10, 1, -55)
 Scroll.Position = UDim2.new(0, 5, 0, 50)
 Scroll.BackgroundTransparency = 1
 Scroll.BorderSizePixel = 0
-
-Scroll.CanvasSize = UDim2.new(
-    0,
-    0,
-    0,
-    330
-)
-
+Scroll.CanvasSize = UDim2.new(0, 0, 0, 330)
 Scroll.ScrollBarThickness = 5
 Scroll.ScrollBarImageColor3 = Color3.fromRGB(140, 80, 255)
 Scroll.ScrollingDirection = Enum.ScrollingDirection.Y
@@ -185,17 +177,13 @@ local function CreateButton(Text, Position)
 
     Button.Size = UDim2.new(1, -20, 0, 42)
     Button.Position = Position
-
     Button.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
     Button.BorderSizePixel = 0
-
     Button.Text = Text
     Button.TextColor3 = Color3.fromRGB(255, 255, 255)
     Button.TextSize = 15
     Button.Font = Enum.Font.GothamBold
-
     Button.AutoButtonColor = true
-
     Button.Parent = Scroll
 
     local Corner = Instance.new("UICorner")
@@ -250,7 +238,6 @@ local function RunScript(URL)
         local Success, Result = pcall(function()
 
             local Source = game:HttpGet(URL)
-
             local Func = loadstring(Source)
 
             if not Func then
@@ -261,10 +248,7 @@ local function RunScript(URL)
         end)
 
         if not Success then
-            warn(
-                "[Best Hub] Script error:",
-                Result
-            )
+            warn("[Best Hub] Script error:", Result)
         end
 
     end)
@@ -367,7 +351,6 @@ local function IsProtected(Object)
 
         if string.find(Name, "egg")
         or string.find(Name, "guard") then
-
             return true
         end
 
@@ -401,7 +384,6 @@ local function GetGuardModel(Object)
             if string.find(Name, "guard") then
                 return Current
             end
-
         end
 
         Current = Current.Parent
@@ -411,7 +393,7 @@ local function GetGuardModel(Object)
 end
 
 --========================================================--
--- STOP GUARD ANIMATION
+-- STOP GUARD ANIMATIONS
 --========================================================--
 
 local function StopGuardAnimations(GuardModel)
@@ -473,13 +455,10 @@ local function ProcessObject(Object)
         return
     end
 
-    local GuardModel =
-        GetGuardModel(Object)
+    local GuardModel = GetGuardModel(Object)
 
     if GuardModel then
-
         StopGuardAnimations(GuardModel)
-
         return
     end
 
@@ -546,9 +525,7 @@ local function RunFixLag()
     FixLagEnabled = true
 
     pcall(function()
-
         Lighting.GlobalShadows = false
-
     end)
 
     for _, Effect in ipairs(
@@ -558,9 +535,7 @@ local function RunFixLag()
         if Effect:IsA("PostEffect") then
 
             pcall(function()
-
                 Effect.Enabled = false
-
             end)
 
         end
@@ -598,14 +573,8 @@ local function RunFixLag()
     FixLagButton.Text = "Fix Lag: ON"
 end
 
---========================================================--
--- FIX LAG BUTTON
---========================================================--
-
 FixLagButton.MouseButton1Click:Connect(function()
-
     RunFixLag()
-
 end)
 
 --========================================================--
@@ -630,15 +599,12 @@ ChilliButton.MouseButton1Click:Connect(function()
                 loadstring(Source)
 
             if not Func then
-
                 error(
                     "Không thể load ICUS MOD BYPASS CHILLI."
                 )
-
             end
 
             return Func()
-
         end)
 
         if not Success then
@@ -668,10 +634,20 @@ OpenButton.MouseButton1Click:Connect(function()
 end)
 
 --========================================================--
--- CREATOR 👑
+-- CREATOR 7 MÀU
 --========================================================--
 
 local CreatorUsername = "maynhin_707"
+
+local RainbowColors = {
+    Color3.fromRGB(255, 0, 0),       -- Đỏ
+    Color3.fromRGB(255, 127, 0),     -- Cam
+    Color3.fromRGB(255, 255, 0),     -- Vàng
+    Color3.fromRGB(0, 255, 0),       -- Xanh lá
+    Color3.fromRGB(0, 170, 255),     -- Xanh dương
+    Color3.fromRGB(0, 0, 255),       -- Xanh lam
+    Color3.fromRGB(170, 0, 255)      -- Tím
+}
 
 local function AddCreatorTag(Character)
 
@@ -688,19 +664,19 @@ local function AddCreatorTag(Character)
         return
     end
 
-    -- Xóa tag cũ
     pcall(function()
 
-        local Old =
-            Head:FindFirstChild("BestHubCreatorTag")
+        local OldTag =
+            Head:FindFirstChild(
+                "BestHubCreatorTag"
+            )
 
-        if Old then
-            Old:Destroy()
+        if OldTag then
+            OldTag:Destroy()
         end
 
     end)
 
-    -- Billboard
     local Billboard =
         Instance.new("BillboardGui")
 
@@ -718,9 +694,11 @@ local function AddCreatorTag(Character)
     Billboard.MaxDistance = 1000
     Billboard.Parent = Head
 
-    -- Text
     local CreatorText =
         Instance.new("TextLabel")
+
+    CreatorText.Name =
+        "CreatorText"
 
     CreatorText.Size =
         UDim2.new(1, 0, 1, 0)
@@ -731,32 +709,38 @@ local function AddCreatorTag(Character)
         "👑Creator👑"
 
     CreatorText.TextScaled = true
+
     CreatorText.Font =
         Enum.Font.GothamBold
 
     CreatorText.TextStrokeTransparency = 0
+
     CreatorText.TextStrokeColor3 =
         Color3.fromRGB(0, 0, 0)
 
     CreatorText.Parent = Billboard
 
-    -- Rainbow
+    --====================================================--
+    -- RAINBOW 7 MÀU
+    --====================================================--
+
     task.spawn(function()
 
-        local Hue = 0
+        local Index = 1
 
-        while CreatorText.Parent do
-
-            Hue = Hue + 0.01
-
-            if Hue >= 1 then
-                Hue = 0
-            end
+        while CreatorText
+        and CreatorText.Parent do
 
             CreatorText.TextColor3 =
-                Color3.fromHSV(Hue, 1, 1)
+                RainbowColors[Index]
 
-            task.wait(0.03)
+            Index = Index + 1
+
+            if Index > #RainbowColors then
+                Index = 1
+            end
+
+            task.wait(0.25)
 
         end
 
@@ -764,7 +748,7 @@ local function AddCreatorTag(Character)
 end
 
 --========================================================--
--- TÌM CREATOR
+-- KIỂM TRA CREATOR
 --========================================================--
 
 local function CheckCreator(PlayerObject)
@@ -802,7 +786,7 @@ local function CheckCreator(PlayerObject)
     )
 end
 
--- Kiểm tra người chơi hiện tại
+-- Người chơi hiện tại
 for _, PlayerObject in ipairs(
     Players:GetPlayers()
 ) do
@@ -811,7 +795,7 @@ for _, PlayerObject in ipairs(
 
 end
 
--- Kiểm tra người chơi mới vào
+-- Người chơi mới
 Players.PlayerAdded:Connect(function(
     PlayerObject
 )
@@ -820,15 +804,5 @@ Players.PlayerAdded:Connect(function(
 
 end)
 
---========================================================--
--- HOÀN TẤT
---========================================================--
-
-print(
-    "[Best Hub] Loaded successfully."
-)
-
-print(
-    "[Best Hub] Creator:",
-    CreatorUsername
-)
+print("[Best Hub] Loaded")
+print("[Best Hub] Creator:", CreatorUsername)

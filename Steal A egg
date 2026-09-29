@@ -1,806 +1,628 @@
---========================================================--
---              BEST HUB TỔNG HỢP
--- Miranda | Lemon | Miranda AFK | Hop Server
--- Fix Lag | ICUS MOD | CREATOR 7 COLORS
---========================================================--
+--================================================--
+--           TỔNG HỢP SCRIPT NOKEY
+--================================================--
 
-local Players = game:GetService("Players")
-local CoreGui = game:GetService("CoreGui")
-local UserInputService = game:GetService("UserInputService")
-local Workspace = game:GetService("Workspace")
-local Lighting = game:GetService("Lighting")
+local Players=game:GetService("Players")
+local CoreGui=game:GetService("CoreGui")
+local UIS=game:GetService("UserInputService")
+local Workspace=game:GetService("Workspace")
+local Lighting=game:GetService("Lighting")
+local RunService=game:GetService("RunService")
 
-local Player = Players.LocalPlayer
-
---========================================================--
--- XÓA GUI CŨ
---========================================================--
+--================================================--
+--                  CLEAN OLD GUI
+--================================================--
 
 pcall(function()
-    local OldGui = CoreGui:FindFirstChild("BestHubTongHop")
-    if OldGui then
-        OldGui:Destroy()
-    end
+    CoreGui.BestHubTongHop:Destroy()
 end)
 
---========================================================--
--- SCREEN GUI
---========================================================--
+pcall(function()
+    CoreGui.BestHubCreatorScreen:Destroy()
+end)
 
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "BestHubTongHop"
-ScreenGui.ResetOnSpawn = false
-ScreenGui.IgnoreGuiInset = true
-ScreenGui.DisplayOrder = 999
-ScreenGui.Parent = CoreGui
+--================================================--
+--                     MAIN GUI
+--================================================--
 
---========================================================--
--- DRAG
---========================================================--
+local Gui=Instance.new("ScreenGui")
+Gui.Name="BestHubTongHop"
+Gui.ResetOnSpawn=false
+Gui.IgnoreGuiInset=true
+Gui.DisplayOrder=999
+Gui.Parent=CoreGui
 
-local function MakeDraggable(Object)
+--================================================--
+--                     DRAG
+--================================================--
 
-    local Dragging = false
-    local DragStart
-    local StartPos
+local function Drag(Object)
 
-    Object.InputBegan:Connect(function(Input)
+    local dragging=false
+    local startPos
+    local startObjectPos
 
-        if Input.UserInputType == Enum.UserInputType.MouseButton1
-        or Input.UserInputType == Enum.UserInputType.Touch then
+    Object.InputBegan:Connect(function(input)
 
-            Dragging = true
-            DragStart = Input.Position
-            StartPos = Object.Position
+        if input.UserInputType==Enum.UserInputType.MouseButton1
+        or input.UserInputType==Enum.UserInputType.Touch then
 
-            Input.Changed:Connect(function()
+            dragging=true
+            startPos=input.Position
+            startObjectPos=Object.Position
 
-                if Input.UserInputState == Enum.UserInputState.End then
-                    Dragging = false
+            input.Changed:Connect(function()
+
+                if input.UserInputState==Enum.UserInputState.End then
+                    dragging=false
                 end
 
             end)
+
         end
+
     end)
 
-    UserInputService.InputChanged:Connect(function(Input)
+    UIS.InputChanged:Connect(function(input)
 
-        if not Dragging then
+        if not dragging then
             return
         end
 
-        if Input.UserInputType == Enum.UserInputType.MouseMovement
-        or Input.UserInputType == Enum.UserInputType.Touch then
+        if input.UserInputType==Enum.UserInputType.MouseMovement
+        or input.UserInputType==Enum.UserInputType.Touch then
 
-            local Delta = Input.Position - DragStart
+            local Delta=input.Position-startPos
 
-            Object.Position = UDim2.new(
-                StartPos.X.Scale,
-                StartPos.X.Offset + Delta.X,
-                StartPos.Y.Scale,
-                StartPos.Y.Offset + Delta.Y
+            Object.Position=UDim2.new(
+                startObjectPos.X.Scale,
+                startObjectPos.X.Offset+Delta.X,
+                startObjectPos.Y.Scale,
+                startObjectPos.Y.Offset+Delta.Y
             )
+
         end
+
     end)
+
 end
 
---========================================================--
--- NÚT MỞ MENU
---========================================================--
+--================================================--
+--                  OPEN BUTTON
+--================================================--
 
-local OpenButton = Instance.new("TextButton")
+local Open=Instance.new("TextButton")
 
-OpenButton.Name = "OpenButton"
-OpenButton.Size = UDim2.new(0, 48, 0, 48)
-OpenButton.Position = UDim2.new(0, 12, 0.5, -24)
-OpenButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-OpenButton.Text = "☰"
-OpenButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-OpenButton.TextSize = 22
-OpenButton.Font = Enum.Font.GothamBold
-OpenButton.BorderSizePixel = 0
-OpenButton.Parent = ScreenGui
+Open.Size=UDim2.fromOffset(48,48)
+Open.Position=UDim2.new(0,12,.5,-24)
 
-local OpenCorner = Instance.new("UICorner")
-OpenCorner.CornerRadius = UDim.new(1, 0)
-OpenCorner.Parent = OpenButton
+Open.BackgroundColor3=Color3.fromRGB(35,30,45)
+Open.BorderSizePixel=0
 
-MakeDraggable(OpenButton)
+Open.Text="☰"
+Open.TextSize=22
+Open.TextColor3=Color3.fromRGB(220,210,255)
 
---========================================================--
--- MAIN MENU
---========================================================--
+Open.Parent=Gui
 
-local Main = Instance.new("Frame")
+local OpenCorner=Instance.new("UICorner")
+OpenCorner.CornerRadius=UDim.new(1,0)
+OpenCorner.Parent=Open
 
-Main.Name = "Main"
-Main.Size = UDim2.new(0, 270, 0, 315)
-Main.Position = UDim2.new(0.5, -135, 0.5, -157)
-Main.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-Main.BorderSizePixel = 0
-Main.Visible = false
-Main.Parent = ScreenGui
+local OpenStroke=Instance.new("UIStroke")
+OpenStroke.Color=Color3.fromRGB(150,125,205)
+OpenStroke.Thickness=1.5
+OpenStroke.Parent=Open
 
-local MainCorner = Instance.new("UICorner")
-MainCorner.CornerRadius = UDim.new(0, 12)
-MainCorner.Parent = Main
+Drag(Open)
 
-local MainStroke = Instance.new("UIStroke")
-MainStroke.Color = Color3.fromRGB(80, 80, 80)
-MainStroke.Thickness = 2
-MainStroke.Parent = Main
+--================================================--
+--                    MAIN MENU
+--================================================--
 
-MakeDraggable(Main)
+local Main=Instance.new("Frame")
 
---========================================================--
--- TITLE
---========================================================--
+Main.Size=UDim2.fromOffset(270,315)
+Main.Position=UDim2.new(.5,-135,.5,-157)
 
-local Title = Instance.new("TextLabel")
+Main.BackgroundColor3=Color3.fromRGB(27,25,34)
+Main.BorderSizePixel=0
+Main.Visible=false
 
-Title.Name = "Title"
-Title.Size = UDim2.new(1, -20, 0, 45)
-Title.Position = UDim2.new(0, 10, 0, 5)
-Title.BackgroundTransparency = 1
-Title.Text = "BEST HUB TỔNG HỢP"
-Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-Title.TextSize = 19
-Title.Font = Enum.Font.GothamBold
-Title.Parent = Main
+Main.Parent=Gui
 
---========================================================--
--- SCROLL MENU
---========================================================--
+local MainCorner=Instance.new("UICorner")
+MainCorner.CornerRadius=UDim.new(0,12)
+MainCorner.Parent=Main
 
-local Scroll = Instance.new("ScrollingFrame")
+local MainStroke=Instance.new("UIStroke")
+MainStroke.Color=Color3.fromRGB(150,120,205)
+MainStroke.Thickness=2
+MainStroke.Parent=Main
 
-Scroll.Name = "ButtonScroll"
-Scroll.Size = UDim2.new(1, -10, 1, -55)
-Scroll.Position = UDim2.new(0, 5, 0, 50)
-Scroll.BackgroundTransparency = 1
-Scroll.BorderSizePixel = 0
-Scroll.CanvasSize = UDim2.new(0, 0, 0, 330)
-Scroll.ScrollBarThickness = 5
-Scroll.ScrollBarImageColor3 = Color3.fromRGB(140, 80, 255)
-Scroll.ScrollingDirection = Enum.ScrollingDirection.Y
-Scroll.Active = true
-Scroll.Parent = Main
+Drag(Main)
 
---========================================================--
--- CREATE BUTTON
---========================================================--
+--================================================--
+--                     TITLE
+--================================================--
 
-local function CreateButton(Text, Position)
+local Title=Instance.new("TextLabel")
 
-    local Button = Instance.new("TextButton")
+Title.Size=UDim2.new(1,-20,0,45)
+Title.Position=UDim2.fromOffset(10,5)
 
-    Button.Size = UDim2.new(1, -20, 0, 42)
-    Button.Position = Position
-    Button.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-    Button.BorderSizePixel = 0
-    Button.Text = Text
-    Button.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Button.TextSize = 15
-    Button.Font = Enum.Font.GothamBold
-    Button.AutoButtonColor = true
-    Button.Parent = Scroll
+Title.BackgroundTransparency=1
 
-    local Corner = Instance.new("UICorner")
-    Corner.CornerRadius = UDim.new(0, 9)
-    Corner.Parent = Button
+Title.Text="Tổng Hợp Script Nokey"
+Title.TextSize=18
+Title.Font=Enum.Font.GothamBold
+Title.TextColor3=Color3.fromRGB(195,185,235)
+
+Title.Parent=Main
+
+--================================================--
+--                    SCROLL
+--================================================--
+
+local Scroll=Instance.new("ScrollingFrame")
+
+Scroll.Size=UDim2.new(1,-10,1,-55)
+Scroll.Position=UDim2.fromOffset(5,50)
+
+Scroll.BackgroundTransparency=1
+Scroll.BorderSizePixel=0
+
+Scroll.CanvasSize=UDim2.fromOffset(0,330)
+
+Scroll.ScrollBarThickness=5
+Scroll.ScrollBarImageColor3=Color3.fromRGB(150,120,205)
+
+Scroll.ScrollingDirection=Enum.ScrollingDirection.Y
+
+Scroll.Parent=Main
+
+--================================================--
+--                    BUTTON
+--================================================--
+
+local function Btn(Text,Y)
+
+    local Button=Instance.new("TextButton")
+
+    Button.Size=UDim2.new(1,-20,0,42)
+    Button.Position=UDim2.fromOffset(10,Y)
+
+    Button.BackgroundColor3=Color3.fromRGB(42,38,50)
+    Button.BorderSizePixel=0
+
+    Button.Text=Text
+    Button.TextColor3=Color3.fromRGB(225,220,235)
+    Button.TextSize=15
+    Button.Font=Enum.Font.GothamBold
+
+    Button.Parent=Scroll
+
+    local Corner=Instance.new("UICorner")
+    Corner.CornerRadius=UDim.new(0,9)
+    Corner.Parent=Button
 
     return Button
+
 end
 
---========================================================--
--- BUTTONS
---========================================================--
+--================================================--
+--                    BUTTONS
+--================================================--
 
-local MirandaButton = CreateButton(
-    "Miranda Hub",
-    UDim2.new(0, 10, 0, 8)
-)
+local Miranda=Btn("Miranda Hub",8)
+local Lemon=Btn("Lemon Hub",58)
+local AFK=Btn("Miranda AFK",108)
+local Hop=Btn("Hop Sever",158)
+local Fix=Btn("Fix Lag",208)
+local Chilli=Btn("ICUS MOD BYPASS CHILLI",258)
 
-local LemonButton = CreateButton(
-    "Lemon Hub",
-    UDim2.new(0, 10, 0, 58)
-)
+--================================================--
+--                  OPEN / CLOSE
+--================================================--
 
-local MirandaAFKButton = CreateButton(
-    "Miranda AFK",
-    UDim2.new(0, 10, 0, 108)
-)
+Open.MouseButton1Click:Connect(function()
 
-local HopButton = CreateButton(
-    "Hop Sever",
-    UDim2.new(0, 10, 0, 158)
-)
+    Main.Visible=not Main.Visible
 
-local FixLagButton = CreateButton(
-    "Fix Lag",
-    UDim2.new(0, 10, 0, 208)
-)
+end)
 
-local ChilliButton = CreateButton(
-    "ICUS MOD BYPASS CHILLI",
-    UDim2.new(0, 10, 0, 258)
-)
+--================================================--
+--                    LOAD
+--================================================--
 
---========================================================--
--- LOADER
---========================================================--
-
-local function RunScript(URL)
+local function Load(URL)
 
     task.spawn(function()
 
-        local Success, Result = pcall(function()
+        local Success,Error=pcall(function()
 
-            local Source = game:HttpGet(URL)
-            local Func = loadstring(Source)
+            local Code=game:HttpGet(URL)
+            local Function=loadstring(Code)
 
-            if not Func then
-                error("Không thể load script.")
+            if Function then
+                Function()
             end
 
-            return Func()
         end)
 
         if not Success then
-            warn("[Best Hub] Script error:", Result)
+            warn("[TỔNG HỢP SCRIPT NOKEY]",Error)
         end
 
     end)
+
 end
 
---========================================================--
--- MIRANDA HUB
---========================================================--
+--================================================--
+--                  MIRANDA
+--================================================--
 
-MirandaButton.MouseButton1Click:Connect(function()
+Miranda.MouseButton1Click:Connect(function()
 
-    MirandaButton.Text = "Loading..."
+    Miranda.Text="Loading..."
 
-    RunScript(
+    Load(
         "https://raw.githubusercontent.com/miirandahub/loader/refs/heads/main/stealeggies"
     )
 
-    task.delay(1, function()
-        MirandaButton.Text = "Miranda Hub"
+    task.delay(1,function()
+
+        if Miranda.Parent then
+            Miranda.Text="Miranda Hub"
+        end
+
     end)
 
 end)
 
---========================================================--
--- LEMON HUB
---========================================================--
+--================================================--
+--                    LEMON
+--================================================--
 
-LemonButton.MouseButton1Click:Connect(function()
+Lemon.MouseButton1Click:Connect(function()
 
-    LemonButton.Text = "Loading..."
+    Lemon.Text="Loading..."
 
-    RunScript(
+    Load(
         "https://raw.githubusercontent.com/lennonxscripts/lennonfarmv2/refs/heads/main/stealanegg"
     )
 
-    task.delay(1, function()
-        LemonButton.Text = "Lemon Hub"
+    task.delay(1,function()
+
+        if Lemon.Parent then
+            Lemon.Text="Lemon Hub"
+        end
+
     end)
 
 end)
 
---========================================================--
--- MIRANDA AFK
---========================================================--
+--================================================--
+--                     AFK
+--================================================--
 
-MirandaAFKButton.MouseButton1Click:Connect(function()
+AFK.MouseButton1Click:Connect(function()
 
-    MirandaAFKButton.Text = "Loading..."
+    AFK.Text="Loading..."
 
-    RunScript(
+    Load(
         "https://raw.githubusercontent.com/miirandahub/loader/refs/heads/main/afkk"
     )
 
-    task.delay(1, function()
-        MirandaAFKButton.Text = "Miranda AFK"
+    task.delay(1,function()
+
+        if AFK.Parent then
+            AFK.Text="Miranda AFK"
+        end
+
     end)
 
 end)
 
---========================================================--
--- HOP SERVER
---========================================================--
+--================================================--
+--                  HOP SERVER
+--================================================--
 
-HopButton.MouseButton1Click:Connect(function()
+Hop.MouseButton1Click:Connect(function()
 
-    HopButton.Text = "Loading..."
+    Hop.Text="Loading..."
 
-    RunScript(
+    Load(
         "https://raw.githubusercontent.com/nguyenthivan1984xx-stack/Andzhehe/refs/heads/main/Hop%20sever"
     )
 
-    task.delay(1, function()
-        HopButton.Text = "Hop Sever"
+    task.delay(1,function()
+
+        if Hop.Parent then
+            Hop.Text="Hop Sever"
+        end
+
     end)
 
 end)
 
---========================================================--
--- FIX LAG
---========================================================--
+--================================================--
+--                    CHILLI
+--================================================--
 
-local FixLagEnabled = false
-local GuardAnimators = {}
+Chilli.MouseButton1Click:Connect(function()
 
-local function IsProtected(Object)
+    Chilli.Text="Loading..."
 
-    local Current = Object
+    Load(
+        "https://raw.githubusercontent.com/robvxs24/freemium/refs/heads/main/chillviethoa.lua"
+    )
 
-    while Current and Current ~= Workspace do
+    task.delay(1,function()
 
-        local Name = string.lower(Current.Name)
-
-        if string.find(Name, "egg")
-        or string.find(Name, "guard") then
-            return true
+        if Chilli.Parent then
+            Chilli.Text="ICUS MOD BYPASS CHILLI"
         end
-
-        Current = Current.Parent
-    end
-
-    return false
-end
-
-local function IsCharacter(Object)
-
-    local Model = Object:FindFirstAncestorOfClass("Model")
-
-    if not Model then
-        return false
-    end
-
-    return Model:FindFirstChildOfClass("Humanoid") ~= nil
-end
-
-local function GetGuardModel(Object)
-
-    local Current = Object
-
-    while Current and Current ~= Workspace do
-
-        if Current:IsA("Model") then
-
-            local Name = string.lower(Current.Name)
-
-            if string.find(Name, "guard") then
-                return Current
-            end
-
-        end
-
-        Current = Current.Parent
-    end
-
-    return nil
-end
-
-local function StopGuardAnimations(GuardModel)
-
-    if not GuardModel then
-        return
-    end
-
-    local Humanoid =
-        GuardModel:FindFirstChildOfClass("Humanoid")
-
-    if not Humanoid then
-        return
-    end
-
-    local Animator =
-        Humanoid:FindFirstChildOfClass("Animator")
-
-    if not Animator then
-        return
-    end
-
-    for _, Track in ipairs(
-        Animator:GetPlayingAnimationTracks()
-    ) do
-
-        pcall(function()
-            Track:Stop(0)
-        end)
-
-    end
-
-    if GuardAnimators[Animator] then
-        return
-    end
-
-    GuardAnimators[Animator] = true
-
-    Animator.AnimationPlayed:Connect(function(Track)
-
-        if not FixLagEnabled then
-            return
-        end
-
-        pcall(function()
-            Track:Stop(0)
-        end)
 
     end)
-end
 
-local function ProcessObject(Object)
+end)
 
-    if not Object or not Object.Parent then
+--================================================--
+--                    FIX LAG
+--================================================--
+
+local Fixed=false
+
+Fix.MouseButton1Click:Connect(function()
+
+    if Fixed then
         return
     end
 
-    local GuardModel = GetGuardModel(Object)
-
-    if GuardModel then
-        StopGuardAnimations(GuardModel)
-        return
-    end
-
-    if IsCharacter(Object) then
-        return
-    end
-
-    if IsProtected(Object) then
-        return
-    end
-
-    if Object:IsA("BasePart") then
-
-        if Object.CanCollide == false then
-
-            Object.LocalTransparencyModifier = 1
-            Object.CanQuery = false
-            Object.CanTouch = false
-
-        end
-
-        pcall(function()
-            Object.Color =
-                Color3.fromRGB(255, 255, 255)
-        end)
-
-        Object.CastShadow = false
-    end
-
-    if Object:IsA("SpecialMesh") then
-
-        pcall(function()
-            Object.VertexColor =
-                Vector3.new(1, 1, 1)
-        end)
-
-    end
-
-    if Object:IsA("ParticleEmitter")
-    or Object:IsA("Trail")
-    or Object:IsA("Beam")
-    or Object:IsA("Smoke")
-    or Object:IsA("Fire")
-    or Object:IsA("Sparkles") then
-
-        Object.Enabled = false
-    end
-end
-
-local function RunFixLag()
-
-    if FixLagEnabled then
-        return
-    end
-
-    FixLagEnabled = true
+    Fixed=true
+    Fix.Text="Fix Lag: ON"
 
     pcall(function()
-        Lighting.GlobalShadows = false
+        Lighting.GlobalShadows=false
     end)
 
-    for _, Effect in ipairs(
-        Lighting:GetDescendants()
-    ) do
+    for _,Object in ipairs(Lighting:GetDescendants()) do
 
-        if Effect:IsA("PostEffect") then
+        if Object:IsA("PostEffect") then
 
             pcall(function()
-                Effect.Enabled = false
+                Object.Enabled=false
             end)
 
         end
+
     end
 
-    for _, Object in ipairs(
-        Workspace:GetDescendants()
-    ) do
+    for _,Object in ipairs(Workspace:GetDescendants()) do
 
-        task.defer(function()
+        local Model=Object:FindFirstAncestorOfClass("Model")
 
-            if FixLagEnabled then
-                ProcessObject(Object)
+        local IsCharacter=
+            Model and Model:FindFirstChildOfClass("Humanoid")
+
+        local Name=Object.Name:lower()
+
+        local Protected=
+            IsCharacter
+            or Name:find("egg")
+            or Name:find("guard")
+
+        if not Protected then
+
+            if Object:IsA("BasePart") then
+
+                Object.CastShadow=false
+
+            elseif Object:IsA("ParticleEmitter")
+            or Object:IsA("Trail")
+            or Object:IsA("Beam")
+            or Object:IsA("Smoke")
+            or Object:IsA("Fire")
+            or Object:IsA("Sparkles") then
+
+                Object.Enabled=false
+
             end
-
-        end)
-    end
-
-    Workspace.DescendantAdded:Connect(function(Object)
-
-        if not FixLagEnabled then
-            return
-        end
-
-        task.defer(function()
-
-            if FixLagEnabled then
-                ProcessObject(Object)
-            end
-
-        end)
-
-    end)
-
-    FixLagButton.Text = "Fix Lag: ON"
-end
-
-FixLagButton.MouseButton1Click:Connect(function()
-    RunFixLag()
-end)
-
---========================================================--
--- ICUS MOD BYPASS CHILLI
---========================================================--
-
-ChilliButton.MouseButton1Click:Connect(function()
-
-    ChilliButton.Text = "Loading..."
-
-    task.spawn(function()
-
-        local Success, Result = pcall(function()
-
-            local URL =
-                "https://raw.githubusercontent.com/robvxs24/freemium/refs/heads/main/chillviethoa.lua"
-
-            local Source = game:HttpGet(URL)
-            local Func = loadstring(Source)
-
-            if not Func then
-                error(
-                    "Không thể load ICUS MOD BYPASS CHILLI."
-                )
-            end
-
-            return Func()
-        end)
-
-        if not Success then
-
-            warn(
-                "[Best Hub] ICUS MOD error:",
-                Result
-            )
 
         end
 
-        ChilliButton.Text =
-            "ICUS MOD BYPASS CHILLI"
-
-    end)
+    end
 
 end)
 
---========================================================--
--- MỞ / ĐÓNG MENU
---========================================================--
+--================================================--
+--             CREATOR SYSTEM
+--================================================--
 
-OpenButton.MouseButton1Click:Connect(function()
+local CreatorName="maynhin_707"
 
-    Main.Visible = not Main.Visible
+local CreatorGui=Instance.new("ScreenGui")
 
-end)
+CreatorGui.Name="BestHubCreatorScreen"
+CreatorGui.IgnoreGuiInset=true
+CreatorGui.ResetOnSpawn=false
+CreatorGui.DisplayOrder=2000
 
---========================================================--
--- CREATOR
---========================================================--
+CreatorGui.Parent=CoreGui
 
-local CreatorUsername = "maynhin_707"
+--================================================--
+--              CREATOR LABEL
+--================================================--
 
-local RainbowColors = {
-    Color3.fromRGB(255, 0, 0),
-    Color3.fromRGB(255, 127, 0),
-    Color3.fromRGB(255, 255, 0),
-    Color3.fromRGB(0, 255, 0),
-    Color3.fromRGB(0, 170, 255),
-    Color3.fromRGB(0, 0, 255),
-    Color3.fromRGB(170, 0, 255)
+local Creator=Instance.new("TextLabel")
+
+-- KÍCH THƯỚC LUÔN CỐ ĐỊNH
+Creator.Size=UDim2.fromOffset(180,40)
+
+-- VỊ TRÍ SẼ ĐƯỢC ĐẶT TRÊN ĐẦU
+Creator.AnchorPoint=Vector2.new(.5,1)
+
+Creator.BackgroundTransparency=1
+Creator.BorderSizePixel=0
+
+Creator.Text="👑Creator👑"
+
+-- TUYỆT ĐỐI KHÔNG TEXTSCALED
+Creator.TextScaled=false
+Creator.TextSize=22
+
+Creator.Font=Enum.Font.GothamBold
+
+Creator.TextStrokeTransparency=0
+Creator.TextStrokeColor3=Color3.new(0,0,0)
+
+Creator.Visible=false
+
+Creator.Parent=CreatorGui
+
+--================================================--
+--                CREATOR COLORS
+--================================================--
+
+local CreatorColors={
+
+    Color3.fromRGB(225,150,160),
+    Color3.fromRGB(225,185,140),
+    Color3.fromRGB(215,210,140),
+    Color3.fromRGB(150,210,170),
+    Color3.fromRGB(145,195,220),
+    Color3.fromRGB(160,165,220),
+    Color3.fromRGB(195,160,215)
+
 }
 
-local function AddCreatorTag(Character)
+task.spawn(function()
 
-    if not Character then
-        return
-    end
+    local Index=1
 
-    local Head = Character:WaitForChild(
-        "Head",
-        10
-    )
+    while Creator.Parent do
 
-    if not Head then
-        return
-    end
+        Creator.TextColor3=CreatorColors[Index]
 
-    -- Xóa tag cũ
-    pcall(function()
+        Index=Index+1
 
-        local OldTag =
-            Head:FindFirstChild(
-                "BestHubCreatorTag"
-            )
-
-        if OldTag then
-            OldTag:Destroy()
+        if Index>#CreatorColors then
+            Index=1
         end
 
-    end)
-
-    --====================================================--
-    -- BILLBOARD CỐ ĐỊNH KÍCH THƯỚC
-    --====================================================--
-
-    local Billboard =
-        Instance.new("BillboardGui")
-
-    Billboard.Name =
-        "BestHubCreatorTag"
-
-    Billboard.Adornee = Head
-
-    -- Kích thước cố định theo pixel
-    Billboard.Size =
-        UDim2.fromOffset(180, 40)
-
-    Billboard.SizeOffset =
-        Vector2.new(0, 0)
-
-    Billboard.StudsOffset =
-        Vector3.new(0, 3, 0)
-
-    Billboard.AlwaysOnTop = true
-
-    Billboard.MaxDistance = 1000
-
-    Billboard.DistanceStep = 0
-
-    Billboard.Parent = Head
-
-    --====================================================--
-    -- CREATOR TEXT
-    --====================================================--
-
-    local CreatorText =
-        Instance.new("TextLabel")
-
-    CreatorText.Name =
-        "CreatorText"
-
-    CreatorText.Size =
-        UDim2.fromScale(1, 1)
-
-    CreatorText.Position =
-        UDim2.fromScale(0, 0)
-
-    CreatorText.BackgroundTransparency = 1
-
-    CreatorText.Text =
-        "👑Creator👑"
-
-    CreatorText.TextScaled = true
-
-    CreatorText.Font =
-        Enum.Font.GothamBold
-
-    CreatorText.TextStrokeTransparency = 0
-
-    CreatorText.TextStrokeColor3 =
-        Color3.fromRGB(0, 0, 0)
-
-    CreatorText.Parent = Billboard
-
-    --====================================================--
-    -- 7 MÀU
-    --====================================================--
-
-    task.spawn(function()
-
-        local Index = 1
-
-        while CreatorText
-        and CreatorText.Parent do
-
-            CreatorText.TextColor3 =
-                RainbowColors[Index]
-
-            Index = Index + 1
-
-            if Index > #RainbowColors then
-                Index = 1
-            end
-
-            task.wait(0.25)
-
-        end
-
-    end)
-end
-
---========================================================--
--- KIỂM TRA CREATOR
---========================================================--
-
-local function CheckCreator(PlayerObject)
-
-    if not PlayerObject then
-        return
-    end
-
-    if string.lower(PlayerObject.Name)
-        ~= string.lower(CreatorUsername) then
-
-        return
-    end
-
-    if PlayerObject.Character then
-
-        task.spawn(function()
-
-            AddCreatorTag(
-                PlayerObject.Character
-            )
-
-        end)
+        task.wait(.35)
 
     end
-
-    PlayerObject.CharacterAdded:Connect(
-        function(Character)
-
-            task.wait(0.5)
-
-            AddCreatorTag(Character)
-
-        end
-    )
-end
-
--- Người chơi hiện tại
-for _, PlayerObject in ipairs(
-    Players:GetPlayers()
-) do
-
-    CheckCreator(PlayerObject)
-
-end
-
--- Người chơi mới
-Players.PlayerAdded:Connect(function(
-    PlayerObject
-)
-
-    CheckCreator(PlayerObject)
 
 end)
 
---========================================================--
--- HOÀN TẤT
---========================================================--
+--================================================--
+--             FIND CREATOR PLAYER
+--================================================--
 
-print("[Best Hub] Loaded successfully")
-print("[Best Hub] Creator:", CreatorUsername)
+local CreatorPlayer=nil
+
+local function FindCreator()
+
+    CreatorPlayer=nil
+
+    for _,PlayerObject in ipairs(Players:GetPlayers()) do
+
+        if PlayerObject.Name:lower()==CreatorName:lower() then
+
+            CreatorPlayer=PlayerObject
+            break
+
+        end
+
+    end
+
+end
+
+FindCreator()
+
+Players.PlayerAdded:Connect(function(PlayerObject)
+
+    if PlayerObject.Name:lower()==CreatorName:lower() then
+
+        CreatorPlayer=PlayerObject
+
+    end
+
+end)
+
+Players.PlayerRemoving:Connect(function(PlayerObject)
+
+    if PlayerObject==CreatorPlayer then
+
+        CreatorPlayer=nil
+        Creator.Visible=false
+
+    end
+
+end)
+
+--================================================--
+--       FOLLOW HEAD, FIXED SCREEN SIZE
+--================================================--
+
+RunService.RenderStepped:Connect(function()
+
+    if not CreatorPlayer then
+
+        Creator.Visible=false
+        return
+
+    end
+
+    local Character=CreatorPlayer.Character
+
+    if not Character then
+
+        Creator.Visible=false
+        return
+
+    end
+
+    local Head=Character:FindFirstChild("Head")
+    local Camera=Workspace.CurrentCamera
+
+    if not Head or not Camera then
+
+        Creator.Visible=false
+        return
+
+    end
+
+    local ScreenPosition,OnScreen=
+        Camera:WorldToViewportPoint(
+            Head.Position+Vector3.new(0,2.8,0)
+        )
+
+    if OnScreen and ScreenPosition.Z>0 then
+
+        -- CHỈ THAY ĐỔI POSITION
+        -- SIZE LUÔN GIỮ 180x40
+
+        Creator.Position=UDim2.fromOffset(
+            ScreenPosition.X,
+            ScreenPosition.Y
+        )
+
+        Creator.Visible=true
+
+    else
+
+        Creator.Visible=false
+
+    end
+
+end)
+
+--================================================--
+--                      DONE
+--================================================--
+
+print("[TỔNG HỢP SCRIPT NOKEY] Loaded")
+print("[TỔNG HỢP SCRIPT NOKEY] Creator: "..CreatorName)

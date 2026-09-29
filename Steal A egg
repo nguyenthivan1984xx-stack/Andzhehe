@@ -1,6 +1,7 @@
 --========================================================--
 --              BEST HUB TỔNG HỢP
---   Miranda | Lemon | Hop Server | Fix Lag | ICUS MOD
+--   Miranda | Lemon | Miranda AFK | Hop Server
+--   Fix Lag | ICUS MOD | CREATOR
 --========================================================--
 
 local Players = game:GetService("Players")
@@ -17,12 +18,18 @@ local Player = Players.LocalPlayer
 
 pcall(function()
     local OldGui = CoreGui:FindFirstChild("BestHubTongHop")
+
     if OldGui then
         OldGui:Destroy()
     end
 end)
 
+--========================================================--
+-- SCREEN GUI
+--========================================================--
+
 local ScreenGui = Instance.new("ScreenGui")
+
 ScreenGui.Name = "BestHubTongHop"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.IgnoreGuiInset = true
@@ -144,23 +151,52 @@ Title.Font = Enum.Font.GothamBold
 Title.Parent = Main
 
 --========================================================--
--- TẠO BUTTON
+-- SCROLL
+--========================================================--
+
+local Scroll = Instance.new("ScrollingFrame")
+
+Scroll.Name = "ButtonScroll"
+Scroll.Size = UDim2.new(1, -10, 1, -55)
+Scroll.Position = UDim2.new(0, 5, 0, 50)
+Scroll.BackgroundTransparency = 1
+Scroll.BorderSizePixel = 0
+
+Scroll.CanvasSize = UDim2.new(
+    0,
+    0,
+    0,
+    330
+)
+
+Scroll.ScrollBarThickness = 5
+Scroll.ScrollBarImageColor3 = Color3.fromRGB(140, 80, 255)
+Scroll.ScrollingDirection = Enum.ScrollingDirection.Y
+Scroll.Active = true
+Scroll.Parent = Main
+
+--========================================================--
+-- CREATE BUTTON
 --========================================================--
 
 local function CreateButton(Text, Position)
 
     local Button = Instance.new("TextButton")
 
-    Button.Size = UDim2.new(1, -30, 0, 42)
+    Button.Size = UDim2.new(1, -20, 0, 42)
     Button.Position = Position
+
     Button.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
     Button.BorderSizePixel = 0
+
     Button.Text = Text
     Button.TextColor3 = Color3.fromRGB(255, 255, 255)
     Button.TextSize = 15
     Button.Font = Enum.Font.GothamBold
+
     Button.AutoButtonColor = true
-    Button.Parent = Main
+
+    Button.Parent = Scroll
 
     local Corner = Instance.new("UICorner")
     Corner.CornerRadius = UDim.new(0, 9)
@@ -175,27 +211,32 @@ end
 
 local MirandaButton = CreateButton(
     "Miranda Hub",
-    UDim2.new(0, 15, 0, 58)
+    UDim2.new(0, 10, 0, 8)
 )
 
 local LemonButton = CreateButton(
     "Lemon Hub",
-    UDim2.new(0, 15, 0, 108)
+    UDim2.new(0, 10, 0, 58)
+)
+
+local MirandaAFKButton = CreateButton(
+    "Miranda AFK",
+    UDim2.new(0, 10, 0, 108)
 )
 
 local HopButton = CreateButton(
     "Hop Sever",
-    UDim2.new(0, 15, 0, 158)
+    UDim2.new(0, 10, 0, 158)
 )
 
 local FixLagButton = CreateButton(
     "Fix Lag",
-    UDim2.new(0, 15, 0, 208)
+    UDim2.new(0, 10, 0, 208)
 )
 
 local ChilliButton = CreateButton(
     "ICUS MOD BYPASS CHILLI",
-    UDim2.new(0, 15, 0, 258)
+    UDim2.new(0, 10, 0, 258)
 )
 
 --========================================================--
@@ -209,6 +250,7 @@ local function RunScript(URL)
         local Success, Result = pcall(function()
 
             local Source = game:HttpGet(URL)
+
             local Func = loadstring(Source)
 
             if not Func then
@@ -219,7 +261,10 @@ local function RunScript(URL)
         end)
 
         if not Success then
-            warn("[Best Hub] Script error:", Result)
+            warn(
+                "[Best Hub] Script error:",
+                Result
+            )
         end
 
     end)
@@ -238,7 +283,9 @@ MirandaButton.MouseButton1Click:Connect(function()
     )
 
     task.delay(1, function()
+
         MirandaButton.Text = "Miranda Hub"
+
     end)
 
 end)
@@ -256,7 +303,29 @@ LemonButton.MouseButton1Click:Connect(function()
     )
 
     task.delay(1, function()
+
         LemonButton.Text = "Lemon Hub"
+
+    end)
+
+end)
+
+--========================================================--
+-- MIRANDA AFK
+--========================================================--
+
+MirandaAFKButton.MouseButton1Click:Connect(function()
+
+    MirandaAFKButton.Text = "Loading..."
+
+    RunScript(
+        "https://raw.githubusercontent.com/miirandahub/loader/refs/heads/main/afkk"
+    )
+
+    task.delay(1, function()
+
+        MirandaAFKButton.Text = "Miranda AFK"
+
     end)
 
 end)
@@ -274,7 +343,9 @@ HopButton.MouseButton1Click:Connect(function()
     )
 
     task.delay(1, function()
+
         HopButton.Text = "Hop Sever"
+
     end)
 
 end)
@@ -296,6 +367,7 @@ local function IsProtected(Object)
 
         if string.find(Name, "egg")
         or string.find(Name, "guard") then
+
             return true
         end
 
@@ -329,6 +401,7 @@ local function GetGuardModel(Object)
             if string.find(Name, "guard") then
                 return Current
             end
+
         end
 
         Current = Current.Parent
@@ -338,7 +411,7 @@ local function GetGuardModel(Object)
 end
 
 --========================================================--
--- DỪNG ANIMATION GUARD
+-- STOP GUARD ANIMATION
 --========================================================--
 
 local function StopGuardAnimations(GuardModel)
@@ -347,13 +420,15 @@ local function StopGuardAnimations(GuardModel)
         return
     end
 
-    local Humanoid = GuardModel:FindFirstChildOfClass("Humanoid")
+    local Humanoid =
+        GuardModel:FindFirstChildOfClass("Humanoid")
 
     if not Humanoid then
         return
     end
 
-    local Animator = Humanoid:FindFirstChildOfClass("Animator")
+    local Animator =
+        Humanoid:FindFirstChildOfClass("Animator")
 
     if not Animator then
         return
@@ -389,7 +464,7 @@ local function StopGuardAnimations(GuardModel)
 end
 
 --========================================================--
--- XỬ LÝ OBJECT
+-- PROCESS OBJECT
 --========================================================--
 
 local function ProcessObject(Object)
@@ -398,10 +473,13 @@ local function ProcessObject(Object)
         return
     end
 
-    local GuardModel = GetGuardModel(Object)
+    local GuardModel =
+        GetGuardModel(Object)
 
     if GuardModel then
+
         StopGuardAnimations(GuardModel)
+
         return
     end
 
@@ -424,7 +502,10 @@ local function ProcessObject(Object)
         end
 
         pcall(function()
-            Object.Color = Color3.fromRGB(255, 255, 255)
+
+            Object.Color =
+                Color3.fromRGB(255, 255, 255)
+
         end)
 
         Object.CastShadow = false
@@ -433,7 +514,10 @@ local function ProcessObject(Object)
     if Object:IsA("SpecialMesh") then
 
         pcall(function()
-            Object.VertexColor = Vector3.new(1, 1, 1)
+
+            Object.VertexColor =
+                Vector3.new(1, 1, 1)
+
         end)
 
     end
@@ -450,7 +534,7 @@ local function ProcessObject(Object)
 end
 
 --========================================================--
--- CHẠY FIX LAG
+-- RUN FIX LAG
 --========================================================--
 
 local function RunFixLag()
@@ -462,7 +546,9 @@ local function RunFixLag()
     FixLagEnabled = true
 
     pcall(function()
+
         Lighting.GlobalShadows = false
+
     end)
 
     for _, Effect in ipairs(
@@ -472,7 +558,9 @@ local function RunFixLag()
         if Effect:IsA("PostEffect") then
 
             pcall(function()
+
                 Effect.Enabled = false
+
             end)
 
         end
@@ -504,6 +592,7 @@ local function RunFixLag()
             end
 
         end)
+
     end)
 
     FixLagButton.Text = "Fix Lag: ON"
@@ -514,7 +603,9 @@ end
 --========================================================--
 
 FixLagButton.MouseButton1Click:Connect(function()
+
     RunFixLag()
+
 end)
 
 --========================================================--
@@ -532,16 +623,22 @@ ChilliButton.MouseButton1Click:Connect(function()
             local URL =
                 "https://raw.githubusercontent.com/robvxs24/freemium/refs/heads/main/chillviethoa.lua"
 
-            local Source = game:HttpGet(URL)
-            local Func = loadstring(Source)
+            local Source =
+                game:HttpGet(URL)
+
+            local Func =
+                loadstring(Source)
 
             if not Func then
+
                 error(
                     "Không thể load ICUS MOD BYPASS CHILLI."
                 )
+
             end
 
             return Func()
+
         end)
 
         if not Success then
@@ -557,6 +654,7 @@ ChilliButton.MouseButton1Click:Connect(function()
             "ICUS MOD BYPASS CHILLI"
 
     end)
+
 end)
 
 --========================================================--
@@ -568,3 +666,169 @@ OpenButton.MouseButton1Click:Connect(function()
     Main.Visible = not Main.Visible
 
 end)
+
+--========================================================--
+-- CREATOR 👑
+--========================================================--
+
+local CreatorUsername = "maynhin_707"
+
+local function AddCreatorTag(Character)
+
+    if not Character then
+        return
+    end
+
+    local Head = Character:WaitForChild(
+        "Head",
+        10
+    )
+
+    if not Head then
+        return
+    end
+
+    -- Xóa tag cũ
+    pcall(function()
+
+        local Old =
+            Head:FindFirstChild("BestHubCreatorTag")
+
+        if Old then
+            Old:Destroy()
+        end
+
+    end)
+
+    -- Billboard
+    local Billboard =
+        Instance.new("BillboardGui")
+
+    Billboard.Name =
+        "BestHubCreatorTag"
+
+    Billboard.Adornee = Head
+    Billboard.Size =
+        UDim2.new(0, 180, 0, 45)
+
+    Billboard.StudsOffset =
+        Vector3.new(0, 3, 0)
+
+    Billboard.AlwaysOnTop = true
+    Billboard.MaxDistance = 1000
+    Billboard.Parent = Head
+
+    -- Text
+    local CreatorText =
+        Instance.new("TextLabel")
+
+    CreatorText.Size =
+        UDim2.new(1, 0, 1, 0)
+
+    CreatorText.BackgroundTransparency = 1
+
+    CreatorText.Text =
+        "👑Creator👑"
+
+    CreatorText.TextScaled = true
+    CreatorText.Font =
+        Enum.Font.GothamBold
+
+    CreatorText.TextStrokeTransparency = 0
+    CreatorText.TextStrokeColor3 =
+        Color3.fromRGB(0, 0, 0)
+
+    CreatorText.Parent = Billboard
+
+    -- Rainbow
+    task.spawn(function()
+
+        local Hue = 0
+
+        while CreatorText.Parent do
+
+            Hue = Hue + 0.01
+
+            if Hue >= 1 then
+                Hue = 0
+            end
+
+            CreatorText.TextColor3 =
+                Color3.fromHSV(Hue, 1, 1)
+
+            task.wait(0.03)
+
+        end
+
+    end)
+end
+
+--========================================================--
+-- TÌM CREATOR
+--========================================================--
+
+local function CheckCreator(PlayerObject)
+
+    if not PlayerObject then
+        return
+    end
+
+    if string.lower(PlayerObject.Name)
+        ~= string.lower(CreatorUsername) then
+
+        return
+    end
+
+    if PlayerObject.Character then
+
+        task.spawn(function()
+
+            AddCreatorTag(
+                PlayerObject.Character
+            )
+
+        end)
+
+    end
+
+    PlayerObject.CharacterAdded:Connect(
+        function(Character)
+
+            task.wait(0.5)
+
+            AddCreatorTag(Character)
+
+        end
+    )
+end
+
+-- Kiểm tra người chơi hiện tại
+for _, PlayerObject in ipairs(
+    Players:GetPlayers()
+) do
+
+    CheckCreator(PlayerObject)
+
+end
+
+-- Kiểm tra người chơi mới vào
+Players.PlayerAdded:Connect(function(
+    PlayerObject
+)
+
+    CheckCreator(PlayerObject)
+
+end)
+
+--========================================================--
+-- HOÀN TẤT
+--========================================================--
+
+print(
+    "[Best Hub] Loaded successfully."
+)
+
+print(
+    "[Best Hub] Creator:",
+    CreatorUsername
+)

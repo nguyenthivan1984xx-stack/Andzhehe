@@ -123,7 +123,7 @@ Icon.Position=UDim2.fromOffset(3,3)
 Icon.BackgroundTransparency=1
 Icon.BorderSizePixel=0
 
-Icon.Image="rbxassetid://76050053648216"
+Icon.Image="rbxassetid://137707442730440"
 Icon.ScaleType=Enum.ScaleType.Crop
 
 Icon.Parent=Open

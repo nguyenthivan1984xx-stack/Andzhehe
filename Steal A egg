@@ -98,10 +98,7 @@ Open.Position=UDim2.new(0,12,.5,-24)
 
 Open.BackgroundColor3=Color3.fromRGB(35,30,45)
 Open.BorderSizePixel=0
-
-Open.Text="☰"
-Open.TextSize=22
-Open.TextColor3=Color3.fromRGB(220,210,255)
+Open.Text=""
 
 Open.Parent=Gui
 
@@ -113,6 +110,27 @@ local OpenStroke=Instance.new("UIStroke")
 OpenStroke.Color=Color3.fromRGB(150,125,205)
 OpenStroke.Thickness=1.5
 OpenStroke.Parent=Open
+
+--================================================--
+--                    IMAGE ICON
+--================================================--
+
+local Icon=Instance.new("ImageLabel")
+
+Icon.Size=UDim2.new(1,-6,1,-6)
+Icon.Position=UDim2.fromOffset(3,3)
+
+Icon.BackgroundTransparency=1
+Icon.BorderSizePixel=0
+
+Icon.Image="rbxassetid://76050053648216"
+Icon.ScaleType=Enum.ScaleType.Crop
+
+Icon.Parent=Open
+
+local IconCorner=Instance.new("UICorner")
+IconCorner.CornerRadius=UDim.new(1,0)
+IconCorner.Parent=Icon
 
 Drag(Open)
 
@@ -457,10 +475,8 @@ CreatorGui.Parent=CoreGui
 
 local Creator=Instance.new("TextLabel")
 
--- KÍCH THƯỚC LUÔN CỐ ĐỊNH
 Creator.Size=UDim2.fromOffset(180,40)
 
--- VỊ TRÍ SẼ ĐƯỢC ĐẶT TRÊN ĐẦU
 Creator.AnchorPoint=Vector2.new(.5,1)
 
 Creator.BackgroundTransparency=1
@@ -468,7 +484,6 @@ Creator.BorderSizePixel=0
 
 Creator.Text="👑Creator👑"
 
--- TUYỆT ĐỐI KHÔNG TEXTSCALED
 Creator.TextScaled=false
 Creator.TextSize=22
 
@@ -601,9 +616,6 @@ RunService.RenderStepped:Connect(function()
         )
 
     if OnScreen and ScreenPosition.Z>0 then
-
-        -- CHỈ THAY ĐỔI POSITION
-        -- SIZE LUÔN GIỮ 180x40
 
         Creator.Position=UDim2.fromOffset(
             ScreenPosition.X,

@@ -93,12 +93,14 @@ end
 
 local Open=Instance.new("TextButton")
 
+Open.Name="OpenButton"
 Open.Size=UDim2.fromOffset(48,48)
 Open.Position=UDim2.new(0,12,.5,-24)
 
 Open.BackgroundColor3=Color3.fromRGB(35,30,45)
 Open.BorderSizePixel=0
 Open.Text=""
+Open.AutoButtonColor=false
 
 Open.Parent=Gui
 
@@ -112,19 +114,20 @@ OpenStroke.Thickness=1.5
 OpenStroke.Parent=Open
 
 --================================================--
---                    IMAGE ICON
+--                     ICON
 --================================================--
 
 local Icon=Instance.new("ImageLabel")
 
-Icon.Size=UDim2.new(1,-6,1,-6)
-Icon.Position=UDim2.fromOffset(3,3)
+Icon.Name="Icon"
+Icon.Size=UDim2.new(1,-4,1,-4)
+Icon.Position=UDim2.fromOffset(2,2)
 
 Icon.BackgroundTransparency=1
 Icon.BorderSizePixel=0
 
 Icon.Image="rbxassetid://137707442730440"
-Icon.ScaleType=Enum.ScaleType.Crop
+Icon.ScaleType=Enum.ScaleType.Fit
 
 Icon.Parent=Open
 
@@ -170,8 +173,8 @@ Title.Size=UDim2.new(1,-20,0,45)
 Title.Position=UDim2.fromOffset(10,5)
 
 Title.BackgroundTransparency=1
-
 Title.Text="Tổng Hợp Script Nokey"
+
 Title.TextSize=18
 Title.Font=Enum.Font.GothamBold
 Title.TextColor3=Color3.fromRGB(195,185,235)
@@ -244,9 +247,7 @@ local Chilli=Btn("ICUS MOD BYPASS CHILLI",258)
 --================================================--
 
 Open.MouseButton1Click:Connect(function()
-
     Main.Visible=not Main.Visible
-
 end)
 
 --================================================--
@@ -420,7 +421,6 @@ Fix.MouseButton1Click:Connect(function()
     for _,Object in ipairs(Workspace:GetDescendants()) do
 
         local Model=Object:FindFirstAncestorOfClass("Model")
-
         local IsCharacter=
             Model and Model:FindFirstChildOfClass("Humanoid")
 
@@ -476,7 +476,6 @@ CreatorGui.Parent=CoreGui
 local Creator=Instance.new("TextLabel")
 
 Creator.Size=UDim2.fromOffset(180,40)
-
 Creator.AnchorPoint=Vector2.new(.5,1)
 
 Creator.BackgroundTransparency=1
@@ -486,14 +485,12 @@ Creator.Text="👑Creator👑"
 
 Creator.TextScaled=false
 Creator.TextSize=22
-
 Creator.Font=Enum.Font.GothamBold
 
 Creator.TextStrokeTransparency=0
 Creator.TextStrokeColor3=Color3.new(0,0,0)
 
 Creator.Visible=false
-
 Creator.Parent=CreatorGui
 
 --================================================--
@@ -560,9 +557,7 @@ FindCreator()
 Players.PlayerAdded:Connect(function(PlayerObject)
 
     if PlayerObject.Name:lower()==CreatorName:lower() then
-
         CreatorPlayer=PlayerObject
-
     end
 
 end)
@@ -585,29 +580,23 @@ end)
 RunService.RenderStepped:Connect(function()
 
     if not CreatorPlayer then
-
         Creator.Visible=false
         return
-
     end
 
     local Character=CreatorPlayer.Character
 
     if not Character then
-
         Creator.Visible=false
         return
-
     end
 
     local Head=Character:FindFirstChild("Head")
     local Camera=Workspace.CurrentCamera
 
     if not Head or not Camera then
-
         Creator.Visible=false
         return
-
     end
 
     local ScreenPosition,OnScreen=

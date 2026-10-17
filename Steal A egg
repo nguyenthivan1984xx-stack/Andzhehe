@@ -293,7 +293,7 @@ end)
 
 Connect(Chilli.MouseButton1Click,function()
     Load(
-        "https://raw.githubusercontent.com/kadit9999/stealanegg/refs/heads/main/ChilliV5BaKhi.lua",
+        "https://raw.githubusercontent.com/kadit9999/stealanegg/refs/heads/main/chilly.lua",
         Chilli,
         "ICUS MOD BYPASS CHILLI"
     )

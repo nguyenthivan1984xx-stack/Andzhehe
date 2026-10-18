@@ -1,14 +1,13 @@
 --================================================--
 --       TỔNG HỢP SCRIPT NOKEY | ICUS HUB
+--                COMPLETE V2
 --================================================--
 
 local Players = game:GetService("Players")
-local CoreGui = game:GetService("CoreGui")
 local UIS = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
 local Lighting = game:GetService("Lighting")
 local RunService = game:GetService("RunService")
-local TextChatService = game:GetService("TextChatService")
 
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
@@ -18,66 +17,63 @@ local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 --================================================--
 
 local CreatorName = "maynhin_707"
-local VerifiedSymbol = utf8.char(57344)
 
 local Purple = Color3.fromRGB(150,120,205)
 local Dark = Color3.fromRGB(27,25,34)
 local ButtonColor = Color3.fromRGB(42,38,50)
+local White = Color3.fromRGB(235,230,245)
 
-local Connections = {}
 local Alive = true
+local Connections = {}
+local CreatorPlayer = nil
 
 --================================================--
 --                 CLEAN OLD GUI
 --================================================--
 
-pcall(function()
-    CoreGui.BestHubTongHop:Destroy()
-end)
+for _,name in ipairs({
+    "BestHubTongHop",
+    "BestHubCreatorScreen",
+    "ICUS_PlayerList"
+}) do
+    local old = PlayerGui:FindFirstChild(name)
 
-pcall(function()
-    CoreGui.BestHubCreatorScreen:Destroy()
-end)
-
-pcall(function()
-    PlayerGui.BestHubTongHop:Destroy()
-end)
-
-pcall(function()
-    PlayerGui.BestHubCreatorScreen:Destroy()
-end)
+    if old then
+        old:Destroy()
+    end
+end
 
 --================================================--
 --                    HELPERS
 --================================================--
 
-local function Connect(signal, callback)
+local function Connect(signal,callback)
     local connection = signal:Connect(callback)
-    table.insert(Connections, connection)
+    table.insert(Connections,connection)
     return connection
 end
 
-local function Corner(object, radius)
-    local c = Instance.new("UICorner")
-    c.CornerRadius = UDim.new(0,radius)
-    c.Parent = object
-    return c
+local function Corner(object,radius)
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0,radius)
+    corner.Parent = object
+    return corner
 end
 
 local function Stroke(object,color,thickness)
-    local s = Instance.new("UIStroke")
-    s.Color = color
-    s.Thickness = thickness
-    s.Parent = object
-    return s
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = color
+    stroke.Thickness = thickness
+    stroke.Parent = object
+    return stroke
 end
 
 local function Drag(object,handle)
     handle = handle or object
 
     local dragging = false
-    local startPos
-    local startObjectPos
+    local dragStart
+    local startPosition
     local dragInput
 
     Connect(handle.InputBegan,function(input)
@@ -85,12 +81,14 @@ local function Drag(object,handle)
         or input.UserInputType == Enum.UserInputType.Touch then
 
             dragging = true
-            startPos = input.Position
-            startObjectPos = object.Position
+            dragStart = input.Position
+            startPosition = object.Position
 
-            Connect(input.Changed,function()
+            local ended
+            ended = input.Changed:Connect(function()
                 if input.UserInputState == Enum.UserInputState.End then
                     dragging = false
+                    ended:Disconnect()
                 end
             end)
         end
@@ -109,20 +107,38 @@ local function Drag(object,handle)
         if input == dragInput
         or input.UserInputType == Enum.UserInputType.Touch then
 
-            local delta = input.Position - startPos
+            local delta = input.Position - dragStart
 
             object.Position = UDim2.new(
-                startObjectPos.X.Scale,
-                startObjectPos.X.Offset + delta.X,
-                startObjectPos.Y.Scale,
-                startObjectPos.Y.Offset + delta.Y
+                startPosition.X.Scale,
+                startPosition.X.Offset + delta.X,
+                startPosition.Y.Scale,
+                startPosition.Y.Offset + delta.Y
             )
         end
     end)
 end
 
+local function IsCreator(player)
+    return player
+        and player.Name:lower() == CreatorName:lower()
+end
+
+local function FindCreator()
+    CreatorPlayer = nil
+
+    for _,player in ipairs(Players:GetPlayers()) do
+        if IsCreator(player) then
+            CreatorPlayer = player
+            break
+        end
+    end
+end
+
+FindCreator()
+
 --================================================--
---                      GUI
+--                     MAIN GUI
 --================================================--
 
 local Gui = Instance.new("ScreenGui")
@@ -178,7 +194,6 @@ Main.Parent = Gui
 
 Corner(Main,12)
 Stroke(Main,Purple,2)
-Drag(Main)
 
 local Title = Instance.new("TextLabel")
 Title.Size = UDim2.new(1,-20,0,45)
@@ -190,12 +205,14 @@ Title.Font = Enum.Font.GothamBold
 Title.TextColor3 = Color3.fromRGB(195,185,235)
 Title.Parent = Main
 
+Drag(Main,Title)
+
 local Scroll = Instance.new("ScrollingFrame")
 Scroll.Size = UDim2.new(1,-10,1,-55)
 Scroll.Position = UDim2.fromOffset(5,50)
 Scroll.BackgroundTransparency = 1
 Scroll.BorderSizePixel = 0
-Scroll.CanvasSize = UDim2.fromOffset(0,330)
+Scroll.CanvasSize = UDim2.fromOffset(0,365)
 Scroll.ScrollBarThickness = 5
 Scroll.ScrollBarImageColor3 = Purple
 Scroll.ScrollingDirection = Enum.ScrollingDirection.Y
@@ -208,12 +225,13 @@ local function Btn(text,y)
     button.BackgroundColor3 = ButtonColor
     button.BorderSizePixel = 0
     button.Text = text
-    button.TextColor3 = Color3.fromRGB(225,220,235)
+    button.TextColor3 = White
     button.TextSize = 15
     button.Font = Enum.Font.GothamBold
     button.Parent = Scroll
 
     Corner(button,9)
+
     return button
 end
 
@@ -223,16 +241,22 @@ local AFK = Btn("Miranda AFK",108)
 local Hop = Btn("Hop Sever",158)
 local Fix = Btn("Fix Lag",208)
 local Chilli = Btn("ICUS MOD BYPASS CHILLI",258)
+local Teddy = Btn("🧸 Teddy Hub",308)
 
 Connect(Open.MouseButton1Click,function()
     Main.Visible = not Main.Visible
 end)
 
 --================================================--
---                    SCRIPT LOADER
+--                   SCRIPT LOADER
 --================================================--
 
 local function Load(url,button,originalText)
+    if button:GetAttribute("Loading") then
+        return
+    end
+
+    button:SetAttribute("Loading",true)
     button.Text = "Loading..."
 
     task.spawn(function()
@@ -240,24 +264,29 @@ local function Load(url,button,originalText)
             local code = game:HttpGet(url)
             local fn = loadstring(code)
 
-            if fn then
-                fn()
-            else
+            if not fn then
                 error("Không thể biên dịch script")
             end
+
+            fn()
         end)
 
         if not success then
             warn("[ICUS HUB]",err)
+            button.Text = "Load Failed"
+            task.wait(1)
         end
-
-        task.wait(1)
 
         if button.Parent then
             button.Text = originalText
+            button:SetAttribute("Loading",false)
         end
     end)
 end
+
+--================================================--
+--                  HUB BUTTONS
+--================================================--
 
 Connect(Miranda.MouseButton1Click,function()
     Load(
@@ -300,10 +329,45 @@ Connect(Chilli.MouseButton1Click,function()
 end)
 
 --================================================--
---                     FIX LAG
+--                  TEDDY HUB
+--================================================--
+
+Connect(Teddy.MouseButton1Click,function()
+    Load(
+        "https://raw.githubusercontent.com/teddyhubdev/diepvy/refs/heads/main/TeddyHub.lua",
+        Teddy,
+        "🧸 Teddy Hub"
+    )
+end)
+
+--================================================--
+--                    FIX LAG
 --================================================--
 
 local Fixed = false
+
+local function IsProtected(object)
+    local current = object
+
+    while current and current ~= Workspace do
+        local name = current.Name:lower()
+
+        if name:find("egg",1,true)
+        or name:find("guard",1,true)
+        or name:find("pet",1,true) then
+            return true
+        end
+
+        if current:IsA("Model")
+        and current:FindFirstChildOfClass("Humanoid") then
+            return true
+        end
+
+        current = current.Parent
+    end
+
+    return false
+end
 
 Connect(Fix.MouseButton1Click,function()
     if Fixed then return end
@@ -324,37 +388,26 @@ Connect(Fix.MouseButton1Click,function()
     end
 
     for _,object in ipairs(Workspace:GetDescendants()) do
-        local model = object:FindFirstAncestorOfClass("Model")
+        if not IsProtected(object) then
+            pcall(function()
+                if object:IsA("BasePart") then
+                    object.CastShadow = false
 
-        local isCharacter =
-            model and model:FindFirstChildOfClass("Humanoid")
-
-        local lowerName = object.Name:lower()
-
-        local protected =
-            isCharacter
-            or lowerName:find("egg")
-            or lowerName:find("guard")
-
-        if not protected then
-            if object:IsA("BasePart") then
-                object.CastShadow = false
-
-            elseif object:IsA("ParticleEmitter")
-            or object:IsA("Trail")
-            or object:IsA("Beam")
-            or object:IsA("Smoke")
-            or object:IsA("Fire")
-            or object:IsA("Sparkles") then
-
-                object.Enabled = false
-            end
+                elseif object:IsA("ParticleEmitter")
+                or object:IsA("Trail")
+                or object:IsA("Beam")
+                or object:IsA("Smoke")
+                or object:IsA("Fire")
+                or object:IsA("Sparkles") then
+                    object.Enabled = false
+                end
+            end)
         end
     end
 end)
 
 --================================================--
---              CREATOR DISPLAY GUI
+--                CREATOR HEAD DISPLAY
 --================================================--
 
 local CreatorGui = Instance.new("ScreenGui")
@@ -368,7 +421,6 @@ local Creator = Instance.new("TextLabel")
 Creator.Size = UDim2.fromOffset(180,40)
 Creator.AnchorPoint = Vector2.new(0.5,1)
 Creator.BackgroundTransparency = 1
-Creator.BorderSizePixel = 0
 Creator.Text = "👑Creator👑"
 Creator.TextSize = 22
 Creator.Font = Enum.Font.GothamBold
@@ -396,47 +448,6 @@ task.spawn(function()
         task.wait(0.35)
     end
 end)
-
---================================================--
---           FIND EXACT CREATOR USERNAME
---================================================--
-
-local CreatorPlayer = nil
-
-local function IsCreator(player)
-    return player
-        and player.Name:lower() == CreatorName:lower()
-end
-
-local function FindCreator()
-    CreatorPlayer = nil
-
-    for _,player in ipairs(Players:GetPlayers()) do
-        if IsCreator(player) then
-            CreatorPlayer = player
-            break
-        end
-    end
-end
-
-FindCreator()
-
-Connect(Players.PlayerAdded,function(player)
-    if IsCreator(player) then
-        CreatorPlayer = player
-    end
-end)
-
-Connect(Players.PlayerRemoving,function(player)
-    if player == CreatorPlayer then
-        CreatorPlayer = nil
-        Creator.Visible = false
-    end
-end)
-
---================================================--
---            FOLLOW CREATOR HEAD
---================================================--
 
 Connect(RunService.RenderStepped,function()
     if not CreatorPlayer then
@@ -469,7 +480,6 @@ Connect(RunService.RenderStepped,function()
             screenPosition.X,
             screenPosition.Y
         )
-
         Creator.Visible = true
     else
         Creator.Visible = false
@@ -477,228 +487,165 @@ Connect(RunService.RenderStepped,function()
 end)
 
 --================================================--
---       AUTO VERIFIED + STARCODE CREATOR
+--             CUSTOM PLAYER LIST
 --================================================--
 
-local StarCreatorImage = nil
-local BadgeCache = setmetatable({}, {__mode = "k"})
-local BadgeConnections = {}
+local ListGui = Instance.new("ScreenGui")
+ListGui.Name = "ICUS_PlayerList"
+ListGui.ResetOnSpawn = false
+ListGui.IgnoreGuiInset = true
+ListGui.DisplayOrder = 998
+ListGui.Parent = PlayerGui
 
--- Tải biểu tượng Star Creator giống script gốc
-pcall(function()
-    if type(writefile) == "function"
-    and type(getcustomasset) == "function" then
+local ListFrame = Instance.new("Frame")
+ListFrame.Name = "PlayerList"
+ListFrame.Size = UDim2.fromOffset(220,245)
+ListFrame.Position = UDim2.new(1,-230,0,65)
+ListFrame.BackgroundColor3 = Dark
+ListFrame.BorderSizePixel = 0
+ListFrame.Visible = false
+ListFrame.Parent = ListGui
 
-        local imageData = game:HttpGet(
-            "https://devforum-uploads.s3.dualstack.us-east-2.amazonaws.com/uploads/original/4X/e/4/0/e40401a6461ea6998787a77c84b8ce47a4d6dca5.png"
-        )
+Corner(ListFrame,10)
+Stroke(ListFrame,Purple,1.5)
 
-        writefile("icus_starcreator.png",imageData)
-        StarCreatorImage = getcustomasset("icus_starcreator.png")
-    end
+local ListTitle = Instance.new("TextLabel")
+ListTitle.Size = UDim2.new(1,-10,0,35)
+ListTitle.Position = UDim2.fromOffset(5,0)
+ListTitle.BackgroundTransparency = 1
+ListTitle.Text = "ICUS | PLAYERS"
+ListTitle.TextColor3 = White
+ListTitle.TextSize = 15
+ListTitle.Font = Enum.Font.GothamBold
+ListTitle.Parent = ListFrame
+
+Drag(ListFrame,ListTitle)
+
+local PlayerScroll = Instance.new("ScrollingFrame")
+PlayerScroll.Size = UDim2.new(1,-10,1,-45)
+PlayerScroll.Position = UDim2.fromOffset(5,40)
+PlayerScroll.BackgroundTransparency = 1
+PlayerScroll.BorderSizePixel = 0
+PlayerScroll.ScrollBarThickness = 3
+PlayerScroll.ScrollBarImageColor3 = Purple
+PlayerScroll.CanvasSize = UDim2.fromOffset(0,0)
+PlayerScroll.Parent = ListFrame
+
+local Layout = Instance.new("UIListLayout")
+Layout.Padding = UDim.new(0,5)
+Layout.SortOrder = Enum.SortOrder.LayoutOrder
+Layout.Parent = PlayerScroll
+
+Connect(Layout:GetPropertyChangedSignal("AbsoluteContentSize"),function()
+    PlayerScroll.CanvasSize = UDim2.fromOffset(
+        0,
+        Layout.AbsoluteContentSize.Y + 8
+    )
 end)
 
-local function IsCreatorText(text)
-    if not CreatorPlayer or not text then
-        return false
-    end
+local ListToggle = Instance.new("TextButton")
+ListToggle.Name = "PlayersToggle"
+ListToggle.Size = UDim2.fromOffset(42,42)
+ListToggle.Position = UDim2.new(1,-54,0,12)
+ListToggle.BackgroundColor3 = Dark
+ListToggle.Text = "👥"
+ListToggle.TextSize = 22
+ListToggle.TextColor3 = White
+ListToggle.Parent = ListGui
 
-    local username = CreatorPlayer.Name
-    local displayName = CreatorPlayer.DisplayName
+Corner(ListToggle,12)
+Stroke(ListToggle,Purple,1.5)
+Drag(ListToggle)
 
-    return text:find("@" .. username,1,true) ~= nil
-        or text:find(username,1,true) ~= nil
-        or text:find(displayName,1,true) ~= nil
-end
-
---================================================--
---               VERIFIED CHAT
---================================================--
-
--- Chỉ tạo hiệu ứng ở phía client đang chạy.
--- Không thay đổi trạng thái Verified chính thức.
-
-local PreviousChatCallback = TextChatService.OnIncomingMessage
-
-pcall(function()
-    TextChatService.OnIncomingMessage = function(message)
-        local properties
-
-        if PreviousChatCallback then
-            local success,result = pcall(
-                PreviousChatCallback,
-                message
-            )
-
-            if success then
-                properties = result
-            end
-        end
-
-        properties = properties
-            or Instance.new("TextChatMessageProperties")
-
-        if CreatorPlayer
-        and message.TextSource
-        and message.TextSource.UserId == CreatorPlayer.UserId then
-
-            local prefix = properties.PrefixText
-
-            if not prefix or prefix == "" then
-                prefix = message.PrefixText
-            end
-
-            if prefix and not prefix:find(VerifiedSymbol,1,true) then
-                properties.PrefixText =
-                    prefix .. VerifiedSymbol
-            end
-        end
-
-        return properties
-    end
+Connect(ListToggle.MouseButton1Click,function()
+    ListFrame.Visible = not ListFrame.Visible
 end)
 
---================================================--
---             STAR CREATOR BADGE
---================================================--
+local function RefreshPlayerList()
+    for _,child in ipairs(PlayerScroll:GetChildren()) do
+        if child:IsA("Frame") then
+            child:Destroy()
+        end
+    end
 
-local function IsPlayerListObject(object)
-    local parent = object
+    local allPlayers = Players:GetPlayers()
 
-    while parent and parent ~= CoreGui do
-        local lower = parent.Name:lower()
-
-        if lower:find("playerlist")
-        or lower:find("player_list")
-        or lower:find("people") then
-            return true
+    table.sort(allPlayers,function(a,b)
+        if IsCreator(a) ~= IsCreator(b) then
+            return IsCreator(a)
         end
 
-        parent = parent.Parent
-    end
+        return a.Name:lower() < b.Name:lower()
+    end)
 
-    return false
-end
+    for index,player in ipairs(allPlayers) do
+        local row = Instance.new("Frame")
+        row.Name = "Player_" .. player.UserId
+        row.Size = UDim2.new(1,-8,0,34)
+        row.BackgroundColor3 = ButtonColor
+        row.BorderSizePixel = 0
+        row.LayoutOrder = index
+        row.Parent = PlayerScroll
 
-local function RemoveBadge(object)
-    local badge = BadgeCache[object]
+        Corner(row,7)
 
-    if badge then
-        pcall(function()
-            badge:Destroy()
-        end)
+        local Name = Instance.new("TextLabel")
+        Name.Size = UDim2.new(1,-12,1,0)
+        Name.Position = UDim2.fromOffset(6,0)
+        Name.BackgroundTransparency = 1
+        Name.TextXAlignment = Enum.TextXAlignment.Left
+        Name.Font = Enum.Font.GothamBold
+        Name.TextSize = 13
+        Name.TextTruncate = Enum.TextTruncate.AtEnd
+        Name.Parent = row
 
-        BadgeCache[object] = nil
-    end
-end
+        if IsCreator(player) then
+            -- Huy hiệu mô phỏng, chỉ trong UI tùy chỉnh.
+            Name.Text = "@" .. player.Name .. "  ✓ ⭐"
+            Name.TextColor3 = Color3.fromRGB(180,155,255)
 
-local function UpdateBadge(object)
-    if not Alive or not object.Parent then
-        return
-    end
-
-    if not CreatorPlayer
-    or not StarCreatorImage
-    or not IsPlayerListObject(object)
-    or not IsCreatorText(object.Text) then
-
-        RemoveBadge(object)
-        return
-    end
-
-    if BadgeCache[object] then
-        return
-    end
-
-    local parent = object.Parent
-
-    local badge = Instance.new("ImageLabel")
-    badge.Name = "ICUS_StarCreatorBadge"
-    badge.BackgroundTransparency = 1
-    badge.Image = StarCreatorImage
-    badge.Size = UDim2.fromOffset(14,14)
-    badge.AnchorPoint = Vector2.new(1,0.5)
-    badge.Position = UDim2.new(0,-3,0.5,1)
-    badge.ZIndex = object.ZIndex + 1
-    badge.Parent = parent
-
-    BadgeCache[object] = badge
-end
-
-local function WatchText(object)
-    if not (
-        object:IsA("TextLabel")
-        or object:IsA("TextButton")
-    ) then
-        return
-    end
-
-    if BadgeConnections[object] then
-        return
-    end
-
-    if not IsPlayerListObject(object) then
-        return
-    end
-
-    BadgeConnections[object] =
-        Connect(object:GetPropertyChangedSignal("Text"),function()
-            UpdateBadge(object)
-        end)
-
-    UpdateBadge(object)
-end
-
--- Quét danh sách người chơi hiện có
-local function ScanPlayerList()
-    for _,object in ipairs(CoreGui:GetDescendants()) do
-        WatchText(object)
+            Stroke(row,Purple,1)
+        else
+            Name.Text = "@" .. player.Name
+            Name.TextColor3 = White
+        end
     end
 end
 
-ScanPlayerList()
+--================================================--
+--                PLAYER DETECTION
+--================================================--
 
--- Tự động nhận các thành phần mới
-Connect(CoreGui.DescendantAdded,function(object)
-    if object:IsA("TextLabel")
-    or object:IsA("TextButton") then
-
-        task.defer(function()
-            if Alive and object.Parent then
-                WatchText(object)
-            end
-        end)
-    end
-end)
-
--- Khi Creator vào hoặc rời server
 Connect(Players.PlayerAdded,function(player)
     if IsCreator(player) then
         CreatorPlayer = player
-        task.defer(ScanPlayerList)
+        print("[ICUS HUB] Creator joined:",player.Name)
     end
+
+    RefreshPlayerList()
 end)
 
 Connect(Players.PlayerRemoving,function(player)
     if player == CreatorPlayer then
         CreatorPlayer = nil
-
-        for object in pairs(BadgeCache) do
-            RemoveBadge(object)
-        end
+        Creator.Visible = false
     end
+
+    task.defer(RefreshPlayerList)
 end)
 
+RefreshPlayerList()
+
 --================================================--
---                 AUTO STATUS
+--                    AUTO STATUS
 --================================================--
 
 if CreatorPlayer then
     print("[ICUS HUB] Creator detected:",CreatorPlayer.Name)
-    print("[ICUS HUB] Local badge effects enabled")
+    print("[ICUS HUB] Custom Creator effects enabled")
 else
     print("[ICUS HUB] Waiting for @" .. CreatorName)
 end
 
-print("[TỔNG HỢP SCRIPT NOKEY] Loaded")
-print("[TỔNG HỢP SCRIPT NOKEY] Creator: " .. CreatorName)
+print("[ICUS HUB] Loaded successfully")
+print("[ICUS HUB] Total buttons: 7")

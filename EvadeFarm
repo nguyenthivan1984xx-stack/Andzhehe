@@ -1,0 +1,537 @@
+--==================================================
+--                 ICUS HUB
+--                 EVADE EVENT
+--             Purple Compact Edition
+--==================================================
+
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local CoreGui = game:GetService("CoreGui")
+
+local LocalPlayer = Players.LocalPlayer
+
+--==================================================
+-- CONFIG
+--==================================================
+
+local GUI_NAME = "ICUS_HUB_EVADE"
+local PURPLE = Color3.fromRGB(165, 105, 255)
+local DARK = Color3.fromRGB(19, 16, 27)
+local PANEL = Color3.fromRGB(31, 26, 43)
+local WHITE = Color3.fromRGB(245, 240, 255)
+local MUTED = Color3.fromRGB(169, 155, 190)
+
+local collectingItems = false
+local avoidingNextbot = false
+local minimized = false
+local connections = {}
+
+--==================================================
+-- CLEANUP
+--==================================================
+
+for _, container in ipairs({CoreGui, LocalPlayer:WaitForChild("PlayerGui")}) do
+    local old = container:FindFirstChild(GUI_NAME)
+    if old then
+        old:Destroy()
+    end
+end
+
+--==================================================
+-- HELPERS
+--==================================================
+
+local function create(className, properties, parent)
+    local object = Instance.new(className)
+    for property, value in pairs(properties or {}) do
+        object[property] = value
+    end
+    object.Parent = parent
+    return object
+end
+
+local function tween(object, duration, properties)
+    TweenService:Create(
+        object,
+        TweenInfo.new(duration, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+        properties
+    ):Play()
+end
+
+local function getCharacterRoot()
+    local character = LocalPlayer.Character
+    if not character then
+        return nil
+    end
+    return character:FindFirstChild("HumanoidRootPart")
+end
+
+--==================================================
+-- GUI ROOT
+--==================================================
+
+local ScreenGui = create("ScreenGui", {
+    Name = GUI_NAME,
+    ResetOnSpawn = false,
+    IgnoreGuiInset = true,
+    DisplayOrder = 999,
+    ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+}, CoreGui)
+
+pcall(function()
+    if not ScreenGui.Parent then
+        ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+    end
+end)
+
+local Main = create("Frame", {
+    Name = "Main",
+    AnchorPoint = Vector2.new(0.5, 0.5),
+    Position = UDim2.new(0.5, 0, 0.5, 0),
+    Size = UDim2.fromOffset(260, 208),
+    BackgroundColor3 = DARK,
+    BorderSizePixel = 0
+}, ScreenGui)
+
+create("UICorner", {CornerRadius = UDim.new(0, 13)}, Main)
+
+local MainStroke = create("UIStroke", {
+    Color = PURPLE,
+    Thickness = 1.7,
+    Transparency = 0.08
+}, Main)
+
+create("UIPadding", {
+    PaddingLeft = UDim.new(0, 1),
+    PaddingRight = UDim.new(0, 1)
+}, Main)
+
+--==================================================
+-- HEADER
+--==================================================
+
+local Header = create("Frame", {
+    Name = "Header",
+    Size = UDim2.new(1, 0, 0, 44),
+    BackgroundColor3 = PANEL,
+    BorderSizePixel = 0
+}, Main)
+
+create("UICorner", {CornerRadius = UDim.new(0, 12)}, Header)
+
+local HeaderCover = create("Frame", {
+    Position = UDim2.new(0, 0, 1, -10),
+    Size = UDim2.new(1, 0, 0, 10),
+    BackgroundColor3 = PANEL,
+    BorderSizePixel = 0
+}, Header)
+
+local Title = create("TextLabel", {
+    Position = UDim2.fromOffset(13, 0),
+    Size = UDim2.new(1, -60, 1, 0),
+    BackgroundTransparency = 1,
+    Text = "ICUS HUB",
+    TextColor3 = WHITE,
+    Font = Enum.Font.GothamBold,
+    TextSize = 19,
+    TextXAlignment = Enum.TextXAlignment.Left
+}, Header)
+
+local TitleGradient = create("UIGradient", {
+    Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(190, 135, 255)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(115, 75, 210))
+    })
+}, Title)
+
+local MinimizeButton = create("TextButton", {
+    Name = "Minimize",
+    AnchorPoint = Vector2.new(1, 0.5),
+    Position = UDim2.new(1, -8, 0.5, 0),
+    Size = UDim2.fromOffset(29, 29),
+    BackgroundColor3 = Color3.fromRGB(75, 54, 105),
+    Text = "−",
+    TextColor3 = WHITE,
+    TextSize = 22,
+    Font = Enum.Font.GothamBold,
+    AutoButtonColor = false
+}, Header)
+
+create("UICorner", {CornerRadius = UDim.new(0, 8)}, MinimizeButton)
+
+--==================================================
+-- SUBTITLE
+--==================================================
+
+local Subtitle = create("TextLabel", {
+    Position = UDim2.fromOffset(12, 49),
+    Size = UDim2.new(1, -24, 0, 19),
+    BackgroundTransparency = 1,
+    Text = "EVADE EVENT  •  PURPLE EDITION",
+    TextColor3 = MUTED,
+    Font = Enum.Font.GothamMedium,
+    TextSize = 10,
+    TextXAlignment = Enum.TextXAlignment.Left
+}, Main)
+
+--==================================================
+-- TOGGLE CREATOR
+--==================================================
+
+local function createToggle(labelText, yPosition, onChanged)
+    local button = create("TextButton", {
+        Name = labelText:gsub("%W", "") .. "Toggle",
+        Position = UDim2.fromOffset(12, yPosition),
+        Size = UDim2.new(1, -24, 0, 43),
+        BackgroundColor3 = PANEL,
+        Text = "",
+        AutoButtonColor = false
+    }, Main)
+
+    create("UICorner", {CornerRadius = UDim.new(0, 9)}, button)
+
+    local outline = create("UIStroke", {
+        Color = Color3.fromRGB(65, 53, 85),
+        Thickness = 1
+    }, button)
+
+    create("TextLabel", {
+        Position = UDim2.fromOffset(12, 0),
+        Size = UDim2.new(1, -65, 1, 0),
+        BackgroundTransparency = 1,
+        Text = labelText,
+        TextColor3 = WHITE,
+        Font = Enum.Font.GothamBold,
+        TextSize = 13,
+        TextXAlignment = Enum.TextXAlignment.Left
+    }, button)
+
+    local track = create("Frame", {
+        AnchorPoint = Vector2.new(1, 0.5),
+        Position = UDim2.new(1, -10, 0.5, 0),
+        Size = UDim2.fromOffset(34, 18),
+        BackgroundColor3 = Color3.fromRGB(68, 62, 78),
+        BorderSizePixel = 0
+    }, button)
+
+    create("UICorner", {CornerRadius = UDim.new(1, 0)}, track)
+
+    local knob = create("Frame", {
+        Position = UDim2.fromOffset(2, 2),
+        Size = UDim2.fromOffset(14, 14),
+        BackgroundColor3 = WHITE,
+        BorderSizePixel = 0
+    }, track)
+
+    create("UICorner", {CornerRadius = UDim.new(1, 0)}, knob)
+
+    local enabled = false
+
+    local function setEnabled(state)
+        enabled = state
+
+        tween(track, 0.16, {
+            BackgroundColor3 = enabled and PURPLE or Color3.fromRGB(68, 62, 78)
+        })
+
+        tween(knob, 0.16, {
+            Position = enabled and UDim2.fromOffset(18, 2) or UDim2.fromOffset(2, 2)
+        })
+
+        tween(outline, 0.16, {
+            Color = enabled and PURPLE or Color3.fromRGB(65, 53, 85)
+        })
+
+        return enabled
+    end
+
+    button.Activated:Connect(function()
+        local newState = setEnabled(not enabled)
+        if onChanged then
+            onChanged(newState)
+        end
+    end)
+
+    return button, setEnabled, function()
+        return enabled
+    end
+end
+
+local collectButton, setCollectVisual, isCollectVisualOn =
+    createToggle("Collect Items", 77, function(state)
+        collectingItems = state
+        if state then
+            Status.Text = "COLLECT ITEMS  •  ON"
+            Status.TextColor3 = PURPLE
+            collectLoop()
+        else
+            Status.Text = "COLLECT ITEMS  •  OFF"
+            Status.TextColor3 = MUTED
+        end
+    end)
+
+local avoidButton, setAvoidVisual, isAvoidVisualOn =
+    createToggle("Avoid Nextbot", 128, function(state)
+        avoidingNextbot = state
+        if state then
+            Status.Text = "AVOID NEXTBOT  •  ON"
+            Status.TextColor3 = PURPLE
+            avoidLoop()
+        else
+            Status.Text = "AVOID NEXTBOT  •  OFF"
+            Status.TextColor3 = MUTED
+        end
+    end)
+
+--==================================================
+-- FOOTER
+--==================================================
+
+local Status = create("TextLabel", {
+    Position = UDim2.new(0, 12, 1, -25),
+    Size = UDim2.new(1, -24, 0, 15),
+    BackgroundTransparency = 1,
+    Text = "ICUS HUB  •  READY",
+    TextColor3 = MUTED,
+    Font = Enum.Font.Gotham,
+    TextSize = 10,
+    TextXAlignment = Enum.TextXAlignment.Left
+}, Main)
+
+--==================================================
+-- MINIMIZE LAUNCHER
+--==================================================
+
+local Launcher = create("TextButton", {
+    Name = "Launcher",
+    AnchorPoint = Vector2.new(0, 0),
+    Position = UDim2.fromOffset(14, 150),
+    Size = UDim2.fromOffset(48, 48),
+    BackgroundColor3 = DARK,
+    Text = "I",
+    TextColor3 = WHITE,
+    TextSize = 22,
+    Font = Enum.Font.GothamBlack,
+    Visible = false,
+    AutoButtonColor = false
+}, ScreenGui)
+
+create("UICorner", {CornerRadius = UDim.new(1, 0)}, Launcher)
+
+create("UIStroke", {
+    Color = PURPLE,
+    Thickness = 2
+}, Launcher)
+
+--==================================================
+-- DRAG SUPPORT (MOUSE + TOUCH)
+--==================================================
+
+local function makeDraggable(handle, target)
+    local dragging = false
+    local dragStart
+    local startPosition
+    local activeInput
+
+    handle.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1
+            or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = input.Position
+            startPosition = target.Position
+            activeInput = input
+        end
+    end)
+
+    handle.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement
+            or input.UserInputType == Enum.UserInputType.Touch then
+            activeInput = input
+        end
+    end)
+
+    local connection = UserInputService.InputChanged:Connect(function(input)
+        if dragging and (
+            input.UserInputType == Enum.UserInputType.MouseMovement
+            or input == activeInput
+        ) then
+            local delta = input.Position - dragStart
+            target.Position = UDim2.new(
+                startPosition.X.Scale,
+                startPosition.X.Offset + delta.X,
+                startPosition.Y.Scale,
+                startPosition.Y.Offset + delta.Y
+            )
+        end
+    end)
+
+    local ended = UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1
+            or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = false
+        end
+    end)
+
+    table.insert(connections, connection)
+    table.insert(connections, ended)
+end
+
+makeDraggable(Header, Main)
+makeDraggable(Launcher, Launcher)
+
+--==================================================
+-- COLLECT ITEMS
+--==================================================
+
+local function collectLoop()
+    task.spawn(function()
+        while collectingItems do
+            task.wait(0.25)
+
+            pcall(function()
+                local root = getCharacterRoot()
+                local effects = workspace:FindFirstChild("Effects")
+                local tickets = effects and effects:FindFirstChild("Tickets")
+
+                if not root or not tickets then
+                    return
+                end
+
+                local ticketList = tickets:GetChildren()
+                local ticket = ticketList[1]
+
+                if ticket then
+                    local ticketRoot = ticket:FindFirstChild("HumanoidRootPart")
+                        or ticket.PrimaryPart
+
+                    if ticketRoot then
+                        root.CFrame = CFrame.new(ticketRoot.Position)
+                    end
+                end
+            end)
+        end
+    end)
+end
+
+--==================================================
+-- AVOID NEXTBOT
+--==================================================
+
+local function findNearestNextbot(root)
+    local characterFolder = workspace:FindFirstChild("Players")
+    if not characterFolder then
+        return nil, math.huge
+    end
+
+    local nearest
+    local nearestDistance = 30
+
+    for _, model in ipairs(characterFolder:GetChildren()) do
+        if model:GetAttribute("AI") == true then
+            local botRoot = model:FindFirstChild("HumanoidRootPart")
+            if botRoot then
+                local distance = (root.Position - botRoot.Position).Magnitude
+                if distance < nearestDistance then
+                    nearest = model
+                    nearestDistance = distance
+                end
+            end
+        end
+    end
+
+    return nearest, nearestDistance
+end
+
+local function getRandomItemSpawn()
+    local map = workspace:FindFirstChild("Map")
+    local spawns = map and map:FindFirstChild("ItemSpawns")
+    if not spawns then
+        return nil
+    end
+
+    local choices = {}
+
+    for _, item in ipairs(spawns:GetChildren()) do
+        if item.Name == "ItemSpawn" and item:IsA("BasePart") then
+            table.insert(choices, item)
+        end
+    end
+
+    if #choices == 0 then
+        return nil
+    end
+
+    return choices[math.random(1, #choices)]
+end
+
+local function avoidLoop()
+    task.spawn(function()
+        while avoidingNextbot do
+            task.wait(0.2)
+
+            pcall(function()
+                local root = getCharacterRoot()
+                if not root then
+                    return
+                end
+
+                local nextbot = findNearestNextbot(root)
+                if nextbot then
+                    local spawnPoint = getRandomItemSpawn()
+                    if spawnPoint then
+                        root.CFrame = spawnPoint.CFrame + Vector3.new(0, 3, 0)
+                    end
+                end
+            end)
+        end
+    end)
+end
+
+-- Toggle callbacks are connected inside createToggle to avoid
+-- duplicate Activated handlers and inverted toggle states.
+
+--==================================================
+-- MINIMIZE / RESTORE
+--==================================================
+
+MinimizeButton.Activated:Connect(function()
+    minimized = true
+    Main.Visible = false
+    Launcher.Visible = true
+end)
+
+Launcher.Activated:Connect(function()
+    minimized = false
+    Main.Visible = true
+    Launcher.Visible = false
+end)
+
+--==================================================
+-- RAINBOW TITLE ACCENT
+--==================================================
+
+task.spawn(function()
+    local hue = 0
+    while ScreenGui.Parent do
+        hue = (hue + 0.004) % 1
+        Title.TextColor3 = Color3.fromHSV(hue, 0.48, 1)
+        task.wait(0.03)
+    end
+end)
+
+--==================================================
+-- CLEANUP
+--==================================================
+
+ScreenGui.Destroying:Connect(function()
+    collectingItems = false
+    avoidingNextbot = false
+
+    for _, connection in ipairs(connections) do
+        pcall(function()
+            connection:Disconnect()
+        end)
+    end
+end)
